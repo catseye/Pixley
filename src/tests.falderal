@@ -1,0 +1,105 @@
+Test suite for our R5RS Pixley interpreter.
+Original: April 2009; Revised: November 2010
+Chris Pressey, Cat's Eye Technologies.
+
+-> Tests for functionality "Interpret Pixley Program"
+
+-> Functionality "Interpret Pixley Program" is implemented by
+-> shell command "(cat >foo.pix && ../script/pixley.sh foo.pix)"
+
+| (quote hello)
+= hello
+
+| (car (quote (foo bar)))
+= foo
+
+| (cdr (quote (foo bar)))
+= (bar)
+
+| (cadr (quote (foo bar)))
+= bar
+
+Because booleans don't actually have a defined representation in
+Pixley, the next few tests are cheating a bit, relying on Scheme's
+defined representation for booleans instead.  This would be easy
+to fix up, but a bit tedious: just wrap each of these in
+
+    (cond (... (quote true)) (else (quote false)))
+
+| (equal? (quote a) (quote a))
+= #t
+
+| (equal? (quote a) (quote b))
+= #f
+
+| (equal? (quote (one (two three)))
+|         (cons (quote one) (quote ((two three)))))
+= #t
+
+| (list? (quote a))
+= #f
+
+| (list? (cons (quote a) (quote ())))
+= #t
+
+Actually, pairs aren't define at all in Pixley, so I wouldn't
+blame an implementation for just freaking out at this one.
+
+| (list? (cons (quote a) (quote b)))
+= #f
+
+| (list? (quote (a b c d e f)))
+= #t
+
+Booleans are not lists.
+
+| (list? (equal? (quote a) (quote b)))
+= #f
+
+Lambda functions are not lists.
+
+| (list? (lambda (x y) (y x)))
+= #f
+
+| (list? (cdr (quote (foo))))
+= #t
+
+| (null? (lambda (x y) (y x)))
+= #f
+
+| (null? (quote r))
+= #f
+
+| (null? (quote ()))
+= #t
+
+| (null? (cdr (quote (foo))))
+= #t
+
+| (let* ((a (quote hello))) a)
+= hello
+
+
+| (let* ((a (let* ((b (quote c))) b))) a)
+= c
+
+| (let* ((a (lambda (x y) (cons x y))))
+|       (a (quote foo) (quote ())))
+= (foo)
+
+| ((lambda (a) a) (quote whee))
+= whee
+
+| (let* ((true (equal? (quote a) (quote a))))
+|   (cond (true (quote hi)) (else (quote lo))))
+= hi
+
+| (let* ((true (equal? (quote a) (quote a)))
+|        (false (equal? (quote a) (quote b))))
+|   (cond (false (quote hi)) (true (quote med)) (else (quote lo))))
+= med
+
+| (let* ((true (equal? (quote a) (quote a)))
+|        (false (equal? (quote a) (quote b))))
+|   (cond (false (quote hi)) (false (quote med)) (else (quote lo))))
+= lo

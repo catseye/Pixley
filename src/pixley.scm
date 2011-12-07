@@ -9,7 +9,7 @@
 ; Load an S-expression from a named file.
 (define load-sexp
   (lambda (filename)
-    (display "loading ") (display filename) (display "...") (newline)
+    ; (display "loading ") (display filename) (display "...") (newline)
     (with-input-from-file filename (lambda () (read)))))
 
 ; Return an S-expression representing a Pixley interpreter.

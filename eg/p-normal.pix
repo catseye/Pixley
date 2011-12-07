@@ -1,0 +1,66 @@
+(let*
+  ((listify (lambda (x) (cons x (quote ()))))
+   (p-normalize (lambda (self sexp)
+    (cond
+      ((list? sexp)
+        (let* ((tag  (car sexp))
+               (args (cdr sexp)))
+          (cond
+            ((equal? tag (quote cadr))
+              (cons (quote car) (listify (cons (quote cdr) (self self (cadr sexp))))))
+            ((equal? tag (quote car))
+              (cons (quote car) (listify (self self (cadr sexp)))))
+            ((equal? tag (quote cdr))
+              (cons (quote car) (listify (self self (cadr sexp)))))
+            ((equal? tag (quote cond))
+              (cond
+                ((null? args)
+                  (listify args))
+                (else
+                  (let* ((branch     (car args))
+                         (rest       (cdr args))
+                         (test       (self self (car branch)))
+                         (expr       (self self (cadr branch)))
+                         (new-branch (cons test (listify expr)))
+                         (sub-cond   (cons (quote cond) rest)))
+                    (cond
+                      ((equal? test (quote else))
+                        expr)
+                      (else
+                        (cons (quote cond) (cons new-branch
+                                                 (listify (cons (quote else) (listify (self self sub-cond))))))))))))
+            ((equal? tag (quote cons))
+              (cons (quote cons) (cons (self self (cadr sexp))
+                                       (listify (self self (car (cdr (cdr sexp))))))))
+            ((equal? tag (quote equal?))
+              (cons (quote equal?) (cons (self self (cadr sexp))
+                                         (listify (self self (car (cdr (cdr sexp))))))))
+            ((equal? tag (quote lambda))
+              (let* ((formals (car args))
+                     (body    (cadr args)))
+                (cons (quote lambda) (cons formals (listify (self self body))))))
+            ((equal? tag (quote let*))
+              (let* ((bindings (car args))
+                     (body     (cadr args)))
+                (cond
+                  ((null? bindings)
+                    (self self body))
+                  (else
+                    (let* ((binding      (car bindings))
+                           (rest         (cdr bindings))
+                           (ident        (car binding))
+                           (expr         (self self (cadr binding)))
+                           (new-bindings (listify (cons ident (listify expr))))
+                           (sub-let      (cons (quote let*) (cons rest (listify body)))))
+                      (cons (quote let*) (cons new-bindings (listify (self self sub-let)))))))))
+            ((equal? tag (quote list?))
+              (cons (quote list?) (self self (cadr sexp))))
+            ((equal? tag (quote null?))
+              (cons (quote null?) (self self (cadr sexp))))
+            ((equal? tag (quote quote))
+              sexp)
+            (else
+              (quote NOT-IMPLEMENTED)))))
+      (else
+        sexp)))))
+  (lambda (sexp) (p-normalize p-normalize sexp)))

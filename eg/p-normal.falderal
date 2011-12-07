@@ -1,0 +1,66 @@
+-> Tests for functionality "P-Normalize Pixley Program"
+
+-> Functionality "P-Normalize Pixley Program" is implemented by
+-> shell command "(cat >foo.pix && ../src/pixley.sh p-normal.pix foo.pix)"
+
+let* gets expanded into a series of nested, one-binding, let*s.
+
+| (let* ((a (quote a)) (b (quote b))) (cons a b))
+= (let* ((a (quote a)) (let* ((b (quote b))) (cons a b))))
+
+cond gets expanded into a series of nested, one-test, conds.
+
+| (cond ((equal? a b) a) ((equal? b c) b) (else c))
+= (cond ((equal? a b) a) (else (cond ((equal? b c) b) (else c))))
+
+Expressions in a let* binding get P-Normalized.
+
+| (let* ((g (let* ((a (quote a)) (b (quote b))) (cons a b)))) g)
+= (let* ((g (let* ((a (quote a)) (let* ((b (quote b))) (cons a b)))))) g)
+
+Expressions in a let* body get P-Normalized.
+
+| (let* ((f (lambda (x) x)))
+|        (f (let* ((a (quote a)) (b (quote b))) (cons a b))))
+= (let* ((c (quote c))
+=        (f (let* ((a (quote a)) (let* ((b (quote b))) (cons a b))))))
+
+Expressions in a cond test get P-Normalized.
+
+...
+
+Expressions in a cond consequent get P-Normalized.
+
+...
+
+Expressions in a cons get P-Normalized.
+
+| (cons (quote x) (let* ((a (quote a)) (b (quote b))) (cons a b)))
+= (cons (quote x) (let* ((a (quote a)) (let* ((b (quote b))) (cons a b)))))
+
+Expressions in a car get P-Normalized.
+
+| (car (let* ((a (quote a)) (b (quote b))) (cons a b)))
+= (car (let* ((a (quote a)) (let* ((b (quote b))) (cons a b)))))
+
+Expressions in a cdr get P-Normalized.
+
+| (cdr (let* ((a (quote a)) (b (quote b))) (cons a b)))
+= (cdr (let* ((a (quote a)) (let* ((b (quote b))) (cons a b)))))
+
+Expressions in a cadr get P-Normalized.
+
+| (cadr (let* ((a (quote a)) (b (quote b))) (cons a b)))
+= (cadr (let* ((a (quote a)) (let* ((b (quote b))) (cons a b)))))
+
+Expressions in a quote do NOT get P-Normalized.
+
+| (quote (let* ((a (quote a)) (b (quote b))) (cons a b)))
+= (quote (let* ((a (quote a)) (b (quote b))) (cons a b)))
+
+Arguments of a function call get P-Normalized.
+
+| (let* ((f (lambda (x) x)))
+|        (f (let* ((a (quote a)) (b (quote b))) (cons a b))))
+= (let* ((f (lambda (x) x)))
+=        (f (let* ((a (quote a)) (let* ((b (quote b))) (cons a b))))))
