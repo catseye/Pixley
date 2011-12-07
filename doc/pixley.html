@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/2002/REC-xhtml1-20020801/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<title>The Pixley Programming Language</title>
+</head>
+<body>
+
+<h1>The Pixley Programming Language</h1>
+
+<h2>Introduction</h2>
+
+<p><dfn>Pixley</dfn> is a strict subset of R<sup>5</sup>RS Scheme.
+All Pixley programs are also therefore Scheme programs.</p>
+
+<p>Pixley was designed for "bootstrappability".  I aimed to encompass a
+minimal subset of Scheme that was still expressive enough to
+permit writing a Pixley interpreter without too much pain.</p>
+
+<h2>Semantics</h2>
+
+<p>Pixley implements the following commands from Scheme
+(listed in alphabetical order:)</p>
+
+<ul>
+<li><code>cadr</code></li>
+<li><code>car</code></li>
+<li><code>cdr</code></li>
+<li><code>cond</code> / <code>else</code></li>
+<li><code>cons</code></li>
+<li><code>equal?</code></li>
+<li><code>lambda</code></li>
+<li><code>let*</code></li>
+<li><code>list?</code></li>
+<li><code>null?</code></li>
+<li><code>quote</code></li>
+</ul>
+
+<p>For the precise meanings of each of these forms,
+please refer to the Revised<sup>5</sup> Report on the Algorithmic Language Scheme.</p>
+
+<p>Pixley only understands the Scheme datatypes of lists, symbols, function values (lambdas),
+and booleans.  Pixley's behaviour regarding any attempt to produce a value of any other type is undefined.
+Neither is its behaviour defined for s-expressions which result in errors
+when evaluated as Scheme programs.</p>
+
+<h2>Syntax</h2>
+
+<p>Pixley's syntax is identical to Scheme's.  The meanings of
+syntactical constructs which are valid in Scheme but not defined in Pixley (such as
+numbers, strings, comments, quasiquoting, or hygienic macros) are undefined.</p>
+
+<p>Of literal values, only those of list type can be directly introduced through syntactical
+elements.  Like Scheme, a literal null list can be denoted by <code>(quote ())</code>.
+(However, <code>()</code> by itself is considered to be an illegal, empty application.)
+Literal symbols may be introduced through the <code>quote</code> form,
+literal function values can be produced through the <code>lambda</code>
+form, and the two boolean values can be produced through the use of trivial
+tests such as <code>(equal? (quote ()) (quote ()))</code>
+and <code>(equal? (quote a) (quote b))</code>.</p>
+
+<h2>Reference Implementation</h2>
+
+<p>The reference implentation of Pixley is written in
+Pixley (and therefore also in Scheme) and is 140 lines long.
+It is called <code>pixley.pix</code>.</p>
+
+<p><code>pixley.pix</code> does not include a lexical processor:
+the Pixley program to be interpreted
+must be made available to the interpreter as a native s-expression.
+Since Pixley does not implement <code>define</code>, this is
+usually achieved by applying a textual copy of <code>pixley.pix</code>
+(a <code>lambda</code> expression)
+to the s-expression to be interpreted as a Pixley program.</p>
+
+<p>Because <code>pixley.pix</code> is written in Pixley, multiple
+copies can be applied successively with equivalent semantics.
+For example, having <code>pixley.pix</code> interpret some
+program <code>foo.pix</code> should produce the same
+observable behaviour (modulo performance) as having
+<code>pixley.pix</code> interpret <code>pixley.pix</code> interpreting
+<code>foo.pix</code>, or having
+<code>pixley.pix</code> interpret <code>pixley.pix</code>
+interpret <code>pixley.pix</code> interpreting
+<code>foo.pix</code>, etc. etc. ad infinitum.</p>
+
+<p>The unit tests for the Pixley reference interpreter do just that,
+running through the set of tests at successively higher "degrees".
+This is an example of a <dfn>computational automorphism</dfn>
+and is a property of any bootstrapped universal computer (or rather,
+of the Turing-complete language of that computer.)</p>
+
+<p>The Pixley reference interpreter is highly meta-circular,
+implementing e.g. Pixley's <code>car</code> simply in terms of the
+underlying Pixley (or Scheme) <code>car</code>.
+Some places where the underlying and interpreted representations must
+differ are in the data types, namely lists and lambda functions.</p>
+
+<p>Each interpreted list is represented as a two-element underlying list.  The
+first element is the atom <code>__list__</code> and the second
+element is the (interpreted) list itself.</p>
+
+<p>Each interpreted lambda function is represented by an underlying list
+of four elements: the atom <code>__lambda__</code>,
+a representation of the enclosing environment, a list of the formal
+arguments of the function, and the (interpreted) body of the function.
+Environments are represented as lists of two-element sublists, where
+each sublist's first element is a symbol naming the identifier and the
+second is a term giving the value.</p>
+
+<h2>Conclusion</h2>
+
+<p>The last main division of a discourse,
+usually containing a summing up of the points
+and a statement of opinion or decisions reached.</p>
+
+<p>Keep Smiling!  (I could never stand those "Home Sweet Home" folks.)
+<br/>Chris Pressey
+<br/>May 1<sup>st</sup>, 2009
+<br/>Cupertino, California, USA</p>
+
+</body>
+</html>
