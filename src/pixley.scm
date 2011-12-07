@@ -1,5 +1,6 @@
-; A Pixley interpreter, implemented in R5RS Scheme.
-; April 2009, Chris Pressey, Cat's Eye Technologies.
+; A Pixley interpreter harness, implemented in R5RS Scheme.
+; Original: April 2009, Chris Pressey, Cat's Eye Technologies.
+; $Id: pixley.scm 806 2010-11-05 02:07:42Z cpressey $
 
 ; This is really just a Scheme wrapper for the Pixley interpreter
 ; written in Pixley.  Because Pixley is a strict subset of R5RS Scheme,
@@ -16,7 +17,7 @@
 (define pixley-interpreter-sexp
   (load-sexp "pixley.pix"))
 
-; Return a Scheme procedure value denoting an executable Pixley interpreter,
+; Return a Scheme procedure value denoting an executable Pixley interpreter.
 (define pixley-interpreter
   (eval pixley-interpreter-sexp (scheme-report-environment 5)))
 
@@ -36,12 +37,12 @@
 ; Sometimes downright Perlish.
 
 ; To remedy this, I have devised a cute little hygienic macro called
-; 'let-symbol' which does essentially the same task, but (IMO) in a cleaner way.
-; let-symbol, like let, takes a set of bindings.  Also like let, it evaluates the
-; values in those bindings exactly once.  Unlike let, it binds those values to
-; symbols.  The body of the let-symbol is interpreted as a literal s-expression,
-; except that every place one of the bound symbols is encountered, the
-; evaluated value that it is bound to is inserted instead.
+; 'let-symbol' which does essentially the same task, but (IMO) in a cleaner
+; way.  let-symbol, like let, takes a set of bindings.  Also like let, it
+; evaluates the expressions in those bindings exactly once.  Unlike let, it
+; binds those values to symbols.  The body of the let-symbol is interpreted as
+; a literal s-expression, except that every place one of the bound symbols is
+; encountered, the evaluated value that it is bound to is inserted instead.
 
 ; Our replacement for quasiquote.
 (define-syntax let-symbol
@@ -81,11 +82,13 @@
             ((is-key _)   (let-symbol rest sym)))))
         (is-key sym)))))
 
-; Create a Pixley program which applies the Pixley interpreter (written in Pixley)
-; to the given S-expression (a Pixley program).
+; Create a Pixley program which applies the Pixley interpreter (written in
+; Pixley) to the given S-expression (a Pixley program).  Unfortunately, this
+; doesn't show off let-symbol as well as it could, because the expressions
+; being assigned to the symbols are trivial.
 (define wrap-pixley-interpreter
   (lambda (sexp)
-    (let-symbol ((interpreter-val (load-sexp "pixley.pix"))
+    (let-symbol ((interpreter-val pixley-interpreter-sexp)
                  (sexp-val        sexp))
       (let* ((interpreter interpreter-val)
              (sexp        (quote sexp-val)))
@@ -94,10 +97,9 @@
 ; Here's the quasiquote version of the above, just for comparison.
 (define wrap-pixley-interpreter-quasiquote
   (lambda (sexp)
-    (let* ((interpreter (load-sexp "pixley.pix")))
-      `(let* ((interpreter ,interpreter)
-              (sexp (quote ,sexp)))
-         (interpreter interpreter sexp '())))))
+    `(let* ((interpreter ,pixley-interpreter-sexp)
+            (sexp (quote ,sexp)))
+       (interpreter interpreter sexp '()))))
 
 ; Create an n-level Pixley program that applies n Pixley interpreters to the
 ; given S-expression.
@@ -107,45 +109,5 @@
       ((zero? degree)
         sexp)
       (else
-        (wrap-pixley-interpreter-nth (- degree 1) (wrap-pixley-interpreter sexp))))))
-
-; A list of test cases to exercise.
-(define test-cases
-  '(
-    (   (let* ((a (quote hello))) a) .
-        hello
-    )
-    (   (let* ((a (lambda (x y) (cons x y)))) (a (quote foo) (quote ()))) .
-        (foo)
-    )
-  )
-)
-
-; Our test harness.
-(define run-tests
-  (lambda (degree all-tests tests)
-    (cond
-      ((null? tests)
-        (run-tests (+ 1 degree) all-tests all-tests))
-      (else
-        (let* ((test-prog   (caar tests))
-               (expected    (cdar tests))
-               (rest        (cdr tests))
-               (sexp        (wrap-pixley-interpreter-nth degree test-prog))
-               (result      (interpret-pixley sexp)))
-          (begin
-            (display "Degree: ") (display degree) (display " ")
-            (display test-prog) (display "...")
-            (cond
-              ((equal? result expected)
-                (begin (display "PASS") (newline)
-                  (run-tests degree all-tests rest)))
-              (else
-                (begin (display "FAIL") (newline)
-                  (display "Expected: ") (display expected) (newline)
-                  (display "Actual: ") (display result) (newline))))))))))
-
-; Top-level driver for the test harness.
-(define test
-  (lambda ()
-    (run-tests 0 test-cases test-cases)))
+        (wrap-pixley-interpreter-nth (- degree 1)
+                                     (wrap-pixley-interpreter sexp))))))

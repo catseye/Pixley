@@ -1,3 +1,89 @@
+; Mini-Scheme harness for our Meta-circular Pixley interpreter.
+; November 2010, Chris Pressey, Cat's Eye Technologies.
+; $Id: init.scm 812 2010-11-05 05:24:23Z cpressey $
+
+; This is based on the init.scm that ships with Mini-Scheme; since
+; the Mini-Scheme interpreter takes no command line arguments,
+; this is the simplest way to start a Pixley environment in Mini-Scheme.
+; Just start Mini-Scheme in the directory in which this file resides.
+
+; This is a init file for Mini-Scheme.
+
+;; fake pre R^3 boolean values
+(define nil #f)
+(define t #t)
+
+(define (caar x) (car (car x)))
+(define (cadr x) (car (cdr x)))
+(define (cdar x) (cdr (car x)))
+(define (cddr x) (cdr (cdr x)))
+(define (caaar x) (car (car (car x))))
+(define (caadr x) (car (car (cdr x))))
+(define (cadar x) (car (cdr (car x))))
+(define (caddr x) (car (cdr (cdr x))))
+(define (cdaar x) (cdr (car (car x))))
+(define (cdadr x) (cdr (car (cdr x))))
+(define (cddar x) (cdr (cdr (car x))))
+(define (cdddr x) (cdr (cdr (cdr x))))
+
+(define call/cc call-with-current-continuation)
+
+(define (list . x) x)
+
+(define (map proc list)
+    (if (pair? list)
+        (cons (proc (car list)) (map proc (cdr list)))))
+
+(define (for-each proc list)
+    (if (pair? list)
+        (begin (proc (car list)) (for-each proc (cdr list)))
+        #t ))
+
+(define (list-tail x k)
+    (if (zero? k)
+        x
+        (list-tail (cdr x) (- k 1))))
+
+(define (list-ref x k)
+    (car (list-tail x k)))
+
+(define (last-pair x)
+    (if (pair? (cdr x))
+        (last-pair (cdr x))
+        x))
+
+(define (head stream) (car stream))
+
+(define (tail stream) (force (cdr stream)))
+
+;;;;; following part is written by a.k
+
+;;;;	atom?
+(define (atom? x)
+  (not (pair? x)))
+
+;;;;	memq
+(define (memq obj lst)
+  (cond
+    ((null? lst) #f)
+    ((eq? obj (car lst)) lst)
+    (else (memq obj (cdr lst)))))
+
+;;;;    equal?
+(define (equal? x y)
+  (if (pair? x)
+    (and (pair? y)
+         (equal? (car x) (car y))
+         (equal? (cdr x) (cdr y)))
+    (and (not (pair? y))
+         (eqv? x y))))
+
+;;;;; following part is written by c.p.
+
+(define (list? x) (or (eq? x '()) (pair? x)))
+
+(define pixley-interpreter-sexp (quote
+;----- Pixley interpreter begins -----
 (lambda (interpret program env)
   (let*  ((find  (lambda (self elem alist)
             (cond
@@ -134,3 +220,42 @@
               (cadr entry))
             (else
               (quote illegal-program-error))))))))
+;----- Pixley interpreter ends -----
+))
+(define interpret (eval pixley-interpreter-sexp))
+
+(define subst
+  (lambda (sexp src dest)
+    (cond
+      ((equal? sexp src)
+        dest)
+      ((null? sexp)
+        '())
+      ((list? sexp)
+        (cons (subst (car sexp) src dest) (subst (cdr sexp) src dest)))
+      (else
+        sexp))))
+
+(define wrap
+  (lambda (interpreter program)
+    (let* ((wrapper (quote
+                      (let* ((interpreter 1)
+                             (program (quote 2)))
+                        (interpreter interpreter program '()))))
+           (wrapper2 (subst wrapper 1 interpreter))
+           (wrapper3 (subst wrapper2 2 program)))
+      wrapper3)))
+
+(define (pixley p)
+  (interpret interpret p '()))
+
+(define (pixley2 p)
+  (interpret interpret (wrap pixley-interpreter-sexp p) '()))
+
+(define (pixley3 p)
+  (interpret interpret
+    (wrap pixley-interpreter-sexp (wrap pixley-interpreter-sexp p)) '()))
+
+(define (pixley4 p)
+  (interpret interpret
+    (wrap pixley-interpreter-sexp (wrap pixley-interpreter-sexp (wrap pixley-interpreter-sexp p))) '()))
