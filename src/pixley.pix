@@ -1,5 +1,5 @@
 (lambda (interpret program env)
-  (let*  ((find  (lambda (self elem alist)
+  (let*  ((find (lambda (self elem alist)
             (cond
               ((null? alist)
                 (quote nothing))
@@ -12,7 +12,7 @@
                       entry)
                     (else
                       (self self elem rest))))))))
-          (interpret-args  (lambda (interpret-args args env)
+          (interpret-args (lambda (interpret-args args env)
             (cond
               ((null? args)
                 args)
