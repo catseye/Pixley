@@ -3,6 +3,9 @@
 -> Functionality "P-Normalize Pixley Program" is implemented by
 -> shell command "(cat >foo.pix && ../script/pixley.sh p-normal.pix foo.pix)"
 
+-> Functionality "P-Normalize Pixley Program" is implemented by
+-> shell command "(cat >foo.pix && ../script/scheme.sh p-normal.pix foo.pix)"
+
 let* gets expanded into a series of nested, one-binding, let*s.
 
 | (let* ((a (quote a)) (b (quote b))) (cons a b))
@@ -20,10 +23,9 @@ Expressions in a let* binding get P-Normalized.
 
 Expressions in a let* body get P-Normalized.
 
-| (let* ((f (lambda (x) x)))
-|        (f (let* ((a (quote a)) (b (quote b))) (cons a b))))
-= (let* ((c (quote c))
-=        (f (let* ((a (quote a)) (let* ((b (quote b))) (cons a b)))))))
+| (let* ((c (quote c)))
+|        (car (let* ((a (quote a)) (b (quote b))) (cons a b))))
+= (let* ((c (quote c))) (car (let* ((a (quote a))) (let* ((b (quote b))) (cons a b)))))
 
 Expressions in a cond test get P-Normalized.
 
@@ -62,5 +64,4 @@ Arguments of a function call get P-Normalized.
 
 | (let* ((f (lambda (x) x)))
 |        (f (let* ((a (quote a)) (b (quote b))) (cons a b))))
-= (let* ((f (lambda (x) x)))
-=        (f (let* ((a (quote a)) (let* ((b (quote b))) (cons a b))))))
+= (let* ((f (lambda (x) x))) (f (let* ((a (quote a))) (let* ((b (quote b))) (cons a b)))))

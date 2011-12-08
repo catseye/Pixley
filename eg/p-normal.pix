@@ -1,5 +1,12 @@
 (let*
-  ((listify (lambda (x) (cons x (quote ()))))
+  ((listify
+    (lambda (x) (cons x (quote ()))))
+   (map (lambda (self fun list)
+    (cond
+      ((null? list)
+        (quote ()))
+      (else
+        (cons (fun fun (car list)) (self self fun (cdr list)))))))
    (p-normalize (lambda (self sexp)
     (cond
       ((list? sexp)
@@ -60,7 +67,7 @@
             ((equal? tag (quote quote))
               sexp)
             (else
-              (quote NOT-IMPLEMENTED)))))
+              (cons tag (map map self args))))))
       (else
         sexp)))))
   (lambda (sexp) (p-normalize p-normalize sexp)))
