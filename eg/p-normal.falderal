@@ -29,11 +29,21 @@ Expressions in a let* body get P-Normalized.
 
 Expressions in a cond test get P-Normalized.
 
-...
+| (cond
+|   ((eq? (let* ((a (quote a)) (b (quote b))) a) (quote a))
+|    (quote yes))
+|   (else
+|    (quote no)))
+= (cond ((eq? (let* ((a (quote a))) (let* ((b (quote b))) a)) (quote a)) (quote yes)) (else (quote no)))
 
 Expressions in a cond consequent get P-Normalized.
 
-...
+| (cond
+|   ((eq? (quote a) (quote a))
+|    (let* ((a (quote a)) (yes (quote b))) yes))
+|   (else
+|    (quote no)))
+= (cond ((eq? (quote a) (quote a)) (let* ((a (quote a))) (let* ((yes (quote b))) yes))) (else (quote no)))
 
 Expressions in a cons get P-Normalized.
 
