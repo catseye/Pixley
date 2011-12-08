@@ -14,13 +14,19 @@ cat >>driver.scm <$1
 cat >>driver.scm <<EOF
 )
 EOF
-cat >>driver.scm <<EOF
+if [ "${2}x" = "x" ]; then
+    cat >>driver.scm <<EOF
+program
+EOF
+else
+    cat >>driver.scm <<EOF
 (program (quote
 EOF
-cat >>driver.scm <$2
-cat >>driver.scm <<EOF
+    cat >>driver.scm <$2
+    cat >>driver.scm <<EOF
 ))
 EOF
+fi
 
 $R5RS driver.scm
 
