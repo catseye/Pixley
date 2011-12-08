@@ -2,7 +2,10 @@
 ; November 2010, Chris Pressey, Cat's Eye Technologies.
 ; $Id: stats.scm 812 2010-11-05 05:24:23Z cpressey $
 
-(load "pixley.scm")
+; Load an S-expression from a named file.
+(define load-sexp
+  (lambda (filename)
+    (with-input-from-file filename (lambda () (read)))))
 
 (define count-cons-cells
   (lambda (sexp)
@@ -42,12 +45,18 @@
       (else
         table))))
 
-(display "Meta-circular Pixley interpreter:") (newline)
-(display "Cons cells: ") (display (count-cons-cells pixley-interpreter-sexp)) (newline)
-(display "Symbol instances: ") (display (count-symbol-instances pixley-interpreter-sexp)) (newline)
-(display "Unique symbols: ")
-(let* ((unique-symbols (collect-unique-symbols pixley-interpreter-sexp '())))
-  (display (length unique-symbols))
-  (display " ")
-  (display unique-symbols)
-  (newline))
+(define report
+  (lambda (filename)
+    (display "File: ") (display filename) (newline)
+    (let ((sexp (load-sexp filename)))
+      (display "Cons cells: ") (display (count-cons-cells sexp)) (newline)
+      (display "Symbol instances: ") (display (count-symbol-instances sexp)) (newline)
+      (display "Unique symbols: ")
+      (let* ((unique-symbols (collect-unique-symbols sexp '())))
+        (display (length unique-symbols))
+        (display " ")
+        (display unique-symbols)
+        (newline)))))
+
+(report "pixley.pix")
+
