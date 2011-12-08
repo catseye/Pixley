@@ -25,7 +25,7 @@ permit writing a Pixley interpreter without too much pain.</p>
 <h2>Semantics</h2>
 
 <p>Pixley implements the following functions and forms from Scheme
-(listed in alphabetical order:)</p>
+(listed in alphabetical order):</p>
 
 <ul>
 <li><code>car</code></li>
@@ -41,20 +41,6 @@ permit writing a Pixley interpreter without too much pain.</p>
 
 <p>For the precise meanings of each of these forms,
 please refer to the Revised<sup>5</sup> Report on the Algorithmic Language Scheme.</p>
-
-<p>Pixley 1.0 also implemented the Scheme functions <code>cadr</code> and <code>null?</code>,
-however, it was found that the interpreter was shorter if those functions were defined
-only locally within the interpreter, and not made a part of the language.  It is easy enough
-to do the same thing to any Pixley 1.0 program; to convert it to Pixley 2.0, simply wrap it
-in the following:</p>
-
-<pre>
-(let* ((cadr (lambda (alist)
-         (car (cdr alist))))
-       (null? (lambda (expr)
-         (equal? expr (quote ())))))
-  ...)
-</pre>
 
 <p>Pixley only understands the Scheme datatypes of lists, symbols, function values (lambdas),
 and booleans.  Pixley's behaviour regarding any attempt to produce a value of any other type is undefined.
@@ -117,7 +103,7 @@ differ are in the data types, namely lists and lambda functions.</p>
 <p>Each interpreted list is represented as a two-element underlying list.  The
 first element is the atom <code>__list__</code> and the second
 element is the (interpreted) list itself.  (<em>Note (Nov 2010): this is a total lie.
-the Interlude, below, for the truth.</em>)</p>
+See Pixley 1.1 in the History, below, for the truth.</em>)</p>
 
 <p>Each interpreted lambda function is represented by an underlying list
 of four elements: the atom <code>__lambda__</code>,
@@ -127,9 +113,34 @@ Environments are represented as lists of two-element sublists, where
 each sublist's first element is a symbol naming the identifier and the
 second is a term giving the value.</p>
 
-<h2>Interlude: Pixley v1.1</h2>
+<h2>History</h2>
 
-<p>So I was writing writing stuff in C to compile with DICE C for AmigaOS 1.3, right?
+<h3>Pixley 1.0</h3>
+
+<p>Pixley 1.0 was released on May 1<sup>st</sup>, 2009, from Cupertino,
+California.</p>
+
+<p>In addition to the 10 Scheme symbols listed above, Pixley 1.0 also implemented
+the Scheme functions <code>cadr</code> and <code>null?</code>. However, it was
+found that the interpreter was actually shorter if those functions were defined
+only locally within the interpreter.  They were thus removed from the Pixley
+language in version 2.0.  It is easy enough to apply the same technique to any
+Pixley 1.0 program to convert it to Pixley 2.0; simply wrap it in the following:</p>
+
+<pre>
+(let* ((cadr (lambda (alist)
+         (car (cdr alist))))
+       (null? (lambda (expr)
+         (equal? expr (quote ())))))
+  ...)
+</pre>
+
+<h2>Pixley v1.1</h2>
+
+<p>Pixley 1.1 was released on November 5<sup>th</sup>, 2010, from Evanston,
+Illinois.</p>
+
+<p>Funny story!  So I was writing writing stuff in C to compile with DICE C for AmigaOS 1.3, right?
 And I was looking for something to write, and I decided to implement Pixley in C.
 And that was going pretty well; as I was implementing each command, I was making up
 ad-hoc test cases for it, and I was thinking "Hey, I should record these somewhere and make a test
@@ -157,15 +168,11 @@ and <code>cdr</code>.  This is clearly not kosher R<sup>5</sup>RS, which has a w
 "function value" is mentioned in that section, but I'd say the spirit of the law is pretty
 clear there or whatever.)</p>
 
-<p>So this means I had to fix Pixley!  And that's what stands before you (bundled with
-the fattened test suite previously mentioned, a REPL, an implementation harness for
-Mini-Scheme, and a statistics generator.)  But first, I had to make a decision: how to
-represent lists?</p>
-
-<p>Well, there were two general paths here: more meta-circular, or less.  I could
-make the implementation conform to the documentation, making it less meta-circular,
-but then I'd have to be changing everything that built or touched a list to build or check
-for a list with <code>__list__</code> at its head.  Doable, but kind of distasteful.
+<p>So this meant I had to fix Pixley! But first, I had to make a decision: how to
+represent lists?  Well, there were two general paths here: more meta-circular, or less.
+I could make the implementation conform to the documentation, making it less meta-circular,
+but then I'd have to be changing everything that built (or touched) a list to build (or check
+for) a list with <code>__list__</code> at its head.  Doable, but kind of distasteful.
 Alternatively, I could make it more meta-circular: keep lists represented as lists, and
 go one further by representing function values as function values.  This is a little unilluminating,
 as it no longer lays bare how function values work; but this is made up for by the fact
@@ -174,17 +181,38 @@ different places) and there is a modest savings of space (because we can fall ba
 the implementing language's semantics for cases like trying to execute a non-function.)
 So that's what I did.</p>
 
-<p>Now, this technically changes the semantics of the language, because gosh you
+<p>Now, this technically changed the semantics of the language, because gosh you
 <em>could</em> have been relying on the fact that <code>(car (lambda (x) x))</code>
 evaluates to <code>__lambda__</code>, in your Pixley programs, and we can't have that,
-can we?  So the language version has been bumped up to 1.1.</p>
+can we?  So the language version was bumped up to 1.1.</p>
 
-<p>One other thing deserves to be mentioned.  During my adventures in getting programs
+<h4>Goodies</h4>
+
+<p>The Pixley 1.1 distribution also included a fattened test suite (previously mentioned),
+a REPL, and a statistics generator.</p>
+
+<p>It also included a Mini-Scheme driver.  During my adventures in getting programs
 to run under AmigaOS 1.3, I compiled Mini-Scheme thereunder, and got Pixley to run
 under it by including the Pixley interpreter in Mini-Scheme's <code>init.scm</code> file and
 <code>eval</code>'ing it therein.  From this I conclude that, although I have not confirmed
 this is in a solid way by looking at the spec or anything, Pixley is also a strict subset of
 R<sup>4</sup>RS Scheme.</p>
+
+<h3>Pixley 2.0</h3>
+
+<h4>Goodies</h4>
+
+<p>The Pixley 2.0 distribution also includes the following supplementary material.
+(This section will be expanded as time permits)</p>
+
+<ul>
+<li>Shell scripts to run Pixley programs (with the Pixley interpreter, or just plain
+in Scheme)</li>
+<li>A P-normalizer written in Pixley</li>
+<li>Test suites, written in Falderal, for both Pixley and the P-normalizer</li>
+<li>A few other standalone Pixley examples, including <code>reverse.pix</code>,
+which reverses the given list</li>
+</ul>
 
 <h2>Conclusion</h2>
 
@@ -194,8 +222,8 @@ and a statement of opinion or decisions reached.</p>
 
 <p>Keep Smiling!  (I could never stand those "Home Sweet Home" folks.)
 <br/>Chris Pressey
-<br/>May 1<sup>st</sup>, 2009
-<br/>Cupertino, California, USA</p>
+<br/>December, 2011
+<br/>Evanston, Illinois</p>
 
 </body>
 </html>
