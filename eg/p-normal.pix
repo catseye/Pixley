@@ -1,5 +1,9 @@
 (let*
-  ((listify
+  ((cadr (lambda (alist)
+    (car (cdr alist))))
+   (null? (lambda (alist)
+    (equal? alist (quote ()))))
+   (listify
     (lambda (x) (cons x (quote ()))))
    (map (lambda (self fun list)
     (cond
@@ -13,8 +17,6 @@
         (let* ((tag  (car sexp))
                (args (cdr sexp)))
           (cond
-            ((equal? tag (quote cadr))
-              (cons (quote car) (listify (cons (quote cdr) (listify (self self (cadr sexp)))))))
             ((equal? tag (quote car))
               (cons (quote car) (listify (self self (cadr sexp)))))
             ((equal? tag (quote cdr))
@@ -62,8 +64,6 @@
                       (cons (quote let*) (cons new-bindings (listify (self self sub-let)))))))))
             ((equal? tag (quote list?))
               (cons (quote list?) (self self (cadr sexp))))
-            ((equal? tag (quote null?))
-              (cons (quote null?) (self self (cadr sexp))))
             ((equal? tag (quote quote))
               sexp)
             (else

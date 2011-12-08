@@ -85,7 +85,11 @@
 (define pixley-interpreter-sexp (quote
 ;----- Pixley interpreter begins -----
 (lambda (interpret program env)
-  (let*  ((find  (lambda (self elem alist)
+  (let*  ((cadr (lambda (alist)
+            (car (cdr alist))))
+          (null? (lambda (alist)
+            (equal? alist (quote ()))))
+          (find (lambda (self elem alist)
             (cond
               ((null? alist)
                 (quote nothing))
@@ -98,7 +102,7 @@
                       entry)
                     (else
                       (self self elem rest))))))))
-          (interpret-args  (lambda (interpret-args args env)
+          (interpret-args (lambda (interpret-args args env)
             (cond
               ((null? args)
                 args)
@@ -124,9 +128,9 @@
                 (let* ((entry (car new-env))
                        (rest  (cdr new-env)))
                   (cons entry (concat-envs concat-envs rest old-env)))))))
-	   (call-lambda (lambda (func args env)
-	     (let* ((arg-vals (interpret-args interpret-args args env)))
-	       (func arg-vals)))))
+           (call-lambda (lambda (func args env)
+             (let* ((arg-vals (interpret-args interpret-args args env)))
+               (func arg-vals)))))
     (cond
       ((null? program)
         program)
@@ -136,15 +140,15 @@
                (entry (find find tag env)))
           (cond
             ((list? entry)
-	      (let* ((func (cadr entry)))
-	        (call-lambda func args env)))
+              (let* ((func (cadr entry)))
+                (call-lambda func args env)))
             ((equal? tag (quote lambda))
               (let* ((formals (car args))
                      (body    (cadr args)))
-		(lambda (arg-vals)
-		  (let* ((arg-env   (expand-args expand-args formals arg-vals))
-		         (new-env   (concat-envs concat-envs arg-env env)))
-		    (interpret interpret body new-env)))))
+                (lambda (arg-vals)
+                  (let* ((arg-env   (expand-args expand-args formals arg-vals))
+                         (new-env   (concat-envs concat-envs arg-env env)))
+                    (interpret interpret body new-env)))))
             ((equal? tag (quote cond))
               (cond
                 ((null? args)
@@ -180,9 +184,6 @@
                            (new-env  (cons new-bi env))
                            (newprog  (cons (quote let*) (cons rest (cons body (quote ()))))))
                       (interpret interpret newprog new-env))))))
-            ((equal? tag (quote null?))
-              (let* ((subject (car args)))
-                (null? (interpret interpret subject env))))
             ((equal? tag (quote list?))
               (let* ((subject (car args)))
                 (list? (interpret interpret subject env))))
@@ -195,9 +196,6 @@
             ((equal? tag (quote cdr))
               (let* ((subject (car args)))
                 (cdr (interpret interpret subject env))))
-            ((equal? tag (quote cadr))
-              (let* ((subject (car args)))
-                (car (cdr (interpret interpret subject env)))))
             ((equal? tag (quote cons))
               (let* ((a (car args))
                      (b (cadr args)))
@@ -208,11 +206,11 @@
                 (equal? (interpret interpret a env) (interpret interpret b env))))
             ((null? tag)
               tag)
-	    ((list? tag)
-	      (let* ((func (interpret interpret tag env)))
-	        (call-lambda func args env)))
-	    (else
-	      (call-lambda tag args env)))))
+            ((list? tag)
+              (let* ((func (interpret interpret tag env)))
+                (call-lambda func args env)))
+            (else
+              (call-lambda tag args env)))))
       (else
         (let* ((entry (find find program env)))
           (cond

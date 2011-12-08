@@ -18,9 +18,6 @@ Chris Pressey, Cat's Eye Technologies.
 | (cdr (quote (foo bar)))
 = (bar)
 
-| (cadr (quote (foo bar)))
-= bar
-
 Because booleans don't actually have a defined representation in
 Pixley, the next few tests are cheating a bit, relying on Scheme's
 defined representation for booleans instead.  This would be easy
@@ -63,24 +60,20 @@ Lambda functions are not lists.
 | (list? (lambda (x y) (y x)))
 = #f
 
+But the empty list is a list.
+
 | (list? (cdr (quote (foo))))
 = #t
 
-| (null? (lambda (x y) (y x)))
-= #f
+The empty list can be expressed as `(quote ())`.
 
-| (null? (quote r))
-= #f
-
-| (null? (quote ()))
+| (equal? (cdr (quote (foo))) (quote ()))
 = #t
 
-| (null? (cdr (quote (foo))))
-= #t
+`let*` lets you bind identifiers to values.
 
 | (let* ((a (quote hello))) a)
 = hello
-
 
 | (let* ((a (let* ((b (quote c))) b))) a)
 = c
@@ -88,6 +81,19 @@ Lambda functions are not lists.
 | (let* ((a (lambda (x y) (cons x y))))
 |       (a (quote foo) (quote ())))
 = (foo)
+
+Bindings established in a binding in a `let*` can be seen in
+subsequent bindings in the same `let*`.
+
+| (let* ((a (quote hello)) (b (cons a (quote ())))) b)
+= (hello)
+
+Shadowing happens.
+
+| (let* ((a (quote hello))) (let* ((a (quote goodbye))) a))
+= goodbye
+
+You can define functions with lambda.  They can be anonymous.
 
 | ((lambda (a) a) (quote whee))
 = whee

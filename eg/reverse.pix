@@ -1,7 +1,7 @@
 (let*
   ((reverse (lambda (self sexp acc)
     (cond
-      ((null? sexp)
+      ((equal? sexp (quote ()))
         acc)
       ((list? sexp)
         (self self (cdr sexp) (cons (car sexp) acc)))

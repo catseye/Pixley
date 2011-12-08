@@ -60,11 +60,6 @@ Expressions in a cdr get P-Normalized.
 | (cdr (let* ((a (quote a)) (b (quote b))) (cons a b)))
 = (cdr (let* ((a (quote a))) (let* ((b (quote b))) (cons a b))))
 
-cadr's, and the expressions in them, get P-Normalized.
-
-| (cadr (let* ((a (quote a)) (b (cons (quote b) (quote ())))) (cons a b)))
-= (car (cdr (let* ((a (quote a))) (let* ((b (cons (quote b) (quote ())))) (cons a b)))))
-
 Expressions in a quote do NOT get P-Normalized.
 
 | (quote (let* ((a (quote a)) (b (quote b))) (cons a b)))
