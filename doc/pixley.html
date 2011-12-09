@@ -49,7 +49,7 @@ when evaluated as Scheme programs.</p>
 
 <h2>Syntax</h2>
 
-<p>Pixley's syntax is identical to Scheme's.  The meanings of
+<p>Pixley's syntax is a strict subset of Scheme's.  The meanings of
 syntactical constructs which are valid in Scheme but not defined in Pixley (such as
 numbers, strings, comments, quasiquoting, or hygienic macros) are undefined.</p>
 
@@ -86,9 +86,8 @@ observable behaviour (modulo performance) as having
 <code>foo.pix</code>, or having
 <code>pixley.pix</code> interpret <code>pixley.pix</code>
 interpret <code>pixley.pix</code> interpreting
-<code>foo.pix</code>, etc. etc. ad infinitum.</p>
-
-<p>The unit tests for the Pixley reference interpreter do just that,
+<code>foo.pix</code>, etc. etc. ad infinitum.
+The Scheme test suite for the Pixley reference interpreter does just that,
 running through the set of tests at successively higher "degrees".
 This is an example of a <dfn>computational automorphism</dfn>
 and is a property of any bootstrapped universal computer (or rather,
@@ -96,22 +95,13 @@ of the Turing-complete language of that computer.)</p>
 
 <p>The Pixley reference interpreter is highly meta-circular,
 implementing e.g. Pixley's <code>car</code> simply in terms of the
-underlying Pixley (or Scheme) <code>car</code>.
-Some places where the underlying and interpreted representations must
-differ are in the data types, namely lists and lambda functions.</p>
-
-<p>Each interpreted list is represented as a two-element underlying list.  The
-first element is the atom <code>__list__</code> and the second
-element is the (interpreted) list itself.  (<em>Note (Nov 2010): this is a total lie.
-See Pixley 1.1 in the History, below, for the truth.</em>)</p>
-
-<p>Each interpreted lambda function is represented by an underlying list
-of four elements: the atom <code>__lambda__</code>,
-a representation of the enclosing environment, a list of the formal
-arguments of the function, and the (interpreted) body of the function.
-Environments are represented as lists of two-element sublists, where
-each sublist's first element is a symbol naming the identifier and the
-second is a term giving the value.</p>
+underlying Pixley (or Scheme) <code>car</code>.  The datatypes of
+Pixley are likewise directly represented by the corresponding datatypes
+in the underlying language.
+Environments are represented as lists similar to association lists,
+except containing two-element sublists instead of pairs, because Pixley
+can't directly represent pairs.  Each sublist's first element is a symbol
+naming the identifier, and the second is the value to which it is bound.</p>
 
 <h2>History</h2>
 
@@ -120,12 +110,12 @@ second is a term giving the value.</p>
 <p>Pixley 1.0 was released on May 1<sup>st</sup>, 2009, from Cupertino,
 California.</p>
 
-<p>In addition to the 10 Scheme symbols listed above, Pixley 1.0 also implemented
+<p>In addition to the 10 Scheme symbols listed above, Pixley 1.0 (and 1.1) also implemented
 the Scheme functions <code>cadr</code> and <code>null?</code>. However, it was
 found that the interpreter was actually shorter if those functions were defined
 only locally within the interpreter.  They were thus removed from the Pixley
 language in version 2.0.  It is easy enough to apply the same technique to any
-Pixley 1.0 program to convert it to Pixley 2.0; simply wrap it in the following:</p>
+Pixley 1.0 (or 1.1) program to convert it to Pixley 2.0; simply wrap it in the following:</p>
 
 <pre>
 (let* ((cadr (lambda (alist)
@@ -152,23 +142,40 @@ at one point, decided anew that it would be a good idea to bulk up the test case
 Well, <code>(list? (lambda (x) x))</code> should be <em>false</em>, right?  Sure.
 Except it wasn't.</p>
 
-<p>Well, I went to the docs and saw that there was an easy explanation for this: in the
+<p>Well, I went to the docs and saw that there was an easy explanation for this.  This was
+for Pixley 1.0, mind you, and they've changed since then, but they told me that:</p>
+
+<blockquote>
+<p>Some places where the underlying and interpreted representations must
+differ are in the data types, namely lists and lambda functions.</p>
+
+<p>Each interpreted list is represented as a two-element underlying list.  The
+first element is the atom <code>__list__</code> and the second
+element is the (interpreted) list itself.</p>
+
+<p>Each interpreted lambda function is represented by an underlying list
+of four elements: the atom <code>__lambda__</code>,
+a representation of the enclosing environment, a list of the formal
+arguments of the function, and the (interpreted) body of the function.</p>
+</blockquote>
+
+<p>In other words, in the
 reference interpreter, both lists and function values are represented with lists; you tell
 them apart by looking at the first element, which is <code>__lambda__</code> for a
 function value and <code>__list__</code> for a list.  And <code>list?</code> was
 probably just looking at the representation list and not checking the first element,
 right?  Sure.  Except, no, it was much more.</p>
 
-<p>It turns out that while function values are in fact represented by lists
-with <code>__lambda__</code> as the first element, lists are just represented by lists.
-Which means that there is an overlap between the types: a function value is, at the Pixley
-level, a kind of list, and can be treated just like one, for example with <code>car</code>
+<p>It turns out that while function values were in fact represented by lists
+with <code>__lambda__</code> as the first element, lists were just represented by lists.
+Which means that there was an overlap between the types: a function value was, at the Pixley
+level, a kind of list, and could be treated just like one, for example with <code>car</code>
 and <code>cdr</code>.  This is clearly not kosher R<sup>5</sup>RS, which has a whole
 <em>section</em> titled "Disjointness of types".  (Of course, neither "list" nor
 "function value" is mentioned in that section, but I'd say the spirit of the law is pretty
 clear there or whatever.)</p>
 
-<p>So this meant I had to fix Pixley! But first, I had to make a decision: how to
+<p>So this meant I had to fix the Pixley interpreter! But first, I had to make a decision: how to
 represent lists?  Well, there were two general paths here: more meta-circular, or less.
 I could make the implementation conform to the documentation, making it less meta-circular,
 but then I'd have to be changing everything that built (or touched) a list to build (or check
@@ -188,30 +195,49 @@ can we?  So the language version was bumped up to 1.1.</p>
 
 <h4>Goodies</h4>
 
-<p>The Pixley 1.1 distribution also included a fattened test suite (previously mentioned),
-a REPL, and a statistics generator.</p>
+<p>The Pixley 1.1 distribution also included the following supplementary material.</p>
 
-<p>It also included a Mini-Scheme driver.  During my adventures in getting programs
+<ul>
+<li>An enlarged test suite (previously mentioned).</li>
+<li>A REPL (read-eval-print loop, or "interactive mode" interpreter), written in Scheme.</li>
+<li>A statistics generator, written in Scheme, which counts the cons cells, symbol
+instances, and unique symbols present in a given s-expression.  This was to measure the
+complexity of the Pixley interpreter.</li>
+<li>A Mini-Scheme driver.  During my adventures in getting programs
 to run under AmigaOS 1.3, I compiled Mini-Scheme thereunder, and got Pixley to run
 under it by including the Pixley interpreter in Mini-Scheme's <code>init.scm</code> file and
 <code>eval</code>'ing it therein.  From this I conclude that, although I have not confirmed
 this is in a solid way by looking at the spec or anything, Pixley is also a strict subset of
-R<sup>4</sup>RS Scheme.</p>
+R<sup>4</sup>RS Scheme.</li>
+</ul>
 
 <h3>Pixley 2.0</h3>
 
+<p>A previously mentioned, Pixley 2.0 removes the <code>cadr</code> and <code>null?</code>
+functions from the language.</p>
+
 <h4>Goodies</h4>
 
-<p>The Pixley 2.0 distribution also includes the following supplementary material.
-(This section will be expanded as time permits)</p>
+<p>The Pixley 2.0 distribution also includes the following supplementary material.</p>
 
 <ul>
-<li>Shell scripts to run Pixley programs (with the Pixley interpreter, or just plain
-in Scheme)</li>
-<li>A P-normalizer written in Pixley</li>
-<li>Test suites, written in Falderal, for both Pixley and the P-normalizer</li>
+<li>Bourne Shell scripts to run Pixley programs which are stored in individual files.
+<code>pixley.sh</code> runs either a self-contained Pixley program from a single file,
+or evaluates a Pixley file to a function value and applies it to an S-expression stored in a
+second file.  <code>scheme.sh</code> does the same thing, but with Scheme, as a
+sanity-check.  By default these scripts use <code>plt-r5rs</code> for the Scheme interpreter,
+but that can be changed with an environment variable.</li>
+<li>A P-Normalizer written in Pixley, probably the first non-trivial Pixley program
+to be written, aside from the Pixley interpreter itself.  P-Normal Pixley is a simplified version of
+Pixley where <code>let*</code> and <code>cond</code> only handle a single instance
+of what they do (like <code>let</code> and <code>if</code> in Scheme.)  This form is
+described more fully in the <a href="../eg/p-normal.falderal">Falderal literate test
+suite for the P-Normalizer</a>.</li>
+<li>Test suites, written in Falderal, for both Pixley and the P-Normalizer.  The
+original test suite written in Scheme, which runs successively deeper nested copies of
+the Pixley interpreter, is still included in the distribution.</li>
 <li>A few other standalone Pixley examples, including <code>reverse.pix</code>,
-which reverses the given list</li>
+which reverses the given list.</li>
 </ul>
 
 <h2>Conclusion</h2>
