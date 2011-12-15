@@ -17,9 +17,6 @@
     (   (cdr (quote (foo bar))) .
         (bar)
     )
-    (   (cadr (quote (foo bar))) .
-        bar
-    )
     ; Because booleans don't actually have a defined representation in
     ; Pixley, the next few tests are cheating a bit...
     (   (equal? (quote a) (quote a)) .
@@ -53,18 +50,6 @@
     (   (list? (cdr (quote (foo)))) .
         #t
     )
-    (   (null? (lambda (x y) (y x))) .
-        #f
-    )
-    (   (null? (quote r)) .
-        #f
-    )
-    (   (null? (quote ())) .
-        #t
-    )
-    (   (null? (cdr (quote (foo)))) .
-        #t
-    )
     (   (let* ((a (quote hello))) a) .
         hello
     )
@@ -74,6 +59,18 @@
     (   (let* ((a (lambda (x y) (cons x y))))
 	  (a (quote foo) (quote ()))) .
         (foo)
+    )
+    (   (let* ((a (quote hello)) (b (cons a (quote ())))) b) .
+        (hello)
+    )
+    (
+        (let* ((a (quote hello))) (let* ((a (quote goodbye))) a)) .
+        goodbye
+    )
+    (   ((let*
+          ((a (quote (hi)))
+           (f (lambda (x) (cons x a)))) f) (quote oh)) .
+        (oh hi)
     )
     (   ((lambda (a) a) (quote whee)) .
         whee

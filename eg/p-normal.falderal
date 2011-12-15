@@ -143,6 +143,12 @@ Expressions in a quote do *not* get P-Normalized.
 | (quote (let* ((a (quote a)) (b (quote b))) (cons a b)))
 = (quote (let* ((a (quote a)) (b (quote b))) (cons a b)))
 
+Expressions in a lambda body get P-Normalized.
+
+| (let* ((a (lambda (x) (let* ((r (quote r)) (p (quote p))) x))))
+|   (a (quote d)))
+= (let* ((a (lambda (x) (let* ((r (quote r))) (let* ((p (quote p))) x))))) (a (quote d)))
+
 Arguments of a function call get P-Normalized.
 
 | (let* ((f (lambda (x) x)))
