@@ -63,7 +63,7 @@
                            (sub-let      (cons (quote let*) (cons rest (listify body)))))
                       (cons (quote let*) (cons new-bindings (listify (self self sub-let)))))))))
             ((equal? tag (quote list?))
-              (cons (quote list?) (self self (cadr sexp))))
+              (cons (quote list?) (listify (self self (cadr sexp)))))
             ((equal? tag (quote quote))
               sexp)
             (else

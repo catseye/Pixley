@@ -32,12 +32,16 @@ fi
 
 SCRIPT=`realpath $0`
 SCRIPTDIR=`dirname ${SCRIPT}`
+
 PIXLEYDIR=${SCRIPTDIR}/../src/
+if [ "${PIXLEY}x" = "x" ]; then
+    PIXLEY=pixley.pix
+fi
 
 cat >driver.scm <<EOF
 (define pixley
 EOF
-cat ${PIXLEYDIR}/pixley.pix >>driver.scm 
+cat ${PIXLEYDIR}/${PIXLEY} >>driver.scm 
 cat >>driver.scm <<EOF
 )
 (define program (quote

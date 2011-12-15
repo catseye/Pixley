@@ -1,11 +1,13 @@
 #!/bin/sh
 
-# run Falderal tests
+echo "Running Falderal tests for Pixley..."
+
 cd src && falderal test tests.falderal
 rm -f foo.pix
 cd ..
 
-# sanity-test scheme.sh and pixley.sh
+echo "Sanity-testing scheme.sh and pixley.sh..."
+
 cat >expected.sexp <<EOF
 (two three)
 EOF
@@ -24,17 +26,35 @@ script/pixley.sh eg/reverse.pix eg/some-list.sexp > out.sexp
 diff -u expected.sexp out.sexp
 rm -f expected.sexp out.sexp
 
-# test p-normalization
+echo 'quit' | miniscm >/dev/null 2>&1
+if [ $? = 0 ]
+  then
+    echo "Right on, you have miniscm installed.  Testing Pixley on it..."
+    cd src
+    cat >expected.out <<EOF
+> a
+> 
+EOF
+    echo '(pixley2 (quote (let* ((a (quote a))) a)))' | miniscm 2>&1 | grep '^>' > miniscm.out
+    diff -u expected.out miniscm.out
+    rm -f expected.out miniscm.out
+    cd ..
+  else
+    echo "miniscm not installed, skipping.  Your loss I guess."
+fi
+
+echo "Running Falderal tests for P-Normalizer..."
+
 cd eg && falderal test p-normal.falderal
 rm -f foo.pix
 cd ..
 
-# test miniscm
-cd src
-cat >expected.out <<EOF
-> a
-> 
-EOF
-echo '(pixley2 (quote (let* ((a (quote a))) a)))' | miniscm 2>&1 | grep '^>' > miniscm.out
-diff -u expected.out miniscm.out
-rm -f expected.out miniscm.out
+echo "P-Normalizing Pixley interpreter..."
+
+script/pixley.sh eg/p-normal.pix src/pixley.pix > src/p-normal-pixley.pix
+
+echo "Testing Pixley programs on P-Normalized interpreter..."
+
+cd src && PIXLEY=p-normal-pixley.pix falderal test tests.falderal
+rm -f foo.pix p-normal-pixley.pix
+cd ..
