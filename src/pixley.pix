@@ -73,14 +73,12 @@
                     (cond
                       ((equal? test (quote else))
                         (interpret interpret expr env))
+                      ((interpret interpret test env)
+                        (interpret interpret expr env))
                       (else
-                        (cond
-                          ((interpret interpret test env)
-                            (interpret interpret expr env))
-                          (else
-                            (let* ((branches (cdr args))
-                                   (newprog (cons (quote cond) branches)))
-                              (interpret interpret newprog env))))))))))
+                        (let* ((branches (cdr args))
+                               (newprog (cons (quote cond) branches)))
+                          (interpret interpret newprog env))))))))
             ((equal? tag (quote let*))
               (let* ((bindings (car args))
                      (body     (cadr args)))
