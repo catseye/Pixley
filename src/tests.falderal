@@ -9,6 +9,9 @@ Chris Pressey, Cat's Eye Technologies.
 -> Functionality "Interpret Pixley Program" is implemented by
 -> shell command "(cat >foo.pix && ../script/scheme.sh foo.pix)"
 
+Constructing and Manipulating Data
+----------------------------------
+
 `quote` evaluates to literally what is in the head of the tail of
 the cons cell whose head is `quote`.
 
@@ -17,6 +20,11 @@ the cons cell whose head is `quote`.
 
 | (quote (foo bar))
 = (foo bar)
+
+`cons` lets you create a list from some thing and another list.
+
+| (cons (quote thing) (quote (rest)))
+= (thing rest)
 
 `car` extracts the head of a list.
 
@@ -27,6 +35,9 @@ the cons cell whose head is `quote`.
 
 | (cdr (quote (foo bar)))
 = (bar)
+
+Predicates and Types
+--------------------
 
 Because booleans don't actually have a defined representation in
 Pixley, the next few tests are cheating a bit, relying on Scheme's
@@ -93,6 +104,9 @@ The empty list can be expressed as `(quote ())`.
 | (equal? (cdr (quote (foo))) (quote ()))
 = #t
 
+Binding to Names
+----------------
+
 `let*` lets you bind identifiers to values.  An identifier can be bound
 to a symbol.
 
@@ -121,18 +135,13 @@ Shadowing happens.
 | (let* ((a (quote hello))) (let* ((a (quote goodbye))) a))
 = goodbye
 
-You can define functions with `lambda`.  They can be anonymous.
+`let*` can have an empty list of bindings.
 
-| ((lambda (a) a) (quote whee))
-= whee
+| (let* () (quote hi))
+= hi
 
-Bindings in force when a function is defined will still be in force
-when the function is applied, even if they are not lexically in scope.
-
-| ((let*
-|    ((a (quote (hi)))
-|     (f (lambda (x) (cons x a)))) f) (quote oh))
-= (oh hi)
+Decision-making
+---------------
 
 `cond` works.
 
@@ -149,3 +158,39 @@ when the function is applied, even if they are not lexically in scope.
 |        (false (equal? (quote a) (quote b))))
 |   (cond (false (quote hi)) (false (quote med)) (else (quote lo))))
 = lo
+
+`cond` can have zero tests before the `else`.
+
+| (cond (else (quote woo)))
+= woo
+
+Functions
+---------
+
+You can define functions with `lambda`.  They can be anonymous.
+
+| ((lambda (a) a) (quote whee))
+= whee
+
+Bindings in force when a function is defined will still be in force
+when the function is applied, even if they are not lexically in scope.
+
+| ((let*
+|    ((a (quote (hi)))
+|     (f (lambda (x) (cons x a)))) f) (quote oh))
+= (oh hi)
+
+Functions can take functions.
+
+| (let*
+|   ((apply (lambda (x) (x (quote a)))))
+|   (apply (lambda (r) (cons r (quote ()))))) 
+= (a)
+
+Functions can return functions.
+
+| (let*
+|   ((mk (lambda (x) (lambda (y) (cons y x))))
+|    (mk2 (mk (quote (vindaloo)))))
+|   (mk2 (quote chicken)))
+= (chicken vindaloo)
