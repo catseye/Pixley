@@ -34,9 +34,8 @@
                 (cons entry (concat-envs concat-envs rest old-env))))))
            (call-lambda (lambda (func args env)
              (let* ((arg-vals (interpret-args interpret-args args env)))
-               (func arg-vals)))))
-    (if
-      (null? program)
+                (func arg-vals)))))
+    (if (null? program)
       program
       (if (list? program)
         (let* ((tag   (car program))
