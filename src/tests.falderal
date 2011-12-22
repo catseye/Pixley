@@ -10,7 +10,7 @@ Chris Pressey, Cat's Eye Technologies.
 -> shell command "(cat >foo.pix && ../script/pixley.sh foo.pix)"
 
 -> Functionality "Interpret Pixley Program" is implemented by
--> shell command "(PIXLEY=../variant/pixley.pifx cat >foo.pix && ../script/pixley.sh foo.pix)"
+-> shell command "(PIXLEY=../dialect/pixley.pifx cat >foo.pix && ../script/pixley.sh foo.pix)"
 
 Constructing and Manipulating Data
 ----------------------------------
