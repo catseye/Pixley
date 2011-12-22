@@ -22,9 +22,15 @@
 # of the function will be output.
 
 # This script requires a Scheme implementation which can run
-# Scheme programs from the command line.  plt-r5rs does the trick.
+# Scheme programs from the command line.  plt-r5rs, from the Racket
+# distribution (sudo apt-get install racket), does the trick.
 # If you want to use a different Scheme implementation, you can set
 # the environment variable R5RS before running this.
+
+# The environment variable PIXLEY can also be set to point to a different
+# implementation of Pixley (written in (some subset of) R5RS).  As a
+# special, setting it to the value R5RS will run source.pix directly in
+# Scheme (just as scheme.sh does.)
 
 if [ "${R5RS}x" = "x" ]; then
     R5RS=plt-r5rs
@@ -38,31 +44,56 @@ if [ "${PIXLEY}x" = "x" ]; then
     PIXLEY=pixley.pix
 fi
 
-cat >driver.scm <<EOF
-(define pixley
+if [ "${PIXLEY}x" = "R5RSx" ]; then
+  cat >driver.scm <<EOF
+(define program
 EOF
-cat ${PIXLEYDIR}/${PIXLEY} >>driver.scm 
-cat >>driver.scm <<EOF
+  cat >>driver.scm <$1
+  cat >>driver.scm <<EOF
 )
-(define program (quote
 EOF
-cat >>driver.scm <$1
-cat >>driver.scm <<EOF
+  if [ "${2}x" = "x" ]; then
+      cat >>driver.scm <<EOF
+program
+EOF
+  else
+      cat >>driver.scm <<EOF
+(program (quote
+EOF
+      cat >>driver.scm <$2
+      cat >>driver.scm <<EOF
 ))
 EOF
-if [ "${2}x" = "x" ]; then
-    cat >>driver.scm <<EOF
+  fi
+else
+  cat >driver.scm <<EOF
+(define pixley
+EOF
+  cat ${PIXLEYDIR}/${PIXLEY} >>driver.scm 
+  cat >>driver.scm <<EOF
+)
+EOF
+  cat >>driver.scm <<EOF
+(define program (quote
+EOF
+  cat >>driver.scm <$1
+  cat >>driver.scm <<EOF
+))
+EOF
+  if [ "${2}x" = "x" ]; then
+      cat >>driver.scm <<EOF
 (pixley pixley program '())
 EOF
-else
-    cat >>driver.scm <<EOF
+  else
+      cat >>driver.scm <<EOF
 (define foonction (pixley pixley program '()))
 (foonction (list (quote
 EOF
-    cat >>driver.scm <$2
-    cat >>driver.scm <<EOF
+      cat >>driver.scm <$2
+      cat >>driver.scm <<EOF
 )))
 EOF
+  fi
 fi
 
 $R5RS driver.scm

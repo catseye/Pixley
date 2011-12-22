@@ -4,13 +4,7 @@ Chris Pressey, Cat's Eye Technologies.
 -> Tests for functionality "Interpret Pixley Program"
 
 -> Functionality "Interpret Pixley Program" is implemented by
--> shell command "(cat >foo.pix && ../script/scheme.sh foo.pix)"
-
--> Functionality "Interpret Pixley Program" is implemented by
 -> shell command "(cat >foo.pix && ../script/pixley.sh foo.pix)"
-
--> Functionality "Interpret Pixley Program" is implemented by
--> shell command "(PIXLEY=../dialect/pixley.pifx cat >foo.pix && ../script/pixley.sh foo.pix)"
 
 Constructing and Manipulating Data
 ----------------------------------
