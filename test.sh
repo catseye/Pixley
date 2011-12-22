@@ -51,7 +51,13 @@ cd ..
 echo "Testing Pixley programs on Pixley interpreter in Pifxley..."
 
 cd src && PIXLEY=../dialect/pixley.pifx falderal test tests.falderal
-rm -f foo.pix p-normal-pixley.pix
+rm -f foo.pix
+cd ..
+
+echo "Testing Pifxley programs on Pifxley interpreter in Pifxley..."
+
+cd dialect && PIXLEY=../dialect/pifxley.pifx falderal test pifxley.falderal
+rm -f foo.pifx
 cd ..
 
 # Optional Mini-Scheme tests
