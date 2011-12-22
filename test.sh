@@ -45,13 +45,13 @@ fi
 
 echo "Running Falderal tests for P-Normalizer..."
 
-cd eg && falderal test p-normal.falderal
+cd variant && falderal test p-normal.falderal
 rm -f foo.pix
 cd ..
 
 echo "P-Normalizing Pixley interpreter..."
 
-script/pixley.sh eg/p-normal.pix src/pixley.pix > src/p-normal-pixley.pix
+script/pixley.sh variant/p-normal.pix src/pixley.pix > src/p-normal-pixley.pix
 
 echo "Testing Pixley programs on P-Normalized interpreter..."
 
