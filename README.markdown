@@ -4,9 +4,9 @@ Pixley
 Pixley is a strict subset of R5RS Scheme (or, if you prefer, R4RS Scheme),
 supporting four datatypes (boolean, cons cell, function, and symbol) and
 a dozen built-in symbols.  The reference implementation of Pixley
-is written in 124 lines of Pixley (or, if you prefer, 124 lines of Scheme;
-and if you prefer more Scheme-ly metrics, it consists of 407 instances of
-53 unique symbols in 672 cons cells.)
+is written in 122 lines of Pixley (or, if you prefer, 122 lines of Scheme;
+and if you prefer more Scheme-ly metrics, it consists of 405 instances of
+53 unique symbols in 668 cons cells.)
 
 Except where noted as being in the public domain, the source code files
 in the Pixley project are distributed under a BSD license.
