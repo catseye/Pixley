@@ -28,6 +28,19 @@ echo "Testing Pixley programs on Pixley reference interpreter..."
 
 falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pixley.pix %(test) >%(output)"' src/tests.falderal
 
+echo "Testing Pixley programs on (Pixley reference interpreter)^2..."
+
+falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pixley.pix src/pixley.pix + %(test) >%(output)"' src/tests.falderal
+
+echo "Testing Pixley programs on (Pixley reference interpreter)^3..."
+
+# Takes about 19 seconds on plt-r5rs on my computer
+falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pixley.pix src/pixley.pix + src/pixley.pix + + %(test) >%(output)"' src/tests.falderal
+
+# If you have an hour or so to kill, you can try the next level up!
+# echo "Testing Pixley programs on (Pixley reference interpreter)^4..."
+# time falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pixley.pix src/pixley.pix + src/pixley.pix + + src/pixley.pix + + + %(test) >%(output)"' src/tests.falderal
+
 echo "Running Falderal tests for P-Normalizer..."
 
 falderal test dialect/p-normal.falderal
@@ -42,15 +55,17 @@ falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/p-
 
 rm -f src/p-normal-pixley.pix
 
-#echo "Testing Pixley programs on Pixley interpreter in Pifxley..."
-#cd src && PIXLEY=../dialect/pixley.pifx falderal test tests.falderal
-#rm -f foo.pix
-#cd ..
+echo "Testing Pixley programs on Pixley interpreter in Pifxley..."
 
-#echo "Testing Pifxley programs on Pifxley interpreter in Pifxley..."
-#cd dialect && PIXLEY=../dialect/pifxley.pifx falderal test pifxley.falderal
-#rm -f foo.pifx
-#cd ..
+falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh dialect/pixley.pifx %(test) >%(output)"' src/tests.falderal
+
+echo "Testing Pifxley programs as Scheme..."
+
+falderal test -f 'Interpret Pifxley Program:shell command "script/tower.sh %(test) >%(output)"' dialect/pifxley.falderal
+
+echo "Testing Pifxley programs on Pifxley interpreter in Pifxley..."
+
+falderal test -f 'Interpret Pifxley Program:shell command "script/tower.sh dialect/pifxley.pifx %(test) >%(output)"' dialect/pifxley.falderal
 
 # Optional Mini-Scheme tests
 
