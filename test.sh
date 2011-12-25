@@ -1,64 +1,56 @@
 #!/bin/sh
 
-echo "Sanity-testing scheme.sh and pixley.sh..."
+echo "Sanity-testing tower.sh..."
 
 cat >expected.sexp <<EOF
 (two three)
 EOF
-script/scheme.sh eg/simple.pix > out.sexp
+script/tower.sh eg/simple.pix > out.sexp
 diff -u expected.sexp out.sexp
-script/pixley.sh eg/simple.pix > out.sexp
+script/tower.sh src/pixley.pix eg/simple.pix > out.sexp
 diff -u expected.sexp out.sexp
 rm -f expected.sexp out.sexp
 
 cat >expected.sexp <<EOF
 (ten (eight nine) seven six five four three two one)
 EOF
-script/scheme.sh eg/reverse.pix eg/some-list.sexp > out.sexp
+script/tower.sh eg/reverse.pix eg/some-list.sexp > out.sexp
 diff -u expected.sexp out.sexp
-script/pixley.sh eg/reverse.pix eg/some-list.sexp > out.sexp
+script/tower.sh src/pixley.pix eg/reverse.pix + eg/some-list.sexp > out.sexp
 diff -u expected.sexp out.sexp
 rm -f expected.sexp out.sexp
 
 echo "Testing Pixley programs as Scheme programs..."
 
-cd src && PIXLEY=R5RS falderal test tests.falderal
-rm -f foo.pix
-cd ..
+falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh %(test) >%(output)"' src/tests.falderal
 
-echo "Testing Pixley programs on reference interpreter..."
+echo "Testing Pixley programs on Pixley reference interpreter..."
 
-cd src && falderal test tests.falderal
-rm -f foo.pix
-cd ..
+falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pixley.pix %(test) >%(output)"' src/tests.falderal
 
 echo "Running Falderal tests for P-Normalizer..."
 
-cd dialect && falderal test p-normal.falderal
-rm -f foo.pix
-cd ..
+falderal test dialect/p-normal.falderal
 
 echo "P-Normalizing Pixley interpreter..."
 
-script/pixley.sh dialect/p-normal.pix src/pixley.pix > src/p-normal-pixley.pix
+script/tower.sh src/pixley.pix dialect/p-normal.pix + src/pixley.pix > src/p-normal-pixley.pix
 
 echo "Testing Pixley programs on P-Normalized interpreter..."
 
-cd src && PIXLEY=p-normal-pixley.pix falderal test tests.falderal
-rm -f foo.pix p-normal-pixley.pix
-cd ..
+falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/p-normal-pixley.pix %(test) >%(output)"' src/tests.falderal
 
-echo "Testing Pixley programs on Pixley interpreter in Pifxley..."
+rm -f src/p-normal-pixley.pix
 
-cd src && PIXLEY=../dialect/pixley.pifx falderal test tests.falderal
-rm -f foo.pix
-cd ..
+#echo "Testing Pixley programs on Pixley interpreter in Pifxley..."
+#cd src && PIXLEY=../dialect/pixley.pifx falderal test tests.falderal
+#rm -f foo.pix
+#cd ..
 
-echo "Testing Pifxley programs on Pifxley interpreter in Pifxley..."
-
-cd dialect && PIXLEY=../dialect/pifxley.pifx falderal test pifxley.falderal
-rm -f foo.pifx
-cd ..
+#echo "Testing Pifxley programs on Pifxley interpreter in Pifxley..."
+#cd dialect && PIXLEY=../dialect/pifxley.pifx falderal test pifxley.falderal
+#rm -f foo.pifx
+#cd ..
 
 # Optional Mini-Scheme tests
 

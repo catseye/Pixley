@@ -79,10 +79,7 @@ Tests for the P-Normalizer
 -> Tests for functionality "P-Normalize Pixley Program"
 
 -> Functionality "P-Normalize Pixley Program" is implemented by
--> shell command "(cat >foo.pix && ../script/pixley.sh p-normal.pix foo.pix)"
-
--> Functionality "P-Normalize Pixley Program" is implemented by
--> shell command "(cat >foo.pix && ../script/scheme.sh p-normal.pix foo.pix)"
+-> shell command "script/tower.sh src/pixley.pix dialect/p-normal.pix + %(test) >%(output)"
 
 `let*` gets expanded into a series of nested, one-binding, `let*`s.
 
