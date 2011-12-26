@@ -5,3 +5,6 @@ Chris Pressey, Cat's Eye Technologies.
 
 | (let* (((a b) (quote c))) (symbol (a b)))
 = c
+
+| (let* (((a b) (lambda (x) (cons x (quote ()))))) ((symbol (a b)) (quote r)))
+= (r)

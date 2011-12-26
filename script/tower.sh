@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# usage: tower.sh {interpreter.sexp | +} program.sexp
+# usage: tower.sh {interpreter.sexp} program.sexp
 
 # See tower.scm for documentation.
 

@@ -16,7 +16,7 @@ cat >expected.sexp <<EOF
 EOF
 script/tower.sh eg/reverse.pix eg/some-list.sexp > out.sexp
 diff -u expected.sexp out.sexp
-script/tower.sh src/pixley.pix eg/reverse.pix + eg/some-list.sexp > out.sexp
+script/tower.sh src/pixley.pix eg/reverse.pix eg/some-list.sexp > out.sexp
 diff -u expected.sexp out.sexp
 rm -f expected.sexp out.sexp
 
@@ -30,16 +30,16 @@ falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pi
 
 echo "Testing Pixley programs on (Pixley reference interpreter)^2..."
 
-falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pixley.pix src/pixley.pix + %(test) >%(output)"' src/tests.falderal
+falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pixley.pix src/pixley.pix %(test) >%(output)"' src/tests.falderal
 
 echo "Testing Pixley programs on (Pixley reference interpreter)^3..."
 
 # Takes about 19 seconds on plt-r5rs on my computer
-falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pixley.pix src/pixley.pix + src/pixley.pix + + %(test) >%(output)"' src/tests.falderal
+falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pixley.pix src/pixley.pix src/pixley.pix %(test) >%(output)"' src/tests.falderal
 
 # If you have an hour or so to kill, you can try the next level up!
 # echo "Testing Pixley programs on (Pixley reference interpreter)^4..."
-# time falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pixley.pix src/pixley.pix + src/pixley.pix + + src/pixley.pix + + + %(test) >%(output)"' src/tests.falderal
+# time falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pixley.pix src/pixley.pix src/pixley.pix src/pixley.pix %(test) >%(output)"' src/tests.falderal
 
 echo "Running Falderal tests for P-Normalizer..."
 
@@ -47,7 +47,7 @@ falderal test dialect/p-normal.falderal
 
 echo "P-Normalizing Pixley interpreter..."
 
-script/tower.sh src/pixley.pix dialect/p-normal.pix + src/pixley.pix > src/p-normal-pixley.pix
+script/tower.sh src/pixley.pix dialect/p-normal.pix src/pixley.pix > src/p-normal-pixley.pix
 
 echo "Testing Pixley programs on P-Normalized interpreter..."
 
