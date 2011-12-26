@@ -1,0 +1,7 @@
+Test suite for Crabwell.
+Chris Pressey, Cat's Eye Technologies.
+
+-> Tests for functionality "Interpret Crabwell Program"
+
+| (let* (((a b) (quote c))) (symbol (a b)))
+= c

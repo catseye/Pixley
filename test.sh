@@ -67,6 +67,14 @@ echo "Testing Pifxley programs on Pifxley interpreter in Pifxley..."
 
 falderal test -f 'Interpret Pifxley Program:shell command "script/tower.sh dialect/pifxley.pifx %(test) >%(output)"' dialect/pifxley.falderal
 
+echo "Testing Pixley programs on Crabwell interpreter..."
+
+falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh dialect/crabwell.pix %(test) >%(output)"' src/tests.falderal
+
+echo "Testing Crabwell-specific programs..."
+
+falderal test -f 'Interpret Crabwell Program:shell command "script/tower.sh dialect/crabwell.pix %(test) >%(output)"' dialect/crabwell.falderal
+
 # Optional Mini-Scheme tests
 
 echo 'quit' | miniscm >/dev/null 2>&1
