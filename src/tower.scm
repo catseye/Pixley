@@ -19,7 +19,7 @@
 ; while there are sexps remaining on the tower:
 ;     pop the top sexp off the tower
 ;     wrap the current sexp with it as an interpreter -> current sexp
-; evaluate current sexp as Scheme
+; you now have a sexp that you can evaluate as Scheme
 
 (define wrap-sexp
   (lambda (wrapee-sexp wrapper-sexp)
@@ -30,12 +30,12 @@
 (define tower-rec
   (lambda (sexp-tower sexp)
     (if (null? sexp-tower)
-      (eval sexp (scheme-report-environment 5))
+      sexp
       (let* ((interpreter-sexp (car sexp-tower))
              (rest             (cdr sexp-tower)))
         (tower-rec rest (wrap-sexp sexp interpreter-sexp))))))
 
-(define tower
+(define make-tower
   (lambda (sexp-tower)
     (let* ((sexp-tower (reverse sexp-tower)))
       (if (null? sexp-tower)
