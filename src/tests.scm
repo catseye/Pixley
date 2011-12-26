@@ -1,7 +1,6 @@
 ; Test suite for our R5RS Pixley interpreter.
 ; Original: April 2009; Revised: November 2010
 ; Chris Pressey, Cat's Eye Technologies.
-; $Id: tests.scm 809 2010-11-05 04:40:24Z cpressey $
 
 (load "pixley.scm")
 

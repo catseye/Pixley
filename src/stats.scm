@@ -1,6 +1,5 @@
 ; Statistics on our meta-circular Pixley interpreter.
 ; November 2010, Chris Pressey, Cat's Eye Technologies.
-; $Id: stats.scm 812 2010-11-05 05:24:23Z cpressey $
 
 ; Load an S-expression from a named file.
 (define load-sexp

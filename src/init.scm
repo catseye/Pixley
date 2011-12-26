@@ -1,6 +1,5 @@
 ; Mini-Scheme harness for our Meta-circular Pixley interpreter.
 ; November 2010, Chris Pressey, Cat's Eye Technologies.
-; $Id: init.scm 812 2010-11-05 05:24:23Z cpressey $
 
 ; This is based on the init.scm that ships with Mini-Scheme; since
 ; the Mini-Scheme interpreter takes no command line arguments,

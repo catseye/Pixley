@@ -1,6 +1,5 @@
 ; REPL for our R5RS Pixley interpreter.
 ; November 2010, Chris Pressey, Cat's Eye Technologies.
-; $Id: repl.scm 806 2010-11-05 02:07:42Z cpressey $
 
 (load "pixley.scm")
 
