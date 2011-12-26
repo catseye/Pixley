@@ -12,12 +12,18 @@ SCRIPT=`realpath $0`
 SCRIPTDIR=`dirname ${SCRIPT}`
 
 cd ${SCRIPTDIR}/..
-cp src/tower.scm mytower.scm
-echo -n '(tower (list ' >>mytower.scm
+echo -n '' >init.scm
+if [ $R5RS = your-weird-scheme ]; then
+    cat >>init.scm <<EOF
+(stuff (to support your weird scheme))
+EOF
+fi
+cat <src/tower.scm >>init.scm
+echo '(tower (quote (' >>init.scm
 for SEXPFILE do
-    echo -n '"'$SEXPFILE'" ' >>mytower.scm
+    cat $SEXPFILE >>init.scm
 done
-echo -n '))' >>mytower.scm
+echo ')))' >>init.scm
 
-${R5RS} mytower.scm
-rm -f mytower.scm
+${R5RS} init.scm
+rm -f init.scm

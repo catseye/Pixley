@@ -13,17 +13,11 @@
 ; If you're interested, you can look at earlier revisions of this
 ; file in the repository -- but you are probably not that interested.
 
-; Load an S-expression from a named file.
-(define load-sexp
-  (lambda (filename)
-    (with-input-from-file filename (lambda () (read)))))
-
 ; The pseudocode is:
 ;
-; pop the last file off the command line
-; load the sexp from it -> current sexp
-; while there are files remaining on the command line:
-;     pop the last file off the command line
+; pop the top sexp off the tower -> current sexp
+; while there are sexps remaining on the tower:
+;     pop the top sexp off the tower
 ;     wrap the current sexp with it as an interpreter -> current sexp
 ; evaluate current sexp as Scheme
 
@@ -34,20 +28,18 @@
        (interpret sexp))))
 
 (define tower-rec
-  (lambda (filenames sexp)
-    (if (null? filenames)
+  (lambda (sexp-tower sexp)
+    (if (null? sexp-tower)
       (eval sexp (scheme-report-environment 5))
-      (let* ((filename (car filenames))
-             (rest     (cdr filenames))
-             (sexp     (wrap-sexp sexp (load-sexp filename))))
-          (tower-rec rest sexp)))))
-      
+      (let* ((interpreter-sexp (car sexp-tower))
+             (rest             (cdr sexp-tower)))
+        (tower-rec rest (wrap-sexp sexp interpreter-sexp))))))
+
 (define tower
-  (lambda (filenames)
-    (let* ((filenames (reverse filenames)))
-      (if (null? filenames)
+  (lambda (sexp-tower)
+    (let* ((sexp-tower (reverse sexp-tower)))
+      (if (null? sexp-tower)
         '()
-        (let* ((filename (car filenames))
-               (rest     (cdr filenames))
-               (sexp     (load-sexp filename)))
+        (let* ((sexp (car sexp-tower))
+               (rest (cdr sexp-tower)))
           (tower-rec rest sexp))))))
