@@ -20,7 +20,9 @@ SCRIPT=`realpath $0`
 SCRIPTDIR=`dirname ${SCRIPT}`
 
 cd ${SCRIPTDIR}/..
-echo -n '' >init.scm
+
+# Create prelude
+echo -n '' >prelude.scm
 if [ "$SCHEME" = "miniscm" ]; then
     cat >prelude.scm <<EOF
 ;;;;; following part is written by a.k
@@ -38,10 +40,40 @@ if [ "$SCHEME" = "miniscm" ]; then
 
 (define (list? x) (or (eq? x '()) (and (pair? x) (list? (cdr x)))))
 EOF
-    cat <prelude.scm >>init.scm
 fi
-cat <src/tower.scm >>init.scm
 
+if [ "$SCHEME" = "miniscm" -o "$SCHEME" = "tinyscheme" ]; then
+    cat >>prelude.scm <<EOF
+(define dump-sexp-tail
+  (lambda (sexp)
+    (cond
+      ((null? sexp)
+        (display ")"))
+      ((pair? sexp)
+        (dump-sexp (car sexp))
+        (if (null? (cdr sexp))
+           (display ")")
+           (begin
+             (display " ")
+             (dump-sexp-tail (cdr sexp)))))
+      (else
+        (display ". ")
+        (dump-sexp sexp)
+        (display ")")))))
+
+(define dump-sexp
+  (lambda (sexp)
+    (cond
+      ((pair? sexp)
+        (display "(") (dump-sexp-tail sexp))
+      (else
+        (display sexp)))))
+EOF
+fi
+
+# Create the tower-maker
+cp prelude.scm init.scm
+cat <src/tower.scm >>init.scm
 echo '(define tower (make-tower (quote (' >>init.scm
 for SEXPFILE do
     cat $SEXPFILE >>init.scm
@@ -56,7 +88,7 @@ EOF
 elif [ "${SCHEME}" = "miniscm" ]; then
     echo '(display tower) (quit)' >>init.scm
     cat <prelude.scm >next.scm
-    echo '(display' >>next.scm
+    echo '(dump-sexp' >>next.scm
     ${SCHEME} -q >>next.scm
     echo ') (newline) (quit)' >>next.scm
     mv next.scm init.scm
@@ -65,7 +97,8 @@ else
     cat >>init.scm <<EOF
 (display tower)
 EOF
-    echo >init.scm '(display'
+    cp prelude.scm output.scm
+    echo >>output.scm '(dump-sexp'
     ${SCHEME} init.scm >>output.scm
     echo >>output.scm ') (newline)'
     ${SCHEME} output.scm
