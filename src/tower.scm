@@ -21,11 +21,26 @@
 ;     wrap the current sexp with it as an interpreter -> current sexp
 ; you now have a sexp that you can evaluate as Scheme
 
+(define subst
+  (lambda (sexp src dest)
+    (cond
+      ((equal? sexp src)
+        dest)
+      ((null? sexp)
+        '())
+      ((list? sexp)
+        (cons (subst (car sexp) src dest) (subst (cdr sexp) src dest)))
+      (else
+        sexp))))
+
 (define wrap-sexp
   (lambda (wrapee-sexp wrapper-sexp)
-    `(let* ((interpret ,wrapper-sexp)
-            (sexp      (quote ,wrapee-sexp)))
-       (interpret sexp))))
+    (subst
+      (subst (quote (let* ((interpret wrapper-sexp)
+                           (sexp      (quote wrapee-sexp)))
+                      (interpret sexp)))
+             (quote wrapper-sexp) wrapper-sexp)
+      (quote wrapee-sexp) wrapee-sexp)))
 
 (define tower-rec
   (lambda (sexp-tower sexp)

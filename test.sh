@@ -31,6 +31,7 @@ falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pi
 
 # On my computer, the following test takes about 19 seconds on plt-r5rs, but
 # about 32 minutes with tinyscheme -- possibly because of frequent GC?
+# Meanwhile, it breaks miniscm completely.
 
 # echo "Testing Pixley programs on (Pixley reference interpreter)^3..."
 # falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pixley.pix src/pixley.pix src/pixley.pix %(test) >%(output)"' src/tests.falderal
@@ -41,8 +42,8 @@ falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pi
 # echo "Testing Pixley programs on (Pixley reference interpreter)^4..."
 # time falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh src/pixley.pix src/pixley.pix src/pixley.pix src/pixley.pix %(test) >%(output)"' src/tests.falderal
 
-# Tinyscheme doesn't pass this yet, because it insists on abbreviating quote
-# forms in its output.
+# Tinyscheme and minischeme don't pass this yet, because they insist on
+# abbreviating quote forms in their output.
 echo "Running Falderal tests for P-Normalizer..."
 falderal test dialect/p-normal.falderal
 
@@ -68,22 +69,3 @@ falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh dialec
 
 echo "Testing Crabwell-specific programs..."
 falderal test -f 'Interpret Crabwell Program:shell command "script/tower.sh dialect/crabwell.pix %(test) >%(output)"' dialect/crabwell.falderal
-
-# Optional Mini-Scheme tests
-
-echo 'quit' | miniscm >/dev/null 2>&1
-if [ $? = 0 ]
-  then
-    echo "Right on, you have miniscm installed.  Testing Pixley on it..."
-    cd src
-    cat >expected.out <<EOF
-> a
-> 
-EOF
-    echo '(pixley2 (quote (let* ((a (quote a))) a)))' | miniscm 2>&1 | grep '^>' > miniscm.out
-    diff -u expected.out miniscm.out
-    rm -f expected.out miniscm.out
-    cd ..
-  else
-    echo "miniscm not installed, skipping.  Your loss I guess."
-fi

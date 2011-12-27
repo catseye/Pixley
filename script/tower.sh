@@ -20,33 +20,55 @@ SCRIPT=`realpath $0`
 SCRIPTDIR=`dirname ${SCRIPT}`
 
 cd ${SCRIPTDIR}/..
-echo -n '' >t.scm
-if [ "$SCHEME" = "your-weird-scheme" ]; then
-    cat >>t.scm <<EOF
-(stuff (to support your weird scheme))
-EOF
-fi
-cat <src/tower.scm >>t.scm
+echo -n '' >init.scm
+if [ "$SCHEME" = "miniscm" ]; then
+    cat >prelude.scm <<EOF
+;;;;; following part is written by a.k
 
-echo '(define tower (make-tower (quote (' >>t.scm
+;;;;    equal?
+(define (equal? x y)
+  (if (pair? x)
+    (and (pair? y)
+         (equal? (car x) (car y))
+         (equal? (cdr x) (cdr y)))
+    (and (not (pair? y))
+         (eqv? x y))))
+
+;;;;; following part is written by c.p.
+
+(define (list? x) (or (eq? x '()) (and (pair? x) (list? (cdr x)))))
+EOF
+    cat <prelude.scm >>init.scm
+fi
+cat <src/tower.scm >>init.scm
+
+echo '(define tower (make-tower (quote (' >>init.scm
 for SEXPFILE do
-    cat $SEXPFILE >>t.scm
+    cat $SEXPFILE >>init.scm
 done
-echo '))))' >>t.scm
+echo '))))' >>init.scm
 
 if [ "${USE_EVAL}" = "yes" ]; then
-    cat >>t.scm <<EOF
+    cat >>init.scm <<EOF
 (eval tower (scheme-report-environment 5))
 EOF
-    ${SCHEME} t.scm
+    ${SCHEME} init.scm
+elif [ "${SCHEME}" = "miniscm" ]; then
+    echo '(display tower) (quit)' >>init.scm
+    cat <prelude.scm >next.scm
+    echo '(display' >>next.scm
+    ${SCHEME} -q >>next.scm
+    echo ') (newline) (quit)' >>next.scm
+    mv next.scm init.scm
+    ${SCHEME} -q
 else
-    cat >>t.scm <<EOF
+    cat >>init.scm <<EOF
 (display tower)
 EOF
     echo >init.scm '(display'
-    ${SCHEME} t.scm >>init.scm
-    echo >>init.scm ') (newline)'
-    ${SCHEME} init.scm
+    ${SCHEME} init.scm >>output.scm
+    echo >>output.scm ') (newline)'
+    ${SCHEME} output.scm
 fi
 
-rm -f t.scm init.scm
+rm -f init.scm output.scm prelude.scm
