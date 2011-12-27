@@ -67,7 +67,7 @@ smaller than the Pifxley self-interpreter, for two reasons:
    to the current binding from an expression which is unchanging over
    the whole form, rather than "folded in" after each binding.
 
-Of course, I may be wrong; I won't know until I implement it.  (TODO)
+Of course, I may be wrong; I won't know until I implement it.
 
 Pifxlety is neither a strict subset of Pifxley nor of Pixley, and
 neither is either of those two languages a strict subset of it.
@@ -129,12 +129,33 @@ lambda calculus, you could just call this language *l*.
 Crabwell
 --------
 
-Unlike the previous languages, Crabwell is a version of Pixley with
-one extra feature -- however, there is a trivial mapping between
-Crabwell programs and Pixley programs.
+Unlike the previous languages, *Crabwell* is a version of Pixley with
+one extra feature.  In Crabwell, an arbitrary S-expression may occur
+instead of a symbol as the identifier in a binding in a `let*`
+expression.  In addition, the form `(symbol x)`, where _x_ is any
+S-expression, evaluates to whatever _x_ is currently bound to in the
+environment.  This allows arbitrary S-expressions to be used as
+identifiers.
 
-In Crabwell, an arbitrary S-expression may occur instead of a symbol
-in the identifier in a binding in a `let*` expression.  In addition,
-evaluating a bare symbol is always an error.  Instead, you must
-evaluate `(symbol x)`, where `x` is an arbitrary S-expression.
+This variation was invented to overcome a limitation of Pixley,
+namely, that it lacks any way to create new symbols.  This is a
+significant limitation for implementing program transformations which
+create new `let*` bindings, such as A-normalization.
 
+Crabwell is not a subset of Scheme, and therefore not a subset of
+Pixley either.  However, Pixley is a subset of Crabwell, and there is
+a trivial mapping between (finite) Crabwell programs and (finite)
+Pixley programs -- simply rename each S-expression-based identifier
+to a symbol-based identifier not used elsewhere in the scope in which
+it resides.  Again, Pixley per se cannot do this, because it cannot
+create new symbols, but a program in a language which can generate a
+program source text character-by-character could do so.
+
+And, I should note, it's not really necessary to translate Crabwell
+to Pixley, or even to evaluate Crabwell, to reap some benefits from
+it in the realm of static analysis.  If a program translates a Pixley
+program to an equivalent Crabwell program, perhaps with new bindings
+generated in it, then proves some property of the Crabwell program,
+we know that property is true of the original Pixley program as well.
+
+`crabwell.pix` is a Crabwell interpreter written in Pixley.

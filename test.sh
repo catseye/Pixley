@@ -67,5 +67,5 @@ falderal test -f 'Interpret Pifxley Program:shell command "script/tower.sh diale
 echo "Testing Pixley programs on Crabwell interpreter..."
 falderal test -f 'Interpret Pixley Program:shell command "script/tower.sh dialect/crabwell.pix %(test) >%(output)"' src/tests.falderal
 
-echo "Testing Crabwell-specific programs..."
+echo "Testing Crabwell programs on Crabwell interpreter..."
 falderal test -f 'Interpret Crabwell Program:shell command "script/tower.sh dialect/crabwell.pix %(test) >%(output)"' dialect/crabwell.falderal

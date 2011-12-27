@@ -1,17 +1,21 @@
 ; A driver for running interpreters (on interpreters...) on Scheme.
 
 ; This is a sexp-based tower implementation.  This is like what is
-; done in pixley.scm; the program to be run is wrapped in zero or
-; more interpreters (as S-expressions), and then the whole thing is
+; done in pixley.scm; the S-expression at the "top" of the tower,
+; which we can think of as the program is wrapped, zero or more times,
+; by each successively "lower" S-expression in the tower, we can think
+; of as interpreters.  The final result is an S-expression that can be
 ; evaluated as a Scheme program.
 
 ; It is also possible to write a lambda-based tower implementation,
-; where we load the sexps top-down, creating a function from each
-; of them as we go.
-; However, this runs into the problem that Pixley functions do not
-; have the same representation, in Scheme, as Scheme procedures.
-; If you're interested, you can look at earlier revisions of this
-; file in the repository -- but you are probably not that interested.
+; where we load the S-expressions from the "bottom up", creating a
+; function from each of them as we go, and using that function to
+; interpret the next "higher" level S-expression.  However, this method
+; runs into the problem that Pixley functions do not have the same
+; representation, in Scheme, as Scheme procedures do.  If you're
+; interested in this approach anyway, you can look at earlier revisions
+; of this file in the repository -- but you are probably not *that*
+; interested.
 
 ; The pseudocode is:
 ;
@@ -21,6 +25,7 @@
 ;     wrap the current sexp with it as an interpreter -> current sexp
 ; you now have a sexp that you can evaluate as Scheme
 
+; This is to support Scheme implementations that can't handle quasiquote
 (define subst
   (lambda (sexp src dest)
     (cond
