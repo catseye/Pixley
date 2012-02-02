@@ -4,6 +4,8 @@
 
 # See tower.scm for documentation on how the "tower" idea works.
 
+# The following comments are out of date.
+
 # This script is somewhat convoluted because it supports several Scheme
 # implementations with different ideas about what they support, and how
 # they would like to interact with the rest of the world.
@@ -16,13 +18,13 @@
 # it.  If your Scheme works like this too, there should be no problems.
 
 # If you have a Scheme implementation which does not support eval, you
-# can set the environment variable USE_EVAL to "no".  This causes this
+# can set the environment variable CAN_EVAL to "no".  This causes this
 # script to write the output of the tower function to a new file, and to
 # evaluate it.
 
 # The following Schemes have custom special support here:
 
-# - tinyscheme: Tinyscheme does not support eval, so USE_EVAL is set
+# - tinyscheme: Tinyscheme does not support eval, so CAN_EVAL is set
 #   to "no".  In addition, it insists on abbreviating quoted
 #   S-expressions during output (i.e. it will print "'(q)" instead of
 #   "(quote (q))",) so it produces output that some of the tests
@@ -44,16 +46,28 @@
 
 ### Initialization ###
 
-if [ "${SCHEME}x" = "x" ]; then
-    SCHEME=plt-r5rs
-fi
+SCHEME_CMD=$SCHEME_IMPL  # command to run for impl
+CAN_EVAL=yes             # impl can eval s-exprs as Scheme progs?
+EXPLICIT_QUIT=no         # impl needs explicit (quit) to stop?
+NEED_EQUAL_P=no          # impl lacks `equal?`
+NEED_LIST_P=no           # impl lacks `list?`
+NEED_DUMP_SEXP=no        # impl needs extra support to write s-exp?
 
-if [ "${USE_EVAL}x" = "x" ]; then
-    USE_EVAL=yes
-fi
-
-if [ "${SCHEME}" = "miniscm" -o "${SCHEME}" = "tinyscheme" ]; then
-    USE_EVAL=no
+if [ "${SCHEME_IMPL}x" = "plt-r5rsx" ]; then
+    # everything's good
+    echo -n ''
+elif [ "${SCHEME_IMPL}x" = "chibi-schemex" ]; then
+    SCHEME_CMD='chibi-scheme -xscheme'
+elif [ "${SCHEME_IMPL}x" = "tinyschemex" ]; then
+    CAN_EVAL=no
+    NEED_DUMP_SEXP=yes
+elif [ "${SCHEME_IMPL}x" = "miniscmx" ]; then
+    SCHEME_CMD='miniscm -q'
+    CAN_EVAL=no
+    EXPLICIT_QUIT=yes
+    NEED_EQUAL_P=yes
+    NEED_LIST_P=yes
+    NEED_DUMP_SEXP=yes
 fi
 
 SCRIPT=`realpath $0`
@@ -64,11 +78,10 @@ cd ${SCRIPTDIR}/..
 ### Generate prelude ###
 
 echo -n '' >prelude.scm
-if [ "$SCHEME" = "miniscm" ]; then
-    cat >prelude.scm <<EOF
-;;;;; following part is written by a.k
 
-;;;;    equal?
+if [ "$NEED_EQUAL_P" = "yes" ]; then
+    # define `equal?` in Scheme.  written by a.k.
+    cat >>prelude.scm <<EOF
 (define (equal? x y)
   (if (pair? x)
     (and (pair? y)
@@ -76,14 +89,19 @@ if [ "$SCHEME" = "miniscm" ]; then
          (equal? (cdr x) (cdr y)))
     (and (not (pair? y))
          (eqv? x y))))
+EOF
+fi
 
-;;;;; following part is written by c.p.
-
+if [ "$NEED_LIST_P" = "yes" ]; then
+    # define `list?` in Scheme.  written by c.p.
+    cat >>prelude.scm <<EOF
 (define (list? x) (or (eq? x '()) (and (pair? x) (list? (cdr x)))))
 EOF
 fi
 
-if [ "$SCHEME" = "miniscm" -o "$SCHEME" = "tinyscheme" ]; then
+if [ "$NEED_DUMP_SEXP" = "yes" ]; then
+    # extra support to dump a sexp (without abbreviating stuff)
+    # written by c.p.
     cat >>prelude.scm <<EOF
 (define dump-sexp-tail
   (lambda (sexp)
@@ -122,33 +140,42 @@ for SEXPFILE do
 done
 echo '))))' >>init.scm
 
-if [ "${USE_EVAL}" = "yes" ]; then
-    ### plt-r5rs or similar -- can eval ###
+if [ "${CAN_EVAL}" = "yes" ]; then
+    # Implementation can eval directly
     cat >>init.scm <<EOF
-(eval tower (scheme-report-environment 5))
+(define result (eval tower (scheme-report-environment 5)))
 EOF
-    ${SCHEME} init.scm
-elif [ "${SCHEME}" = "miniscm" ]; then
-    ### Mini-Scheme is special ###
-    echo '(display tower) (quit)' >>init.scm
-    cat <prelude.scm >next.scm
-    echo '(dump-sexp' >>next.scm
-    ${SCHEME} -q >>next.scm
-    echo ') (newline) (quit)' >>next.scm
-    mv next.scm init.scm
-    ${SCHEME} -q
+    echo '(display result) (newline)' >>init.scm
+    ${SCHEME_CMD} init.scm
 else
-    ### Tinyscheme or similar -- can't eval ###
+    # Implementation can't eval directly, so dump result to
+    # another file and interpret it immediately afterward
     cat >>init.scm <<EOF
 (display tower)
 EOF
-    cp prelude.scm output.scm
-    echo >>output.scm '(dump-sexp'
-    ${SCHEME} init.scm >>output.scm
-    echo >>output.scm ') (newline)'
-    ${SCHEME} output.scm
+    if [ "${EXPLICIT_QUIT}" = "yes" ]; then
+        echo '(quit)' >>init.scm
+    fi
+
+    cp prelude.scm next.scm
+  
+    if [ "$NEED_DUMP_SEXP" = "yes" ]; then
+        echo '(dump-sexp' >>next.scm
+        ${SCHEME_CMD} init.scm >>next.scm
+        echo ') (newline)' >>next.scm
+    else
+        echo '(display' >>next.scm
+        ${SCHEME_CMD} init.scm >>next.scm
+        echo ') (newline)' >>next.scm
+    fi
+    if [ "${EXPLICIT_QUIT}" = "yes" ]; then
+        echo '(quit)' >>next.scm
+    fi
+
+    mv next.scm init.scm
+    ${SCHEME_CMD} init.scm
 fi
 
 ### Clean up ###
 
-rm -f init.scm output.scm prelude.scm
+rm -f init.scm next.scm prelude.scm
