@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [ "${SCHEME_IMPL}x" = "x" ]; then
+    export SCHEME_IMPL=plt-r5rs
+fi
+
 echo "Sanity-testing tower.sh..."
 
 cat >expected.sexp <<EOF

@@ -4,45 +4,34 @@
 
 # See tower.scm for documentation on how the "tower" idea works.
 
-# The following comments are out of date.
-
-# This script is somewhat convoluted because it supports several Scheme
-# implementations with different ideas about what they support, and how
-# they would like to interact with the rest of the world.
-
-# Set the environment variable SCHEME to the name of your Scheme
-# implementation.  If SCHEME is not set, plt-r5rs (from the Racket
-# distribution, downloadable from http://racket-lang.org/) is used.  This
-# implementation supports eval and does what you expect when you say
-# "plt-r5rs foo.scm", so there are no special considerations to take for
-# it.  If your Scheme works like this too, there should be no problems.
-
-# If you have a Scheme implementation which does not support eval, you
-# can set the environment variable CAN_EVAL to "no".  This causes this
-# script to write the output of the tower function to a new file, and to
-# evaluate it.
-
-# The following Schemes have custom special support here:
-
-# - tinyscheme: Tinyscheme does not support eval, so CAN_EVAL is set
-#   to "no".  In addition, it insists on abbreviating quoted
-#   S-expressions during output (i.e. it will print "'(q)" instead of
-#   "(quote (q))",) so it produces output that some of the tests
-#   don't expect.  To work around this, this script prepends a prelude
-#   to the generated Scheme source which provides a function which
-#   dumps S-expressions the way the tests expect.
-
-# - miniscm: Mini-Scheme is supported, but a somewhat enhanced version
-#   (available from https://github.com/catseye/minischeme) which
-#   supports a -q option to suppress non-explicit output is required.
-#   Like Tinyscheme, Mini-Scheme does not support eval, and
-#   miniscm insists on abbreviating quoted S-expressions too, so the
-#   considerations for Tinyscheme apply for Mini-Scheme too.
-#   And, since miniscm reads only the init.scm file at startup, this
-#   script generates a file by that name and starts miniscm on it.
-#   To support this, the generated prelude further contains some
-#   procedures which miniscm's core lacks, but which are required to
-#   run Pixley programs.
+# This script provides supports three Scheme implementations.  Select
+# the implementation of Scheme that you wish to use by setting the
+# environment SCHEME_IMPL to one of the following values:
+#
+# - plt-r5rs         # http://racket-lang.org/
+# - tinyscheme       # http://tinyscheme.sourceforge.net/
+# - miniscm          # https://github.com/catseye/minischeme
+#
+# I was going to support chibi-scheme
+# ( http://code.google.com/p/chibi-scheme/ ), but after some back-
+# and-forth on whether it supports R5RS or not, the maintainer has
+# said that "chibi is an R7RS scheme".  Since Pixley is not a subset
+# of R7RS in any good sense, I dropped it.
+#
+# I was also going to support Bootstrap Scheme
+# ( https://github.com/petermichaux/bootstrap-scheme ), but it turned
+# out that Bootstrap Scheme doesn't even support let*, which is one
+# of the core forms in Pixley; so if I did support it, it would only
+# be able to run Pi[f]xlety, etc., and it just didn't seem worth it.
+# So I dropped it too.
+#
+# I may change my mind on either or both of these in the future, but
+# for now, they're not supported.
+#
+# If you have another implementation of Scheme you would like to
+# support, figure out which of the listed capabilities are
+# appropriate for it, and add it to the if/elif/fi chain in the
+# Initialization section.
 
 ### Initialization ###
 
@@ -54,20 +43,39 @@ NEED_LIST_P=no           # impl lacks `list?`
 NEED_DUMP_SEXP=no        # impl needs extra support to write s-exp?
 
 if [ "${SCHEME_IMPL}x" = "plt-r5rsx" ]; then
-    # everything's good
+    # The default capabilities are fine for plt-r5rs.
     echo -n ''
-elif [ "${SCHEME_IMPL}x" = "chibi-schemex" ]; then
-    SCHEME_CMD='chibi-scheme -xscheme'
 elif [ "${SCHEME_IMPL}x" = "tinyschemex" ]; then
+    # Tinyscheme does not support eval, so CAN_EVAL is set to "no".
+    # In addition, it insists on abbreviating quoted S-expressions
+    # during output -- i.e., it will print "'(q)" instead of
+    # "(quote (q))" -- so it produces output that some of the tests
+    # don't expect.  To work around this, this script prepends a
+    # definition of a function "dump-sexp" which explicitly formats
+    # the resulting S-expression in the way the tests do expect.
     CAN_EVAL=no
     NEED_DUMP_SEXP=yes
 elif [ "${SCHEME_IMPL}x" = "miniscmx" ]; then
+    # Mini-Scheme is supported, but a somewhat enhanced version
+    # (available from https://github.com/catseye/minischeme) which
+    # supports a -q option to suppress non-explicit output is required.
+    # Like Tinyscheme, Mini-Scheme does not support eval, and
+    # miniscm insists on abbreviating quoted S-expressions too, so the
+    # considerations for Tinyscheme apply for Mini-Scheme too.
+    # miniscm's core lacks "equal?" and "list?", so definitions for
+    # those are also prepended to the source we want to run.
+    # And, since miniscm reads only the init.scm file at startup, this
+    # script makes sure to generate its Scheme file under that name.
     SCHEME_CMD='miniscm -q'
     CAN_EVAL=no
     EXPLICIT_QUIT=yes
     NEED_EQUAL_P=yes
     NEED_LIST_P=yes
     NEED_DUMP_SEXP=yes
+else
+    echo "Please set SCHEME_IMPL to one of the following:"
+    echo "plt-r5rs, tinyscheme, miniscm"
+    exit 1
 fi
 
 SCRIPT=`realpath $0`
