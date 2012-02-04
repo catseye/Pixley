@@ -56,9 +56,8 @@ elif [ "${SCHEME_IMPL}x" = "tinyschemex" ]; then
     CAN_EVAL=no
     NEED_DUMP_SEXP=yes
 elif [ "${SCHEME_IMPL}x" = "miniscmx" ]; then
-    # Mini-Scheme is supported, but a somewhat enhanced version
-    # (available from https://github.com/catseye/minischeme) which
-    # supports a -q option to suppress non-explicit output is required.
+    # Mini-Scheme is supported, but version 0.85p1 (a fork available
+    # at the above URL is required to support the -q and -e options.
     # Like Tinyscheme, Mini-Scheme does not support eval, and
     # miniscm insists on abbreviating quoted S-expressions too, so the
     # considerations for Tinyscheme apply for Mini-Scheme too.
@@ -66,7 +65,7 @@ elif [ "${SCHEME_IMPL}x" = "miniscmx" ]; then
     # those are also prepended to the source we want to run.
     # And, since miniscm reads only the init.scm file at startup, this
     # script makes sure to generate its Scheme file under that name.
-    SCHEME_CMD='miniscm -q'
+    SCHEME_CMD='miniscm -q -e'
     CAN_EVAL=no
     EXPLICIT_QUIT=yes
     NEED_EQUAL_P=yes
