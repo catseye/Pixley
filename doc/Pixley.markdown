@@ -58,10 +58,10 @@ of trivial tests such as `(equal? (quote ()) (quote ()))` and
 Reference Implementation
 ------------------------
 
-The reference implementation of Pixley, `pixley.pix`, is written in 122
-lines of Pixley (or, if you prefer, 122 lines of Scheme; and if you prefer
-more Scheme-ly metrics, it consists of 405 instances of 53 unique symbols
-in 668 cons cells.)
+The reference implementation of Pixley, `pixley.pix`, is written in 124
+lines of Pixley (or, if you prefer, 124 lines of Scheme; and if you prefer
+more Scheme-ly metrics, it consists of 413 instances of 54 unique symbols
+in 684 cons cells.)
 
 `pixley.pix` does not include a lexical processor: the Pixley program to
 be interpreted must be made available to the interpreter as a native
@@ -229,6 +229,56 @@ material:
 * A few other standalone Pixley examples, including `reverse.pix`,
   which reverses the given list.
 
+### Pixley 2.0 revision 2012.02xx ###
+
+While there were no changes to the language in revision 2012.02xx, this is
+a fairly major revision to the Pixley distribution, so let's list what's
+new in it here.
+
+* The Bourne shell scripts `pixley.sh` and `scheme.sh` were replaced by a
+  single script `tower.sh`.  The idea behind this script is that it lets
+  you constuct a "tower of interpreters" from a sequence of text files
+  which contain S-expressions.  The first such S-expression is interpreted
+  as Scheme, and may evaluate to a function value; the second such will be
+  interpreted by that function, and may evaluate to another function value,
+  and so forth, until there is an S-expression that evaluates to something
+  besides a function value (and that result will be printed to standard
+  output and `tower.sh` will terminate.)
+
+* `tower.sh` officially supports three implementations of Scheme that can
+  be used as the base interpreter: `plt-r5rs` from the Racket distribution,
+  `tinyscheme`, and `miniscm` version 0.85p1 (from our fork of the project
+  on GitHub.)  Support for Scheme implementations is (more or less)
+  capability-based, so adding support for other implementations should not
+  be difficult (especially if they are similar to the three already
+  supported.)
+
+* The test suite was put into Falderal 0.6 format and now uses `tower.sh`
+  to run each test case.  By default, it uses `plt-r5rs`, but can be told
+  to use any of the Scheme implementations that `tower.sh` supports.
+  (Note: there is currently a failure when running one of the tests on a
+  Pixley interpreter on a Pixley interpreter on `miniscm` that I have yet
+  to track down.)
+
+* To match the expectations of `tower.sh`, the Pixley self-interpreter was
+  refactored to evaluate to a function value of one argument.  It was also
+  simplified slightly, removing an unnecessary nested `cond`.
+
+* Various dialects of Pixley have been defined and described, and collected
+  in the `dialect` directory of the distribution.  The dialects include
+  Pifxley, which supports an `if` construct instead of `cond`; there is a
+  Pixley interpreter written in Pifxley, and a Pifxley self-interpreter.
+  There is also a dialect called Crabwell which allows values to be bound
+  to, not just symbols, but arbitrary S-expressions.
+
+* A bug (a missing case) was fixed in the P-Normalizer.
+
+* The main Pixley documentation (what you're reading now) was converted
+  to Markdown format.
+
+* Source code in the Pixley distribution was placed under a BSD-style
+  license.
+
 Conclusion
 ----------
 
@@ -237,5 +287,5 @@ the points and a statement of opinion or decisions reached.
 
 Keep Smiling!  (I could never stand those "Home Sweet Home" folks.)  
 Chris Pressey  
-December 9th, 2011  
+February xxth, 2012  
 Evanston, Illinois
