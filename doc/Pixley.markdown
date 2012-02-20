@@ -1,7 +1,7 @@
 The Pixley Programming Language
 ===============================
 
-Language version 2.0, distribution revision 2011.1209
+Language version 2.0, distribution revision 2012.0219
 
 Introduction
 ------------
@@ -229,9 +229,9 @@ material:
 * A few other standalone Pixley examples, including `reverse.pix`,
   which reverses the given list.
 
-### Pixley 2.0 revision 2012.02xx ###
+### Pixley 2.0 revision 2012.0219 ###
 
-While there were no changes to the language in revision 2012.02xx, this is
+While there were no changes to the language in revision 2012.0219, this is
 a fairly major revision to the Pixley distribution, so let's list what's
 new in it here.
 
@@ -287,5 +287,5 @@ the points and a statement of opinion or decisions reached.
 
 Keep Smiling!  (I could never stand those "Home Sweet Home" folks.)  
 Chris Pressey  
-February xxth, 2012  
+February 19th, 2012  
 Evanston, Illinois
