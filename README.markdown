@@ -14,7 +14,7 @@ in the Pixley project are distributed under a BSD license.
 The latest released version of the Pixley language is 2.0.  For more
 information on the language, reference implementation, and project, please
 refer to
-[The Pixley Programming Language](http://catseye.tc/projects/pixley/doc/_Pixley.markdown.html)
+[The Pixley Programming Language](http://catseye.tc/projects/pixley/doc/Pixley.markdown.html)
 document.
 
 Development
