@@ -76,83 +76,83 @@ wriiten them all out, option #2 seems most appealing.)
 Tests for the P-Normalizer
 --------------------------
 
--> Tests for functionality "P-Normalize Pixley Program"
+    -> Tests for functionality "P-Normalize Pixley Program"
 
--> Functionality "P-Normalize Pixley Program" is implemented by
--> shell command "script/tower.sh src/pixley.pix dialect/p-normal.pix %(test-file)"
+    -> Functionality "P-Normalize Pixley Program" is implemented by
+    -> shell command "script/tower.sh src/pixley.pix dialect/p-normal.pix %(test-file)"
 
 `let*` gets expanded into a series of nested, one-binding, `let*`s.
 
-| (let* ((a (quote a)) (b (quote b))) (cons a b))
-= (let* ((a (quote a))) (let* ((b (quote b))) (cons a b)))
+    | (let* ((a (quote a)) (b (quote b))) (cons a b))
+    = (let* ((a (quote a))) (let* ((b (quote b))) (cons a b)))
 
 `cond` gets expanded into a series of nested, one-test, `cond`s.
 
-| (cond ((equal? a b) a) ((equal? b c) b) (else c))
-= (cond ((equal? a b) a) (else (cond ((equal? b c) b) (else c))))
+    | (cond ((equal? a b) a) ((equal? b c) b) (else c))
+    = (cond ((equal? a b) a) (else (cond ((equal? b c) b) (else c))))
 
 Expressions in a `let*` binding get P-Normalized.
 
-| (let* ((g (let* ((a (quote a)) (b (quote b))) (cons a b)))) g)
-= (let* ((g (let* ((a (quote a))) (let* ((b (quote b))) (cons a b))))) g)
+    | (let* ((g (let* ((a (quote a)) (b (quote b))) (cons a b)))) g)
+    = (let* ((g (let* ((a (quote a))) (let* ((b (quote b))) (cons a b))))) g)
 
 Expressions in a `let*` body get P-Normalized.
 
-| (let* ((c (quote c)))
-|        (car (let* ((a (quote a)) (b (quote b))) (cons a b))))
-= (let* ((c (quote c))) (car (let* ((a (quote a))) (let* ((b (quote b))) (cons a b)))))
+    | (let* ((c (quote c)))
+    |        (car (let* ((a (quote a)) (b (quote b))) (cons a b))))
+    = (let* ((c (quote c))) (car (let* ((a (quote a))) (let* ((b (quote b))) (cons a b)))))
 
 Expressions in a `cond` test get P-Normalized.
 
-| (cond
-|   ((eq? (let* ((a (quote a)) (b (quote b))) a) (quote a))
-|    (quote yes))
-|   (else
-|    (quote no)))
-= (cond ((eq? (let* ((a (quote a))) (let* ((b (quote b))) a)) (quote a)) (quote yes)) (else (quote no)))
+    | (cond
+    |   ((eq? (let* ((a (quote a)) (b (quote b))) a) (quote a))
+    |    (quote yes))
+    |   (else
+    |    (quote no)))
+    = (cond ((eq? (let* ((a (quote a))) (let* ((b (quote b))) a)) (quote a)) (quote yes)) (else (quote no)))
 
 Expressions in a `cond` branch get P-Normalized.
 
-| (cond
-|   ((eq? (quote a) (quote a))
-|    (let* ((a (quote a)) (yes (quote b))) yes))
-|   (else
-|    (quote no)))
-= (cond ((eq? (quote a) (quote a)) (let* ((a (quote a))) (let* ((yes (quote b))) yes))) (else (quote no)))
+    | (cond
+    |   ((eq? (quote a) (quote a))
+    |    (let* ((a (quote a)) (yes (quote b))) yes))
+    |   (else
+    |    (quote no)))
+    = (cond ((eq? (quote a) (quote a)) (let* ((a (quote a))) (let* ((yes (quote b))) yes))) (else (quote no)))
 
 Expressions in a `cons` get P-Normalized.
 
-| (cons (quote x) (let* ((a (quote a)) (b (quote b))) (cons a b)))
-= (cons (quote x) (let* ((a (quote a))) (let* ((b (quote b))) (cons a b))))
+    | (cons (quote x) (let* ((a (quote a)) (b (quote b))) (cons a b)))
+    = (cons (quote x) (let* ((a (quote a))) (let* ((b (quote b))) (cons a b))))
 
 Expressions in a `car` get P-Normalized.
 
-| (car (let* ((a (quote a)) (b (quote b))) (cons a b)))
-= (car (let* ((a (quote a))) (let* ((b (quote b))) (cons a b))))
+    | (car (let* ((a (quote a)) (b (quote b))) (cons a b)))
+    = (car (let* ((a (quote a))) (let* ((b (quote b))) (cons a b))))
 
 Expressions in a `cdr` get P-Normalized.
 
-| (cdr (let* ((a (quote a)) (b (quote b))) (cons a b)))
-= (cdr (let* ((a (quote a))) (let* ((b (quote b))) (cons a b))))
+    | (cdr (let* ((a (quote a)) (b (quote b))) (cons a b)))
+    = (cdr (let* ((a (quote a))) (let* ((b (quote b))) (cons a b))))
 
 Expressions in a `list?` get P-Normalized.
 
-| (list? (let* ((a (quote a)) (b (quote b))) (cons a b)))
-= (list? (let* ((a (quote a))) (let* ((b (quote b))) (cons a b))))
+    | (list? (let* ((a (quote a)) (b (quote b))) (cons a b)))
+    = (list? (let* ((a (quote a))) (let* ((b (quote b))) (cons a b))))
 
 Expressions in a `quote` do *not* get P-Normalized.
 
-| (quote (let* ((a (quote a)) (b (quote b))) (cons a b)))
-= (quote (let* ((a (quote a)) (b (quote b))) (cons a b)))
+    | (quote (let* ((a (quote a)) (b (quote b))) (cons a b)))
+    = (quote (let* ((a (quote a)) (b (quote b))) (cons a b)))
 
 Expressions in a `lambda` body get P-Normalized.
 
-| (let* ((a (lambda (x) (let* ((r (quote r)) (p (quote p))) x))))
-|   (a (quote d)))
-= (let* ((a (lambda (x) (let* ((r (quote r))) (let* ((p (quote p))) x))))) (a (quote d)))
+    | (let* ((a (lambda (x) (let* ((r (quote r)) (p (quote p))) x))))
+    |   (a (quote d)))
+    = (let* ((a (lambda (x) (let* ((r (quote r))) (let* ((p (quote p))) x))))) (a (quote d)))
 
 Arguments of a function application get P-Normalized.
 
-| (let* ((f (lambda (x) x)))
-|        (f (let* ((a (quote a)) (b (quote b))) (cons a b))))
-= (let* ((f (lambda (x) x))) (f (let* ((a (quote a))) (let* ((b (quote b))) (cons a b)))))
+    | (let* ((f (lambda (x) x)))
+    |        (f (let* ((a (quote a)) (b (quote b))) (cons a b))))
+    = (let* ((f (lambda (x) x))) (f (let* ((a (quote a))) (let* ((b (quote b))) (cons a b)))))

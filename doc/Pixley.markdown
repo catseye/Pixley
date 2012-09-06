@@ -221,7 +221,7 @@ material:
   Pixley is a simplified version of Pixley where `let*` can only bind one
   identifer to one value and `cond` can only make one test, like Scheme's
   `if`.  This form is described more fully in the [Falderal literate test
-  suite for the P-Normalizer](../eg/p-normal.falderal).
+  suite for the P-Normalizer](../eg/P-Normal.markdown).
 * Test suites, written in Falderal, for both Pixley and the P-Normalizer.
   The original test suite written in Scheme, which runs successively deeper
   nested copies of the Pixley interpreter, is still included in the
