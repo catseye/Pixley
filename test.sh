@@ -4,8 +4,13 @@ if [ "${SCHEME_IMPL}x" = "x" ]; then
     export SCHEME_IMPL=plt-r5rs
 fi
 
-if [ -z `which $SCHEME_IMPL`]; then
+if [ `which ${SCHEME_IMPL}`x = "x" ]; then
     echo "Your selected Scheme implementation, $SCHEME_IMPL, was not found."
+    exit 1
+fi
+
+if [ `which realpath`x = "x" ]; then
+    echo "You need 'realpath' installed to run tower.sh."
     exit 1
 fi
 
