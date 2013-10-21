@@ -4,6 +4,11 @@ if [ "${SCHEME_IMPL}x" = "x" ]; then
     export SCHEME_IMPL=plt-r5rs
 fi
 
+if [ -z `which $SCHEME_IMPL`]; then
+    echo "Your selected Scheme implementation, $SCHEME_IMPL, was not found."
+    exit 1
+fi
+
 echo "Sanity-testing tower.sh..."
 
 cat >expected.sexp <<EOF
