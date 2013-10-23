@@ -1,7 +1,14 @@
 #!/bin/sh
 
-# A wrapper script around miniscm (my fork) to get it to behave more or less
-# how we want.
+# Support the miniscm-0.85p1 Scheme implementation as if it behaved like
+# plt-r5rs behaves, i.e.:
+
+#   % echo '(+ 1 2)' > program.scm
+#   % miniscm.sh program.scm
+#   3
+#   % 
+
+# Some caveats apply (Protip: some caveats *always* apply.)
 
 cat >init.scm <<EOF
 (define (equal? x y)
@@ -14,4 +21,10 @@ cat >init.scm <<EOF
 (define (list? x) (or (eq? x '()) (and (pair? x) (list? (cdr x)))))
 EOF
 
-miniscm -q -e <$1
+echo "(display" >tmpprog.scm
+cat $1 >>tmpprog.scm
+echo ") (newline)" >>tmpprog.scm
+
+miniscm -q -e <tmpprog.scm
+
+rm -f tmpprog.scm

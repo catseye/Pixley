@@ -36,10 +36,6 @@
 ### Initialization ###
 
 SCHEME_CMD=$SCHEME_IMPL  # command to run for impl
-CAN_EVAL=yes             # impl can eval s-exprs as Scheme progs?
-EXPLICIT_QUIT=no         # impl needs explicit (quit) to stop?
-NEED_EQUAL_P=no          # impl lacks `equal?`
-NEED_LIST_P=no           # impl lacks `list?`
 NEED_DUMP_SEXP=no        # impl needs extra support to write s-exp?
 
 if [ "${SCHEME_IMPL}x" = "plt-r5rsx" ]; then
@@ -52,7 +48,7 @@ elif [ "${SCHEME_IMPL}x" = "tinyschemex" ]; then
     # don't expect.  To work around this, this script prepends a
     # definition of a function "dump-sexp" which explicitly formats
     # the resulting S-expression in the way the tests do expect.
-    SCHEME_CMD='script/tinyscheme.sh'
+    #
     NEED_DUMP_SEXP=yes
 elif [ "${SCHEME_IMPL}x" = "miniscmx" ]; then
     # Mini-Scheme is supported, but version 0.85p1 (a fork available
@@ -62,7 +58,6 @@ elif [ "${SCHEME_IMPL}x" = "miniscmx" ]; then
     # miniscm's core lacks "equal?" and "list?", so definitions for
     # those are also prepended to the source we want to run.
     SCHEME_CMD='script/miniscm.sh'
-    NEED_DUMP_SEXP=yes
 else
     echo "Please set SCHEME_IMPL to one of the following:"
     echo "plt-r5rs, tinyscheme, miniscm"
@@ -77,26 +72,6 @@ cd ${SCRIPTDIR}/..
 ### Generate prelude ###
 
 echo -n '' >prelude.scm
-
-if [ "$NEED_EQUAL_P" = "yes" ]; then
-    # define `equal?` in Scheme.  written by a.k.
-    cat >>prelude.scm <<EOF
-(define (equal? x y)
-  (if (pair? x)
-    (and (pair? y)
-         (equal? (car x) (car y))
-         (equal? (cdr x) (cdr y)))
-    (and (not (pair? y))
-         (eqv? x y))))
-EOF
-fi
-
-if [ "$NEED_LIST_P" = "yes" ]; then
-    # define `list?` in Scheme.  written by c.p.
-    cat >>prelude.scm <<EOF
-(define (list? x) (or (eq? x '()) (and (pair? x) (list? (cdr x)))))
-EOF
-fi
 
 if [ "$NEED_DUMP_SEXP" = "yes" ]; then
     # extra support to dump a sexp (without abbreviating stuff)
@@ -144,9 +119,6 @@ echo '))))' >>program.scm
 cat >>program.scm <<EOF
 (display tower)
 EOF
-if [ "${EXPLICIT_QUIT}" = "yes" ]; then
-    echo '(quit)' >>program.scm
-fi
 
 if [ ! "${DEBUG}x" = "x" ]; then
     less program.scm
@@ -162,9 +134,6 @@ else
     echo '(display' >>next.scm
     ${SCHEME_CMD} program.scm >>next.scm
     echo ') (newline)' >>next.scm
-fi
-if [ "${EXPLICIT_QUIT}" = "yes" ]; then
-    echo '(quit)' >>next.scm
 fi
 
 mv next.scm program.scm

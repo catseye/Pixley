@@ -1,17 +1,27 @@
 #!/bin/sh
 
-# A wrapper script around tinyscheme to get it to behave more or less
-# how we want.
+# Support the tinyscheme Scheme implementation as if it behaved like
+# plt-r5rs behaves, i.e.:
 
-cat >init.scm <<EOF
-(define (equal? x y)
-  (if (pair? x)
-    (and (pair? y)
-         (equal? (car x) (car y))
-         (equal? (cdr x) (cdr y)))
-    (and (not (pair? y))
-         (eqv? x y))))
-(define (list? x) (or (eq? x '()) (and (pair? x) (list? (cdr x)))))
-EOF
+#   % echo '(+ 1 2)' > program.scm
+#   % tinyscheme.sh program.scm
+#   3
+#   % 
 
-tinyscheme $1
+# Note: if tinyscheme is installed from source, the executable's name
+# will be 'scheme' and it will require 'init.scm' in the current
+# directory.  However, if it is installed from a package (using apt-get,) the
+# executable's name will be 'tinyscheme' and it will not require 'init.scm'
+# in the current directory.  Just one of those cases where the package
+# managers decide to try to make your life easier by making things obstensibly
+# saner while at the same time introducing an incompatibility.
+# 
+# This wrapper assumes you have installed it from a package.
+
+echo "(display" >tmpprog.scm
+cat $1 >>tmpprog.scm
+echo ") (newline)" >>tmpprog.scm
+
+tinyscheme tmpprog.scm
+
+rm -f tmpprog.scm

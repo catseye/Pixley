@@ -12,8 +12,8 @@ the cons cell whose head is `quote`.
     | (quote hello)
     = hello
 
-    | (quote (foo bar))
-    = (foo bar)
+    | (quote (quote quote))
+    = (quote quote)
 
 `cons` lets you create a list from some thing and another list.
 
