@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# A wrapper script around miniscm (my fork) to get it to behave more or less
+# A wrapper script around tinyscheme to get it to behave more or less
 # how we want.
 
 cat >init.scm <<EOF
@@ -14,4 +14,4 @@ cat >init.scm <<EOF
 (define (list? x) (or (eq? x '()) (and (pair? x) (list? (cdr x)))))
 EOF
 
-miniscm -q -e <$1
+tinyscheme $1
