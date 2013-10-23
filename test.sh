@@ -45,20 +45,12 @@ EOF
 falderal test config.markdown src/tests.markdown
 
 
-echo "Testing Pixley programs on [${PIXLEY_IMPL}] (directly)..."
+echo "Testing Pixley programs on [${PIXLEY_IMPL}] (via scheme-adapter.sh)..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
-    -> "impl/${PIXLEY_IMPL}/${PIXLEY_IMPL} '%(test-file)'"
+    -> "SCHEME_IMPL=${PIXLEY_IMPL} script/scheme-adapter.sh /dev/null %(test-file)"
 EOF
 falderal test config.markdown src/tests.markdown
-
-
-#echo "Testing Pixley programs on [${PIXLEY_IMPL}] (directly)..."
-#cat >config.markdown <<EOF
-#    -> Functionality "Interpret Pixley Program" is implemented by shell command
-#    -> "impl/${PIXLEY_IMPL}/${PIXLEY_IMPL} '%(test-text)'"
-#EOF
-#falderal test config.markdown src/tests.markdown
 
 
 echo "Testing Pixley programs on [${PIXLEY_IMPL}] (via tower.sh)..."

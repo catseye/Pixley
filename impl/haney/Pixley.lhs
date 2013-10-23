@@ -117,7 +117,7 @@ TODO: barf if symbol not in env
 > eval env (Cons fun actuals) =
 >     case eval env fun of
 >         Lambda closedEnv formals body ->
->             eval (bindArgs closedEnv formals actuals) body
+>             eval (bindArgs env closedEnv formals actuals) body
 >         Macro closedEnv body ->
 >             let
 >                 env' = Map.insert "arg" actuals closedEnv
@@ -143,10 +143,10 @@ TODO: barf if symbol not in env
 > bind (Cons (Symbol sym) (Cons sexpr Null)) env =
 >     Map.insert sym (eval env sexpr) env
 
-> bindArgs env Null Null =
->     env
-> bindArgs env (Cons (Symbol sym) formals) (Cons actual actuals) =
->     Map.insert sym (eval env actual) (bindArgs env formals actuals)
+> bindArgs env closedEnv Null Null =
+>     closedEnv
+> bindArgs env closedEnv (Cons (Symbol sym) formals) (Cons actual actuals) =
+>     Map.insert sym (eval env actual) (bindArgs env closedEnv formals actuals)
 
 > consFromEnvList [] =
 >     Null
