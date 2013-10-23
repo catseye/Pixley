@@ -52,20 +52,16 @@ elif [ "${SCHEME_IMPL}x" = "tinyschemex" ]; then
     # don't expect.  To work around this, this script prepends a
     # definition of a function "dump-sexp" which explicitly formats
     # the resulting S-expression in the way the tests do expect.
+    SCHEME_CMD='script/tinyscheme.sh'
     NEED_DUMP_SEXP=yes
 elif [ "${SCHEME_IMPL}x" = "miniscmx" ]; then
     # Mini-Scheme is supported, but version 0.85p1 (a fork available
-    # at the above URL is required to support the -q and -e options.
+    # at the above URL) is required to support the -q and -e options.
     # Like Tinyscheme, Mini-Scheme insists on abbreviating quoted sexps,
     # so the considerations for Tinyscheme apply for Mini-Scheme too.
     # miniscm's core lacks "equal?" and "list?", so definitions for
     # those are also prepended to the source we want to run.
-    # And, since miniscm reads only the init.scm file at startup, this
-    # script makes sure to generate its Scheme file under that name.
-    SCHEME_CMD='miniscm -q -e'
-    EXPLICIT_QUIT=yes
-    NEED_EQUAL_P=yes
-    NEED_LIST_P=yes
+    SCHEME_CMD='script/miniscm.sh'
     NEED_DUMP_SEXP=yes
 else
     echo "Please set SCHEME_IMPL to one of the following:"
@@ -135,40 +131,44 @@ fi
 
 ### Create the tower ###
 
-cp prelude.scm init.scm
-cat <src/tower.scm >>init.scm
-echo '(define tower (make-tower (quote (' >>init.scm
+cp prelude.scm program.scm
+cat <src/tower.scm >>program.scm
+echo '(define tower (make-tower (quote (' >>program.scm
 for SEXPFILE do
-    cat $SEXPFILE >>init.scm
+    cat $SEXPFILE >>program.scm
 done
-echo '))))' >>init.scm
+echo '))))' >>program.scm
 
 # We don't mess around with 'eval'.  We dump the result to
 # another file and interpret it immediately afterward instead.
-cat >>init.scm <<EOF
+cat >>program.scm <<EOF
 (display tower)
 EOF
 if [ "${EXPLICIT_QUIT}" = "yes" ]; then
-    echo '(quit)' >>init.scm
+    echo '(quit)' >>program.scm
+fi
+
+if [ ! "${DEBUG}x" = "x" ]; then
+    less program.scm
 fi
 
 cp prelude.scm next.scm
 
 if [ "$NEED_DUMP_SEXP" = "yes" ]; then
     echo '(dump-sexp' >>next.scm
-    ${SCHEME_CMD} init.scm >>next.scm
+    ${SCHEME_CMD} program.scm >>next.scm
     echo ') (newline)' >>next.scm
 else
     echo '(display' >>next.scm
-    ${SCHEME_CMD} init.scm >>next.scm
+    ${SCHEME_CMD} program.scm >>next.scm
     echo ') (newline)' >>next.scm
 fi
 if [ "${EXPLICIT_QUIT}" = "yes" ]; then
     echo '(quit)' >>next.scm
 fi
 
-mv next.scm init.scm
-${SCHEME_CMD} init.scm
+mv next.scm program.scm
+${SCHEME_CMD} program.scm
 
 ### Clean up ###
 
