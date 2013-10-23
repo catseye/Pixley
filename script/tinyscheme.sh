@@ -18,8 +18,12 @@
 # 
 # This wrapper assumes you have installed it from a package.
 
+echo -n '' >tmpprog.scm
+if [ ! "$1"x = "/dev/nullx" ]; then
+    cat $1 >>tmpprog.scm
+fi
 echo "(display" >tmpprog.scm
-cat $1 >>tmpprog.scm
+cat $2 >>tmpprog.scm
 echo ") (newline)" >>tmpprog.scm
 
 tinyscheme tmpprog.scm
