@@ -171,10 +171,9 @@ struct value *eval(struct value *sexp, struct env *env)
                     sexp = l->body;
                     done = 0; /* "tail call" */                    
                 } else {
-                    printf("Cannot evaluate ");
-                    dump(h);
-                    printf("\n");
-                    exit(1);
+                    struct value *k = eval(h, env);
+                    struct value *m = cons(eval(k, env), t);
+                    return eval(m, env);
                 }
                 break;
             }
