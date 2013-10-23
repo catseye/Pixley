@@ -77,6 +77,7 @@ struct pstate *parse_resumable(struct pstate *state)
                 char sym[128];
                 int i = 0;
                 while (isalpha(*(state->ptr)) ||
+                       isdigit(*(state->ptr)) ||
                        *(state->ptr) == '*' ||
                        *(state->ptr) == '-' ||
                        *(state->ptr) == '_' ||

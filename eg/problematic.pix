@@ -1,0 +1,6 @@
+(let*
+  ((mk (lambda (x)
+         (lambda (y)
+           (cons y x))))
+   (mkt (mk (quote (vindaloo)))))
+  (mkt (quote chicken)))

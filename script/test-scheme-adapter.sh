@@ -1,6 +1,8 @@
 #!/bin/sh
 
-IMPLS="plt-r5rs huski tinyscheme miniscm"
+if [ "${IMPLS}x" = "x" ]; then
+    IMPLS="plt-r5rs huski tinyscheme miniscm"
+fi
 
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command

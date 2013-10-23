@@ -89,7 +89,7 @@ struct value *eval(struct value *sexp, struct env *env)
                 } else if (h == cond) {
                     struct value *branch = head(t);
                     /* this will error out with car(nil) if no 'else' in cond */
-                    while (1) {
+                    while (done) {
                         struct value *test = head(branch);
                         struct value *expr = head(tail(branch));
                         if (test == else_) {
@@ -106,7 +106,6 @@ struct value *eval(struct value *sexp, struct env *env)
                             }
                         }
                     }
-                    return nil;
                 } else if (h == cons_) {
                     struct value *j = eval(head(t), env);
                     struct value *k = eval(head(tail(t)), env);
@@ -153,6 +152,8 @@ struct value *eval(struct value *sexp, struct env *env)
                         return falsehood;
                     }
                 } else if (h == quote) {
+                    if (t == nil)
+                        return t;
                     return head(t);
                 } else if (h->type == V_LAMBDA) {
                     struct lambda *l = (struct lambda *)h;

@@ -1,0 +1,3 @@
+(let*
+  ((apply (lambda (x) (x (quote a)))))
+  (apply (lambda (r) (cons r (quote foo)))))

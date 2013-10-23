@@ -23,10 +23,12 @@ int main(int argc, char **argv)
             dump(state->result);
             printf("\n");
             */
+            /*
             struct estate *estate = push_estate(NULL, env, state->result);
             estate = eval_resumable(estate);
-            /*printf("Result: ");*/
             dump(estate->result);
+            */            
+            dump(eval(state->result, env));
             printf("\n");
             done = 1;
         } else {
