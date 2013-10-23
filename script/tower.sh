@@ -46,27 +46,23 @@ if [ "${SCHEME_IMPL}x" = "plt-r5rsx" ]; then
     # The default capabilities are fine for plt-r5rs.
     echo -n ''
 elif [ "${SCHEME_IMPL}x" = "tinyschemex" ]; then
-    # Tinyscheme does not support eval, so CAN_EVAL is set to "no".
-    # In addition, it insists on abbreviating quoted S-expressions
+    # Tinyscheme insists on abbreviating quoted S-expressions
     # during output -- i.e., it will print "'(q)" instead of
     # "(quote (q))" -- so it produces output that some of the tests
     # don't expect.  To work around this, this script prepends a
     # definition of a function "dump-sexp" which explicitly formats
     # the resulting S-expression in the way the tests do expect.
-    CAN_EVAL=no
     NEED_DUMP_SEXP=yes
 elif [ "${SCHEME_IMPL}x" = "miniscmx" ]; then
     # Mini-Scheme is supported, but version 0.85p1 (a fork available
     # at the above URL is required to support the -q and -e options.
-    # Like Tinyscheme, Mini-Scheme does not support eval, and
-    # miniscm insists on abbreviating quoted S-expressions too, so the
-    # considerations for Tinyscheme apply for Mini-Scheme too.
+    # Like Tinyscheme, Mini-Scheme insists on abbreviating quoted sexps,
+    # so the considerations for Tinyscheme apply for Mini-Scheme too.
     # miniscm's core lacks "equal?" and "list?", so definitions for
     # those are also prepended to the source we want to run.
     # And, since miniscm reads only the init.scm file at startup, this
     # script makes sure to generate its Scheme file under that name.
     SCHEME_CMD='miniscm -q -e'
-    CAN_EVAL=no
     EXPLICIT_QUIT=yes
     NEED_EQUAL_P=yes
     NEED_LIST_P=yes
@@ -147,41 +143,32 @@ for SEXPFILE do
 done
 echo '))))' >>init.scm
 
-if [ "${CAN_EVAL}" = "yes" ]; then
-    # Implementation can eval directly
-    cat >>init.scm <<EOF
-(define result (eval tower (scheme-report-environment 5)))
-EOF
-    echo '(display result) (newline)' >>init.scm
-    ${SCHEME_CMD} init.scm
-else
-    # Implementation can't eval directly, so dump result to
-    # another file and interpret it immediately afterward
-    cat >>init.scm <<EOF
+# We don't mess around with 'eval'.  We dump the result to
+# another file and interpret it immediately afterward instead.
+cat >>init.scm <<EOF
 (display tower)
 EOF
-    if [ "${EXPLICIT_QUIT}" = "yes" ]; then
-        echo '(quit)' >>init.scm
-    fi
-
-    cp prelude.scm next.scm
-  
-    if [ "$NEED_DUMP_SEXP" = "yes" ]; then
-        echo '(dump-sexp' >>next.scm
-        ${SCHEME_CMD} init.scm >>next.scm
-        echo ') (newline)' >>next.scm
-    else
-        echo '(display' >>next.scm
-        ${SCHEME_CMD} init.scm >>next.scm
-        echo ') (newline)' >>next.scm
-    fi
-    if [ "${EXPLICIT_QUIT}" = "yes" ]; then
-        echo '(quit)' >>next.scm
-    fi
-
-    mv next.scm init.scm
-    ${SCHEME_CMD} init.scm
+if [ "${EXPLICIT_QUIT}" = "yes" ]; then
+    echo '(quit)' >>init.scm
 fi
+
+cp prelude.scm next.scm
+
+if [ "$NEED_DUMP_SEXP" = "yes" ]; then
+    echo '(dump-sexp' >>next.scm
+    ${SCHEME_CMD} init.scm >>next.scm
+    echo ') (newline)' >>next.scm
+else
+    echo '(display' >>next.scm
+    ${SCHEME_CMD} init.scm >>next.scm
+    echo ') (newline)' >>next.scm
+fi
+if [ "${EXPLICIT_QUIT}" = "yes" ]; then
+    echo '(quit)' >>next.scm
+fi
+
+mv next.scm init.scm
+${SCHEME_CMD} init.scm
 
 ### Clean up ###
 
