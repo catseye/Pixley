@@ -4,6 +4,10 @@ if [ "${SCHEME_IMPL}x" = "x" ]; then
     export SCHEME_IMPL=plt-r5rs
 fi
 
+if [ "${PIXLEY_IMPL}x" = "x" ]; then
+    export PIXLEY_IMPL=haney
+fi
+
 if [ `which ${SCHEME_IMPL}`x = "x" ]; then
     echo "Your selected Scheme implementation, $SCHEME_IMPL, was not found."
     exit 1
@@ -41,18 +45,26 @@ EOF
 falderal test config.markdown src/tests.markdown
 
 
-echo "Testing Pixley programs on [mignon] (directly)..."
+echo "Testing Pixley programs on [${PIXLEY_IMPL}] (directly)..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
-    -> "impl/mignon/mignon '%(test-text)'"
+    -> "impl/${PIXLEY_IMPL}/${PIXLEY_IMPL} '%(test-file)'"
 EOF
 falderal test config.markdown src/tests.markdown
 
 
-echo "Testing Pixley programs on [mignon] (via tower.sh)..."
-cat >config.markdown <<"EOF"
+#echo "Testing Pixley programs on [${PIXLEY_IMPL}] (directly)..."
+#cat >config.markdown <<EOF
+#    -> Functionality "Interpret Pixley Program" is implemented by shell command
+#    -> "impl/${PIXLEY_IMPL}/${PIXLEY_IMPL} '%(test-text)'"
+#EOF
+#falderal test config.markdown src/tests.markdown
+
+
+echo "Testing Pixley programs on [${PIXLEY_IMPL}] (via tower.sh)..."
+cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
-    -> "SCHEME_IMPL=${SCHEME_IMPL} FINAL_SCHEME_IMPL=mignon script/tower.sh %(test-file)"
+    -> "SCHEME_IMPL=${SCHEME_IMPL} FINAL_SCHEME_IMPL=${PIXLEY_IMPL} script/tower.sh %(test-file)"
 EOF
 falderal test config.markdown src/tests.markdown
 
@@ -65,10 +77,10 @@ EOF
 falderal test config.markdown src/tests.markdown
 
 
-echo "Testing Pixley programs on Pixley interpreter on [mignon]..."
+echo "Testing Pixley programs on Pixley interpreter on [${PIXLEY_IMPL}]..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
-    -> "SCHEME_IMPL=${SCHEME_IMPL} FINAL_SCHEME_IMPL=mignon script/tower.sh src/pixley.pix %(test-file)"
+    -> "SCHEME_IMPL=${SCHEME_IMPL} FINAL_SCHEME_IMPL=${PIXLEY_IMPL} script/tower.sh src/pixley.pix %(test-file)"
 EOF
 falderal test config.markdown src/tests.markdown
 
@@ -81,10 +93,10 @@ EOF
 falderal test config.markdown src/tests.markdown
 
 
-echo "Testing Pixley programs on Pixley interpreter on Pixley interpreter on [mignon]..."
+echo "Testing Pixley programs on Pixley interpreter on Pixley interpreter on [${PIXLEY_IMPL}]..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
-    -> "SCHEME_IMPL=${SCHEME_IMPL} FINAL_SCHEME_IMPL=mignon script/tower.sh src/pixley.pix src/pixley.pix %(test-file)"
+    -> "SCHEME_IMPL=${SCHEME_IMPL} FINAL_SCHEME_IMPL=${PIXLEY_IMPL} script/tower.sh src/pixley.pix src/pixley.pix %(test-file)"
 EOF
 falderal test config.markdown src/tests.markdown
 
