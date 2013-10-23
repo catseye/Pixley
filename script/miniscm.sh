@@ -2,6 +2,15 @@
 
 # scheme-adapter.sh wrapper to support the miniscm-0.85p1 Scheme implementation
 
+# - miniscm          # https://github.com/catseye/minischeme
+
+# Mini-Scheme is supported, but version 0.85p1 (a fork available
+# at the above URL) is required to support the -q and -e options.
+# Like Tinyscheme, Mini-Scheme insists on abbreviating quoted sexps,
+# so the considerations for Tinyscheme apply for Mini-Scheme too.
+# miniscm's core lacks "equal?" and "list?", so definitions for
+# those are also prepended to the source we want to run.
+
 cat >init.scm <<EOF
 ;;; written by a.k
 

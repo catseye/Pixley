@@ -1,12 +1,8 @@
 #!/bin/sh
 
-# Support the tinyscheme Scheme implementation as if it behaved like
-# plt-r5rs behaves, i.e.:
+# scheme-adapter.sh wrapper to support the tinyscheme Scheme implementation
 
-#   % echo '(+ 1 2)' > program.scm
-#   % tinyscheme.sh program.scm
-#   3
-#   % 
+# - tinyscheme       # http://tinyscheme.sourceforge.net/
 
 # Note: if tinyscheme is installed from source, the executable's name
 # will be 'scheme' and it will require 'init.scm' in the current
@@ -17,6 +13,13 @@
 # saner while at the same time introducing an incompatibility.
 # 
 # This wrapper assumes you have installed it from a package.
+
+# Tinyscheme insists on abbreviating quoted S-expressions
+# during output -- i.e., it will print "'(q)" instead of
+# "(quote (q))" -- so it produces output that some of the tests
+# don't expect.  To work around this, this script prepends a
+# definition of a function "dump-sexp" which explicitly formats
+# the resulting S-expression in the way the tests do expect.
 
 echo -n '' >tmpprog.scm
 if [ ! "$1"x = "/dev/nullx" ]; then

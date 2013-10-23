@@ -32,10 +32,33 @@
 # No output from evaluating the prelude.scm program will be produced unless
 # it specifically calls (display ...) or the like.
 
+# Some caveats apply (Protip: some caveats *always* apply.)
+
 # This script simply delegates to a wrapper script.  To find these wrapper
 # scripts, 'realpath' is needed.
 
-# Some caveats apply (Protip: some caveats *always* apply.)
+# This script provides support for four Scheme implementations.  Select
+# the implementation of Scheme that you wish to use by setting the
+# environment SCHEME_IMPL to one of the supported values (see wrapper scripts.)
+
+# I was going to support chibi-scheme
+# ( http://code.google.com/p/chibi-scheme/ ), but after some back-
+# and-forth on whether it supports R5RS or not, the maintainer has
+# said that "chibi is an R7RS scheme".  Since Pixley is not a subset
+# of R7RS in any good sense, I dropped it.
+#
+# I was also going to support Bootstrap Scheme
+# ( https://github.com/petermichaux/bootstrap-scheme ), but it turned
+# out that Bootstrap Scheme doesn't even support let*, which is one
+# of the core forms in Pixley; so if I did support it, it would only
+# be able to run Pi[f]xlety, etc., and it just didn't seem worth it.
+# So I dropped it too.
+#
+# I may change my mind on either or both of these in the future, but
+# for now, they're not supported.
+#
+# If you have another implementation of Scheme you would like to
+# support, please do feel free to contribute a wrapper for it.
 
 SCRIPT=`realpath $0`
 SCRIPTDIR=`dirname ${SCRIPT}`

@@ -2,6 +2,8 @@
 
 # scheme-adapter.sh wrapper to support the plt-r5rs Scheme implementation
 
+# - plt-r5rs         # http://racket-lang.org/
+
 echo -n '' >tmpprog.scm
 if [ ! "$1"x = "/dev/nullx" ]; then
     cat $1 >>tmpprog.scm
