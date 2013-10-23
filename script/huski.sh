@@ -5,10 +5,8 @@
 # - huski            # http://justinethier.github.io/husk-scheme/
 
 echo -n '' >tmpprog.scm
-if [ ! "$1"x = "/dev/nullx" ]; then
-    cat $1 >>tmpprog.scm
-fi
-echo "(display" >tmpprog.scm
+cat $1 >>tmpprog.scm
+echo "(display" >>tmpprog.scm
 cat $2 >>tmpprog.scm
 echo ") (newline)" >>tmpprog.scm
 

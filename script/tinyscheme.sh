@@ -22,9 +22,7 @@
 # the resulting S-expression in the way the tests do expect.
 
 echo -n '' >tmpprog.scm
-if [ ! "$1"x = "/dev/nullx" ]; then
-    cat $1 >>tmpprog.scm
-fi
+cat $1 >>tmpprog.scm
 
 cat >>tmpprog.scm <<EOF
 (define dump-sexp-tail

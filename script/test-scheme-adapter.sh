@@ -1,11 +1,13 @@
 #!/bin/sh
 
+IMPLS="plt-r5rs huski tinyscheme miniscm"
+
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
     -> "script/scheme-adapter.sh /dev/null %(test-file)"
 EOF
 
-for IMPL in plt-r5rs huski tinyscheme miniscm; do
+for IMPL in $IMPLS; do
     echo "Testing Pixley programs as Scheme programs on ${IMPL}..."
     SCHEME_IMPL=$IMPL falderal test config.markdown src/tests.markdown
 done
@@ -15,7 +17,7 @@ done
 cat >prelude.scm <<EOF
 (define gerbil (quote hamster))
 (display gerbil)
-(define zork (x y) (cons x (cons y (quote ()))))
+(define zork (lambda (x y) (cons x (cons y (quote ())))))
 EOF
 
 cat >test-scheme-adapter.markdown <<EOF
@@ -25,16 +27,14 @@ cat >test-scheme-adapter.markdown <<EOF
     -> "script/scheme-adapter.sh prelude.scm %(test-file)"
 
     | (quote hello)
-    = hamster
-    = hello
+    = hamsterhello
 
     | (zork (quote a) (quote b))
-    = hamster
-    = (a b)
+    = hamster(a b)
 EOF
 
-for IMPL in plt-r5rs huski tinyscheme miniscm; do
-    echo "Testing Pixley programs as Scheme programs on ${IMPL}..."
+for IMPL in $IMPLS; do
+    echo "Testing Scheme adapter on ${IMPL}..."
     SCHEME_IMPL=$IMPL falderal test test-scheme-adapter.markdown
 done
 
