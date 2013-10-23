@@ -186,16 +186,17 @@ struct value *eval(struct value *sexp, struct env *env)
                     debug("*(lambda)");
                     struct lambda *l = (struct lambda *)h;
                     struct value *formals = l->formals;
-                    env = l->env; /* WHAAA? */
+                    struct env *l_env = l->env;
                     while (t->type == V_CONS) {
                         struct value *formal = head(formals);
                         struct value *value = eval(head(t), env);
-                        env = bind(env, (struct atom *)formal, value);
+                        l_env = bind(l_env, (struct atom *)formal, value);
                         formals = tail(formals);
                         t = tail(t);
                     }
                     /* XXX do we have to save env?? */
-                    /* return eval(l->body, env); */
+                    /* return eval(l->body, l_env); */
+                    env = l_env;
                     sexp = l->body;
                     done = 0; /* "tail call" */       
                 } else {

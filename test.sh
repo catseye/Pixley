@@ -65,18 +65,26 @@ EOF
 falderal test config.markdown src/tests.markdown
 
 
-#echo "Testing Pixley programs on Pixley interpreter on [mignon]..."
-#cat >config.markdown <<EOF
-#    -> Functionality "Interpret Pixley Program" is implemented by shell command
-#    -> "SCHEME_IMPL=${SCHEME_IMPL} FINAL_SCHEME_IMPL=mignon script/tower.sh src/pixley.pix %(test-file)"
-#EOF
-#falderal test config.markdown src/tests.markdown
+echo "Testing Pixley programs on Pixley interpreter on [mignon]..."
+cat >config.markdown <<EOF
+    -> Functionality "Interpret Pixley Program" is implemented by shell command
+    -> "SCHEME_IMPL=${SCHEME_IMPL} FINAL_SCHEME_IMPL=mignon script/tower.sh src/pixley.pix %(test-file)"
+EOF
+falderal test config.markdown src/tests.markdown
 
 
 echo "Testing Pixley programs on Pixley interpreter on Pixley interpreter on [${SCHEME_IMPL}]..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
     -> "script/tower.sh src/pixley.pix src/pixley.pix %(test-file)"
+EOF
+falderal test config.markdown src/tests.markdown
+
+
+echo "Testing Pixley programs on Pixley interpreter on Pixley interpreter on [mignon]..."
+cat >config.markdown <<EOF
+    -> Functionality "Interpret Pixley Program" is implemented by shell command
+    -> "SCHEME_IMPL=${SCHEME_IMPL} FINAL_SCHEME_IMPL=mignon script/tower.sh src/pixley.pix src/pixley.pix %(test-file)"
 EOF
 falderal test config.markdown src/tests.markdown
 
