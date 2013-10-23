@@ -22,7 +22,35 @@ echo -n '' >tmpprog.scm
 if [ ! "$1"x = "/dev/nullx" ]; then
     cat $1 >>tmpprog.scm
 fi
-echo "(display" >tmpprog.scm
+
+cat >>tmpprog.scm <<EOF
+(define dump-sexp-tail
+  (lambda (sexp)
+    (cond
+      ((null? sexp)
+        (display ")"))
+      ((pair? sexp)
+        (dump-sexp (car sexp))
+        (if (null? (cdr sexp))
+           (display ")")
+           (begin
+             (display " ")
+             (dump-sexp-tail (cdr sexp)))))
+      (else
+        (display ". ")
+        (dump-sexp sexp)
+        (display ")")))))
+
+(define dump-sexp
+  (lambda (sexp)
+    (cond
+      ((pair? sexp)
+        (display "(") (dump-sexp-tail sexp))
+      (else
+        (display sexp)))))
+EOF
+
+echo "(dump-sexp" >>tmpprog.scm
 cat $2 >>tmpprog.scm
 echo ") (newline)" >>tmpprog.scm
 
