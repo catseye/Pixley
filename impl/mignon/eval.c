@@ -139,7 +139,10 @@ struct value *eval(struct value *sexp, struct env *env)
                     done = 0; /* "tail call" */
                 } else if (h == listp) {
                     struct value *k = eval(head(t), env);
-                    if (k == nil || k->type == V_CONS) {
+                    while (k->type == V_CONS) {
+                        k = tail(k);
+                    }
+                    if (k == nil) {
                         return truth;
                     } else {
                         return falsehood;
