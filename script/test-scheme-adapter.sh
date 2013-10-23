@@ -10,19 +10,32 @@ for IMPL in plt-r5rs huski tinyscheme miniscm; do
     SCHEME_IMPL=$IMPL falderal test config.markdown src/tests.markdown
 done
 
-# this test is not very good
-cat >config.markdown <<EOF
-    -> Functionality "Interpret Pixley Program" is implemented by shell command
-    -> "script/scheme-adapter.sh prelude.scm %(test-file)"
-EOF
+# test that prelude.scm is actually loaded and stuff
 
 cat >prelude.scm <<EOF
 (define gerbil (quote hamster))
+(display gerbil)
+(define zork (x y) (cons x (cons y (quote ()))))
+EOF
+
+cat >test-scheme-adapter.markdown <<EOF
+    -> Tests for functionality "Use Scheme Adapter"
+
+    -> Functionality "Use Scheme Adapter" is implemented by shell command
+    -> "script/scheme-adapter.sh prelude.scm %(test-file)"
+
+    | (quote hello)
+    = hamster
+    = hello
+
+    | (zork (quote a) (quote b))
+    = hamster
+    = (a b)
 EOF
 
 for IMPL in plt-r5rs huski tinyscheme miniscm; do
     echo "Testing Pixley programs as Scheme programs on ${IMPL}..."
-    SCHEME_IMPL=$IMPL falderal test config.markdown src/tests.markdown
+    SCHEME_IMPL=$IMPL falderal test test-scheme-adapter.markdown
 done
 
-rm -f config.markdown tmpprog.scm init.scm prelude.scm
+rm -f config.markdown tmpprog.scm init.scm prelude.scm test-scheme-adapter.markdown

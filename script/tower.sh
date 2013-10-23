@@ -26,16 +26,8 @@ echo '))))' >>program.scm
 # We don't mess around with 'eval'.  We dump the result to
 # another file and interpret it immediately afterward instead.
 
-if [ ! "${DEBUG}x" = "x" ]; then
-    less program.scm
-fi
-
 echo 'tower' >expression.scm
 ${SCRIPTDIR}/scheme-adapter.sh program.scm expression.scm >next.scm
-
-if [ ! "${DEBUG}x" = "x" ]; then
-    less next.scm
-fi
 
 ${SCRIPTDIR}/scheme-adapter.sh /dev/null next.scm
 

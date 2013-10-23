@@ -12,6 +12,10 @@ echo "(display" >tmpprog.scm
 cat $2 >>tmpprog.scm
 echo ") (newline)" >>tmpprog.scm
 
+if [ ! "${DEBUG}x" = "x" ]; then
+    less tmpprog.scm
+fi
+
 huski tmpprog.scm
 
 rm -f tmpprog.scm
