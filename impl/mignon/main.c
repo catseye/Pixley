@@ -12,7 +12,7 @@ int main(int argc, char **argv)
     int done = 0;
     int argn = 1;
 
-    nil = (struct value *)atom("nil");
+    nil = (struct value *)atom("()");
 
     while (!done) {
         state = parse_resumable(state);

@@ -114,7 +114,11 @@ struct pstate *parse_resumable(struct pstate *state)
                 }
                 if (*(state->ptr) == ')') {
                     state->ptr++;
-                    state->result = (struct value *)state->head;
+                    if (state->head == NULL) {
+                        state->result = nil;
+                    } else {
+                        state->result = (struct value *)state->head;
+                    }
                     state->status = P_DONE;
                     break;
                 } else {

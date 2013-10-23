@@ -169,7 +169,7 @@ struct value *eval(struct value *sexp, struct env *env)
                     /* XXX do we have to save env?? */
                     /* return eval(l->body, env); */
                     sexp = l->body;
-                    done = 0; /* "tail call" */                    
+                    done = 0; /* "tail call" */       
                 } else {
                     struct value *k = eval(h, env);
                     struct value *m = cons(eval(k, env), t);
