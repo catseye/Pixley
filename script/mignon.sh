@@ -9,4 +9,8 @@
 # - if the expression file (second argument) contains anything other than
 #   Pixley, things will crash and burn
 
+if [ ! "${DEBUG}x" = "x" ]; then
+    less $2
+fi
+
 impl/mignon/mignon `cat $2` 2>&1

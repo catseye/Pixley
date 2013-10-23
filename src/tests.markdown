@@ -174,6 +174,16 @@ when the function is applied, even if they are not lexically in scope.
     |     (f (lambda (x) (cons x a)))) f) (quote oh))
     = (oh hi)
 
+You can call a function with a bound name as its argument.
+
+    | (let* ((interpret
+    |         (lambda (program)
+    |           (let* ((interpreter (quote z)))
+    |             (cons interpreter program))))
+    |        (sexp (quote (cdr (quote (one two three))))))
+    |   (interpret sexp))
+    = (z cdr (quote (one two three)))
+
 Functions can take functions.
 
     | (let*

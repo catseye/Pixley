@@ -36,6 +36,11 @@ ${SCRIPTDIR}/scheme-adapter.sh program.scm expression.scm >next.scm
 if [ "${FINAL_SCHEME_IMPL}x" = "x" ]; then
     FINAL_SCHEME_IMPL=${SCHEME_IMPL}
 fi
+
+if [ ! "${DEBUG_TOWER}x" = "x" ]; then
+    less next.scm
+fi
+
 SCHEME_IMPL=${FINAL_SCHEME_IMPL} ${SCRIPTDIR}/scheme-adapter.sh /dev/null next.scm
 
 ### Clean up ###
