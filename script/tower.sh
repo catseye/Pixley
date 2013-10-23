@@ -9,6 +9,10 @@
 # the implementation of Scheme that you wish to use by setting the
 # environment variable SCHEME_IMPL before running this script.
 
+# If the environment variable FINAL_SCHEME_IMPL is set, that program will be
+# used instead of SCHEME_IMPL when it comes time to run the resulting
+# tower.  (SCHEME_IMPL will still be used to construct the tower.)
+
 ### Initialization ###
 
 SCRIPT=`realpath $0`
@@ -29,7 +33,10 @@ echo '))))' >>program.scm
 echo 'tower' >expression.scm
 ${SCRIPTDIR}/scheme-adapter.sh program.scm expression.scm >next.scm
 
-${SCRIPTDIR}/scheme-adapter.sh /dev/null next.scm
+if [ "${FINAL_SCHEME_IMPL}x" = "x" ]; then
+    FINAL_SCHEME_IMPL=${SCHEME_IMPL}
+fi
+SCHEME_IMPL=${FINAL_SCHEME_IMPL} ${SCRIPTDIR}/scheme-adapter.sh /dev/null next.scm
 
 ### Clean up ###
 

@@ -15,7 +15,6 @@ if [ `which realpath`x = "x" ]; then
 fi
 
 echo "Sanity-testing tower.sh..."
-
 cat >expected.sexp <<EOF
 (two three)
 EOF
@@ -24,7 +23,6 @@ diff -u expected.sexp out.sexp
 script/tower.sh src/pixley.pix eg/simple.pix > out.sexp
 diff -u expected.sexp out.sexp
 rm -f expected.sexp out.sexp
-
 cat >expected.sexp <<EOF
 (ten (eight nine) seven six five four three two one)
 EOF
@@ -35,35 +33,51 @@ diff -u expected.sexp out.sexp
 rm -f expected.sexp out.sexp
 
 
+echo "Testing Pixley programs on [${SCHEME_IMPL}]..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
     -> "script/tower.sh %(test-file)"
 EOF
-echo "Testing Pixley programs on [${SCHEME_IMPL}]..."
 falderal test config.markdown src/tests.markdown
 
 
+echo "Testing Pixley programs on [mignon] (directly)..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
     -> "impl/mignon/mignon '%(test-text)'"
 EOF
-echo "Testing Pixley programs on [mignon]..."
 falderal test config.markdown src/tests.markdown
 
 
+echo "Testing Pixley programs on [mignon] (via tower.sh)..."
+cat >config.markdown <<"EOF"
+    -> Functionality "Interpret Pixley Program" is implemented by shell command
+    -> "SCHEME_IMPL=${SCHEME_IMPL} FINAL_SCHEME_IMPL=mignon script/tower.sh %(test-file)"
+EOF
+falderal test config.markdown src/tests.markdown
+
+
+echo "Testing Pixley programs on Pixley interpreter on [${SCHEME_IMPL}]..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
     -> "script/tower.sh src/pixley.pix %(test-file)"
 EOF
-echo "Testing Pixley programs on Pixley interpreter on [${SCHEME_IMPL}]..."
 falderal test config.markdown src/tests.markdown
 
 
+#echo "Testing Pixley programs on Pixley interpreter on [mignon]..."
+#cat >config.markdown <<EOF
+#    -> Functionality "Interpret Pixley Program" is implemented by shell command
+#    -> "SCHEME_IMPL=miniscm FINAL_SCHEME_IMPL=mignon script/tower.sh src/pixley.pix %(test-file)"
+#EOF
+#falderal test config.markdown src/tests.markdown
+
+
+echo "Testing Pixley programs on Pixley interpreter on Pixley interpreter on [${SCHEME_IMPL}]..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
     -> "script/tower.sh src/pixley.pix src/pixley.pix %(test-file)"
 EOF
-echo "Testing Pixley programs on Pixley interpreter on Pixley interpreter on [${SCHEME_IMPL}]..."
 falderal test config.markdown src/tests.markdown
 
 
@@ -71,25 +85,23 @@ falderal test config.markdown src/tests.markdown
 # about 32 minutes with tinyscheme -- possibly because of frequent GC?
 # Meanwhile, it breaks miniscm completely.
 #
+#echo "Testing Pixley programs on (Pixley reference interpreter)^3..."
 #cat >config.markdown <<EOF
 #    -> Functionality "Interpret Pixley Program" is implemented by shell command
 #    -> "script/tower.sh src/pixley.pix src/pixley.pix src/pixley.pix %(test-file)"
 #EOF
-#
-# echo "Testing Pixley programs on (Pixley reference interpreter)^3..."
-# falderal test config.markdown src/tests.markdown
+#falderal test config.markdown src/tests.markdown
 
 
 # And if you have an hour or so to kill, you can try the next level up!
 # (That's with plt-r5rs; I imagine tinyscheme would take much longer)
 #
+#echo "Testing Pixley programs on (Pixley reference interpreter)^4..."
 #cat >config.markdown <<EOF
 #    -> Functionality "Interpret Pixley Program" is implemented by shell command
 #    -> "script/tower.sh src/pixley.pix src/pixley.pix src/pixley.pix src/pixley.pix %(test-file)"
 #EOF
-#
-# echo "Testing Pixley programs on (Pixley reference interpreter)^4..."
-# time falderal test config.markdown src/tests.markdown
+#time falderal test config.markdown src/tests.markdown
 
 
 echo "Running Falderal tests for P-Normalizer..."
@@ -107,42 +119,42 @@ falderal test config.markdown src/tests.markdown
 rm -f src/p-normal-pixley.pix
 
 
+echo "Testing Pixley programs on Pixley interpreter in Pifxley..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
     -> "script/tower.sh dialect/pixley.pifx %(test-file)"
 EOF
-echo "Testing Pixley programs on Pixley interpreter in Pifxley..."
 falderal test config.markdown src/tests.markdown
 
 
+echo "Testing Pifxley programs as Scheme..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pifxley Program" is implemented by shell command
     -> "script/tower.sh %(test-file)"
 EOF
-echo "Testing Pifxley programs as Scheme..."
 falderal test config.markdown dialect/Pifxley.markdown
 
 
+echo "Testing Pifxley programs on Pifxley interpreter in Pifxley..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pifxley Program" is implemented by shell command
     -> "script/tower.sh dialect/pifxley.pifx %(test-file)"
 EOF
-echo "Testing Pifxley programs on Pifxley interpreter in Pifxley..."
 falderal test config.markdown dialect/Pifxley.markdown
 
 
+echo "Testing Pixley programs on Crabwell interpreter..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
     -> "script/tower.sh dialect/crabwell.pix %(test-file)"
 EOF
-echo "Testing Pixley programs on Crabwell interpreter..."
 falderal test config.markdown src/tests.markdown
 
 
+echo "Testing Crabwell programs on Crabwell interpreter..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Crabwell Program" is implemented by shell command
     -> "script/tower.sh dialect/crabwell.pix %(test-file)"
 EOF
-echo "Testing Crabwell programs on Crabwell interpreter..."
 falderal test config.markdown dialect/Crabwell.markdown
 rm -f config.markdown
