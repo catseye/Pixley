@@ -1,7 +1,7 @@
 The Pixley Programming Language
 ===============================
 
-Language version 2.0, distribution revision 2013.1025-pre
+Language version 2.0, distribution revision 2013.1024
 
 Introduction
 ------------
@@ -281,9 +281,9 @@ new in it here.
 * Source code in the Pixley distribution was placed under a BSD-style
   license.
 
-### Pixley 2.0 revision 2013.1025 ###
+### Pixley 2.0 revision 2013.1024 ###
 
-While there were no changes to the language in revision 2013.1025, some
+While there were no changes to the language in revision 2013.1024, some
 interesting stuff was added to the Pixley distribution, so let's list what's
 new in it here.
 
