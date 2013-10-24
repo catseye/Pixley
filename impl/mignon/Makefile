@@ -30,6 +30,7 @@ all: ${PROG}${EXE}
 
 ${PROG}${EXE}: $(OBJS)
 	$(CC) $(OBJS) -o ${PROG} $(LIBS)
+	$(STRIP) $(PROG)
 
 parse${O}: parse.c parse.h sexp.h
 	$(CC) $(CFLAGS) -c parse.c -o parse${O}

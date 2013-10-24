@@ -48,7 +48,6 @@ static void debug(const char *msg)
 
 struct value *eval(struct value *sexp, struct env *env)
 {
-    struct value *cadr = atom("cadr");
     struct value *car = atom("car");
     struct value *cdr = atom("cdr");
     struct value *cond = atom("cond");
@@ -58,7 +57,6 @@ struct value *eval(struct value *sexp, struct env *env)
     struct value *lambda_ = atom("lambda");
     struct value *let = atom("let*");
     struct value *listp = atom("list?");
-    struct value *nullp = atom("null?");
     struct value *quote = atom("quote");
     struct value *truth = atom("#t");
     struct value *falsehood = atom("#f");
@@ -90,10 +88,6 @@ struct value *eval(struct value *sexp, struct env *env)
                     debug(((struct atom *)h)->string);
                     sexp = cons(bound, t); /* pair of a lambda and a list */
                     done = 0; /* "tail call" */
-                } else if (h == cadr) {
-                    struct value *k = eval(head(t), env);
-                    debug("*cadr");
-                    return head(tail(k));
                 } else if (h == car) {
                     struct value *k = eval(head(t), env);
                     debug("*car");
@@ -165,14 +159,6 @@ struct value *eval(struct value *sexp, struct env *env)
                     while (k->type == V_CONS) {
                         k = tail(k);
                     }
-                    if (k == nil) {
-                        return truth;
-                    } else {
-                        return falsehood;
-                    }
-                } else if (h == nullp) {
-                    struct value *k = eval(head(t), env);
-                    debug("*null?");
                     if (k == nil) {
                         return truth;
                     } else {
