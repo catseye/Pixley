@@ -6,7 +6,7 @@ Language version 2.0, distribution revision 2012.0219
 Introduction
 ------------
 
-*Pixley* is a strict and purely functional subset of R^(5)RS Scheme.
+*Pixley* is a strict and purely functional subset of R^5^RS Scheme.
 All Pixley programs are also therefore Scheme programs.
 
 Pixley was designed for "bootstrappability".  I aimed to encompass a
@@ -30,7 +30,7 @@ Pixley implements the following functions and forms from Scheme
 * `quote`
 
 For the precise meanings of each of these forms, please refer to the
-Revised^(5) Report on the Algorithmic Language Scheme.
+Revised^5^ Report on the Algorithmic Language Scheme.
 
 Pixley only understands the Scheme datatypes of lists, symbols, function
 values (lambdas), and booleans.  Pixley's behaviour regarding any attempt
