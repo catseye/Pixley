@@ -78,9 +78,6 @@ A helper function to make Cons cells from Haskell lists.
 Evaluator
 =========
 
-TODO: should we actually put symbols like car and cdr in initial
-environment?  (what does scheme do?)
-
 > car (Cons a b) = a
 > cdr (Cons a b) = b
 
@@ -90,8 +87,6 @@ Scheme and Pixley do.
 > listp Null = Boolean True
 > listp (Cons a b) = listp b
 > listp _ = Boolean False
-
-TODO: barf if symbol not in env
 
 > eval env (Symbol s) =
 >     (Map.!) env s
@@ -165,4 +160,4 @@ Top-Level Driver
 >     let
 >         Right ast = parse expr "" program
 >     in
->         show $ eval Map.empty ast
+>         eval Map.empty ast

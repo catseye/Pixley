@@ -1,12 +1,12 @@
 The Pixley Programming Language
 ===============================
 
-Language version 2.0, distribution revision 2012.0219
+Language version 2.0, distribution revision 2013.1025-pre
 
 Introduction
 ------------
 
-*Pixley* is a strict and purely functional subset of R^5^RS Scheme.
+*Pixley* is a strict and purely functional subset of R5RS Scheme.
 All Pixley programs are also therefore Scheme programs.
 
 Pixley was designed for "bootstrappability".  I aimed to encompass a
@@ -53,7 +53,9 @@ illegal, empty application.)  Literal symbols may be introduced through
 the `quote` form, literal function values can be produced through the
 `lambda` form, and the two boolean values can be produced through the use
 of trivial tests such as `(equal? (quote ()) (quote ()))` and
-`(equal? (quote a) (quote b))`.
+`(equal? (quote a) (quote b))`.  (Note however that Pixley's test suite
+does generally require a Pixley implementation to be able to *depict*
+truth and falsehood in the output as `#t` and `#f`, respectively.)
 
 Reference Implementation
 ------------------------
@@ -156,7 +158,7 @@ It turns out that while function values were in fact represented by lists
 with `__lambda__` as the first element, lists were just represented by lists.
 Which means that there was an overlap between the types: a function value was,
 at the Pixley level, a kind of list, and could be treated just like one, for
-example with `car` and `cdr`.  This is clearly not kosher R^(5)RS, which has
+example with `car` and `cdr`.  This is clearly not kosher R5RS, which has
 a whole *section* titled "Disjointness of types".  (Of course, neither "list"
 nor "function value" is mentioned in that section, but I'd say the spirit of
 the law is pretty clear there or whatever.)
@@ -197,7 +199,7 @@ material:
   run under it by including the Pixley interpreter in Mini-Scheme's
   `init.scm` file and invoking it therein.  From this I conclude that,
   although I have not confirmed this is in a solid way by looking at the
-  spec or anything, Pixley is also a strict subset of R^(4)RS Scheme.
+  spec or anything, Pixley is also a strict subset of R4RS Scheme.
 
 ### Pixley 2.0 ###
 
@@ -278,6 +280,33 @@ new in it here.
 
 * Source code in the Pixley distribution was placed under a BSD-style
   license.
+
+### Pixley 2.0 revision 2013.1025 ###
+
+While there were no changes to the language in revision 2013.1025, some
+interesting stuff was added to the Pixley distribution, so let's list what's
+new in it here.
+
+* Funny story!  Remember when I said I was writing writing stuff in C to
+  compile with DICE C under AmigaOS 1.3, and that what I decided to write
+  was a Pixley interpreter in C?  Well, that implementation of Pixley,
+  called `mignon`, has finally been included in the Pixley distribution.
+
+* Another implementation of Pixley, this time in Haskell and called `haney`,
+  has also been included in the Pixley distribution.
+
+* The `tower.sh` script has been refactored, since honestly it was kind of
+  grody.  The abstraction layer which tries to make different implementations
+  of Scheme behave the same has been split off into `scheme-adapter.sh`,
+  while the responsibility of `tower.sh` itself is only to build and run the
+  tower of interpreters.  In addition to `plt-r5rs`, Mini-Scheme, and
+  Tinyscheme, `scheme-adapter.sh` also supports the Husk Scheme interpreter.
+  Finally, `scheme-adapter.sh` supports `mignon` and `haney` as well; even
+  though they're not proper Scheme interpreters, they can be used as the
+  base interpreter for a tower of Pixley interpreters.
+
+* The test suite has been modernized (for whatever "modern" means for
+  Falderal) and enriched to handle testing these extra implementations.
 
 Conclusion
 ----------

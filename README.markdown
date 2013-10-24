@@ -11,7 +11,9 @@ and if you prefer more Scheme-ly metrics, it consists of 413 instances of
 This distribution also contains (non-reference) implementations of Pixley
 in C (`mignon`) and Haskell (`haney`), as well as ancillary support for
 running Pixley under four different implementations of Scheme (Racket's
-`plt-r5rs`, Husk Scheme, Mini-Scheme v0.85p1, and Tinyscheme.)
+`plt-r5rs`, Husk Scheme, Mini-Scheme v0.85p1, and Tinyscheme,) as well as
+several minor dialects of the Pixley language (Pifxley, P-Normal Pixley,
+and Crabwell.)
 
 Except where noted as being in the public domain, the source code files
 in the Pixley project are distributed under a BSD license.

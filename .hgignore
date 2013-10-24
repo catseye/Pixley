@@ -2,5 +2,8 @@ syntax: glob
 
 *.o
 *.hi
-mignon
-haney
+
+syntax: regexp
+
+^impl/mignon/mignon
+^impl/haney/haney

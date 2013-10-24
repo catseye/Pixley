@@ -5,4 +5,4 @@ import Pixley
 main = do
     [fileName] <- getArgs
     programText <- readFile fileName
-    putStrLn (runPixley programText)
+    putStrLn $ show $ runPixley programText
