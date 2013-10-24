@@ -37,9 +37,13 @@
 # This script simply delegates to a wrapper script.  To find these wrapper
 # scripts, 'realpath' is needed.
 
-# This script provides support for four Scheme implementations.  Select
+# This script currently provides support for four Scheme implementations
+# (plt-r5rs, huski, tinischeme, miniscm) and two Pixley implementations
+# (mignon and haney) (which obviously aren't full Scheme implementations so
+# don't bother trying them on anything besides Pixley programs.)  Select
 # the implementation of Scheme that you wish to use by setting the
-# environment SCHEME_IMPL to one of the supported values (see wrapper scripts.)
+# environment SCHEME_IMPL to one of the supported values.  See the individual
+# wrapper scripts, in the wrapper subdirectory, for more information.
 
 # I was going to support chibi-scheme
 # ( http://code.google.com/p/chibi-scheme/ ), but after some back-
@@ -62,5 +66,5 @@
 
 SCRIPT=`realpath $0`
 SCRIPTDIR=`dirname ${SCRIPT}`
-WRAPPER="${SCRIPTDIR}/${SCHEME_IMPL}.sh"
+WRAPPER="${SCRIPTDIR}/wrapper/${SCHEME_IMPL}.sh"
 exec ${WRAPPER} $1 $2
