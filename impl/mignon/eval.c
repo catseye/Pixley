@@ -36,11 +36,15 @@ static void dump_env(struct env *env)
     printf("}\n");
 }
 
+#ifdef DEBUG
 static void debug(const char *msg)
 {
-    //printf("%s\n", msg);
+    printf("%s\n", msg);
     msg = msg;
 }
+#else
+#define debug(x)
+#endif
 
 struct value *eval(struct value *sexp, struct env *env)
 {
@@ -65,8 +69,6 @@ struct value *eval(struct value *sexp, struct env *env)
         switch (sexp->type) {
             case V_ATOM:
             {
-                debug("V_ATOM");
-                debug(((struct atom *)sexp)->string);
                 struct atom *name = (struct atom *)sexp;
                 struct value *value = lookup(env, name);
                 if (value == NULL) {
@@ -79,30 +81,30 @@ struct value *eval(struct value *sexp, struct env *env)
             }
             case V_CONS:
             {
-                debug("V_CONS");
                 struct value *h = head(sexp);
                 struct value *t = tail(sexp);
                 struct value *bound = lookup(env, (struct atom *)h);
+                debug("V_CONS");
                 if (bound != NULL) {
                     debug("*(bound)");
                     debug(((struct atom *)h)->string);
                     sexp = cons(bound, t); /* pair of a lambda and a list */
                     done = 0; /* "tail call" */
                 } else if (h == cadr) {
-                    debug("*cadr");
                     struct value *k = eval(head(t), env);
+                    debug("*cadr");
                     return head(tail(k));
                 } else if (h == car) {
-                    debug("*car");
                     struct value *k = eval(head(t), env);
+                    debug("*car");
                     return head(k);
                 } else if (h == cdr) {
-                    debug("*cdr");
                     struct value *k = eval(head(t), env);
+                    debug("*cdr");
                     return tail(k);
                 } else if (h == cond) {
-                    debug("*cond");
                     struct value *branch = head(t);
+                    debug("*cond");
                     /* this will error out with car(nil) if no 'else' in cond */
                     while (done) {
                         struct value *test = head(branch);
@@ -122,14 +124,14 @@ struct value *eval(struct value *sexp, struct env *env)
                         }
                     }
                 } else if (h == cons_) {
-                    debug("*cons");
                     struct value *j = eval(head(t), env);
                     struct value *k = eval(head(tail(t)), env);
+                    debug("*cons");
                     return cons(j, k);
                 } else if (h == equalp) {
-                    debug("*equalp");
                     struct value *j = eval(head(t), env);
                     struct value *k = eval(head(tail(t)), env);
+                    debug("*equalp");
                     if (equal(j, k)) {
                         return truth;
                     } else {
@@ -139,10 +141,9 @@ struct value *eval(struct value *sexp, struct env *env)
                     debug("*lambda");
                     return lambda(env, head(t), head(tail(t)));
                 } else if (h == let) {
-                    debug("*let*");
                     struct value *pairs = head(t);
                     struct value *body = head(tail(t));
-
+                    debug("*let*");
                     while (pairs != nil) {
                         struct value *pair = head(pairs);
                         struct value *name = head(pair);
@@ -159,8 +160,8 @@ struct value *eval(struct value *sexp, struct env *env)
                     sexp = body;
                     done = 0; /* "tail call" */
                 } else if (h == listp) {
-                    debug("*list?");
                     struct value *k = eval(head(t), env);
+                    debug("*list?");
                     while (k->type == V_CONS) {
                         k = tail(k);
                     }
@@ -170,8 +171,8 @@ struct value *eval(struct value *sexp, struct env *env)
                         return falsehood;
                     }
                 } else if (h == nullp) {
-                    debug("*null?");
                     struct value *k = eval(head(t), env);
+                    debug("*null?");
                     if (k == nil) {
                         return truth;
                     } else {
@@ -183,10 +184,10 @@ struct value *eval(struct value *sexp, struct env *env)
                         return t;
                     return head(t);
                 } else if (h->type == V_LAMBDA) {
-                    debug("*(lambda)");
                     struct lambda *l = (struct lambda *)h;
                     struct value *formals = l->formals;
                     struct env *l_env = l->env;
+                    debug("*(lambda)");
                     while (t->type == V_CONS) {
                         struct value *formal = head(formals);
                         struct value *value = eval(head(t), env);
@@ -200,9 +201,9 @@ struct value *eval(struct value *sexp, struct env *env)
                     sexp = l->body;
                     done = 0; /* "tail call" */       
                 } else {
-                    debug("*(inner sexp)*");
                     struct value *k = eval(h, env);
                     struct value *m = cons(eval(k, env), t);
+                    debug("*(inner sexp)*");
                     return eval(m, env);
                 }
                 break;

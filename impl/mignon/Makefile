@@ -21,7 +21,7 @@ endif
 CFLAGS+= ${WARNS} ${EXTRA_CFLAGS}
 
 ifdef DEBUG
-  CFLAGS+= -g
+  CFLAGS+= -g -DDEBUG
 endif
 
 OBJS=	sexp${O} parse${O} eval${O} main${O}
