@@ -16,18 +16,15 @@ int main(int argc, char **argv)
 
     while (!done) {
         state = parse_resumable(state);
-        /*dump_pstate(state);*/
+#ifdef DEBUG
+        dump_pstate(state);
+#endif
         if (state->status == P_DONE) {
-            /*
+#ifdef DEBUG
             printf("Program: ");
             dump(state->result);
             printf("\n");
-            */
-            /*
-            struct estate *estate = push_estate(NULL, env, state->result);
-            estate = eval_resumable(estate);
-            dump(estate->result);
-            */
+#endif
             dump(eval(state->result, env));
             printf("\n");
             done = 1;

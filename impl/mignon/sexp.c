@@ -9,17 +9,12 @@ struct atom *atom_list;
 
 struct value *nil;
 
-/* for gc */
-struct value *chain = NULL;
-
 struct value *cons(struct value *h, struct value *t)
 {
     struct cons *c = malloc(sizeof *c);
     c->type = V_CONS;
-    c->chain = chain;
     c->head = h;
     c->tail = t;
-    chain = (struct value *)c;
     return (struct value *)c;
 }
 
@@ -55,7 +50,6 @@ struct value *atom(const char *s)
     if (a == NULL) {
         a = malloc(sizeof *a);
         a->type = V_ATOM;
-        a->chain = NULL; /* atoms are not GC'ed */
         a->string = malloc(strlen(s) + 1);
         strcpy(a->string, s);
         a->next = atom_list;
@@ -68,11 +62,9 @@ struct value *lambda(struct env *env, struct value *formals, struct value *body)
 {
     struct lambda *l = malloc(sizeof *l);
     l->type = V_LAMBDA;
-    l->chain = chain;
     l->env = env;
     l->formals = formals;
     l->body = body;
-    chain = (struct value *)l;
     return (struct value *)l;
 }
 

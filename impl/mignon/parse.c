@@ -51,7 +51,9 @@ struct pstate *parse_resumable(struct pstate *state)
 {
     int done = 0;
     while (!done) {
-        /* dump_pstate(state); */
+#ifdef DEBUG
+        dump_pstate(state);
+#endif
         switch (state->status) {
             case P_START:
             {
