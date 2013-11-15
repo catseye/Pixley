@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # scheme-adapter.sh wrapper to support the Chicken Scheme interpreter
+# http://www.call-cc.org/
 
 echo -n '' >tmpprog.scm
 cat $1 >>tmpprog.scm
