@@ -7,18 +7,6 @@
  * requires yoob.SexpParser
  */
 
-var pixleyCar = function(args) {
-    return args[0].head;
-};
-
-var pixleyCdr = function(args) {
-    return args[0].tail;
-};
-
-var pixleyCons = function(args) {
-    return new yoob.Cons(args[0], args[1]);
-};
-
 var evalList = function(sexp, env) {
     args = [];
     while (sexp !== null) {
@@ -33,7 +21,6 @@ var evalList = function(sexp, env) {
 };
 
 var evalPixley = function(ast, env) {
-    alert('evaling ' + depict(ast));
     if (ast === null) {
         return null;
     } else if (ast instanceof yoob.Cons) {
@@ -41,7 +28,15 @@ var evalPixley = function(ast, env) {
         var fn;
         if (head instanceof yoob.Atom) {
             if (head.text === 'quote') {
-                return ast.tail;
+                return ast.tail.head;
+            } else if (head.text === 'car') {
+                return evalPixley(ast.tail.head).head;
+            } else if (head.text === 'cdr') {
+                return evalPixley(ast.tail.head).tail;
+            } else if (head.text === 'cons') {
+                var a = evalPixley(ast.tail.head);
+                var b = evalPixley(ast.tail.tail.head);
+                return new yoob.Cons(a, b);
             } else {
                 fn = evalPixley(ast.head, env);
             }
@@ -56,7 +51,7 @@ var evalPixley = function(ast, env) {
         }
         return env[ast.text];
     } else {
-        alert('wait what, not a yoob.Cons or yoob.Atom: ' + ast.toString());
+        alert('wait what, not a yoob.Cons or yoob.Atom: ' + depict(ast));
     }
 };
 
@@ -76,12 +71,7 @@ function PixleyController() {
 
     this.step = function() {
         if (finished) return;
-        var env = {
-            'car': pixleyCar,
-            'cdr': pixleyCdr,
-            'cons': pixleyCons
-        };
-        result = evalPixley(this.ast, env);
+        result = evalPixley(this.ast, {});
         alert(depict(result));
         finished = true;
         this.draw();
