@@ -7,6 +7,23 @@
  * requires yoob.SexpParser
  */
 
+var listP = function(sexp) {
+    if (sexp === null) return true;
+    if (!(sexp instanceof yoob.Cons)) return false;
+    return listP(sexp.tail);
+};
+
+var equalP = function(a, b) {
+    if (a === null && b == null) return true;
+    if (a instanceof yoob.Atom && b instanceof yoob.Atom && a.text === b.text) {
+        return true;
+    }
+    if (a instanceof yoob.Cons && b instanceof yoob.Cons) {
+        return equalP(a.head, b.head) && equalP(a.tail, b.tail);
+    }
+    return false;
+};
+
 var evalList = function(sexp, env) {
     args = [];
     while (sexp !== null) {
@@ -37,6 +54,22 @@ var evalPixley = function(ast, env) {
                 var a = evalPixley(ast.tail.head);
                 var b = evalPixley(ast.tail.tail.head);
                 return new yoob.Cons(a, b);
+            } else if (head.text === 'list?') {
+                var a = evalPixley(ast.tail.head);
+                return new yoob.Atom(listP(a) ? '#t' : '#f');
+            } else if (head.text === 'equal?') {
+                var a = evalPixley(ast.tail.head);
+                var b = evalPixley(ast.tail.tail.head);
+                return new yoob.Atom(equalP(a, b) ? '#t' : '#f');
+            } else if (head.text === 'let*') {
+                alert('not implemented');
+                return head;
+            } else if (head.text === 'cond') {
+                alert('not implemented');
+                return head;
+            } else if (head.text === 'lambda') {
+                alert('not implemented');
+                return head;
             } else {
                 fn = evalPixley(ast.head, env);
             }

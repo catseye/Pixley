@@ -38,7 +38,8 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
   <span id="select_source_container">
     <select id="select_source">
       <option>(select one...)</option>
-      <option>silly-little-thing</option>
+      <option>equality-test</option>
+      <option>list-test</option>
     </select>
   </span>
 </div>
@@ -48,8 +49,11 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
 <textarea id="program" rows="25" cols="40"
 >(cons (quote a) (cons (quote b) ())</textarea>
 
-<div id="silly-little-thing" style="display: none;"
->(cons (quote foo) (cons (quote bar) ())</div>
+<div id="equality-test" style="display: none;"
+>(equal? (quote foo) (quote foo))</div>
+
+<div id="list-test" style="display: none;"
+>(list? (quote foo))</div>
 
 </body>
 <script src="../src/yoob/controller.js"></script>
