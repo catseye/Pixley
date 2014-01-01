@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Pixley</title>
+  <style>
+#info { float: right; }
+  </style>
+</head>
+<body>
+
+<p id="info">
+Pixley on:
+<a href="http://catseye.tc/node/Pixley">catseye.tc</a> |
+<a href="https://github.com/catseye/Pixley">github</a>
+</p>
+
+<h1>Pixley</h1>
+
+<button id="load">Load</button>
+<button id="edit">Edit</button>
+<button id="start">Start</button>
+<button id="stop">Stop</button>
+<button id="step">Step</button>
+Speed: <input id="speed" type="range" min="0" max="200" value="0" />
+
+<div>
+  example source:
+  <span id="select_source_container">
+    <select id="select_source">
+      <option>(select one...)</option>
+      <option>silly-little-thing</option>
+    </select>
+  </span>
+</div>
+
+<textarea id="program" rows="25" cols="40">
+</textarea>
+
+<div id="silly-little-thing" style="display: none;"
+>(cons (quote a) (cons (quote b) ())</div>
+
+</body>
+<script src="../src/yoob/controller.js"></script>
+<script src="../src/yoob/tree.js"></script>
+<script src="../src/yoob/scanner.js"></script>
+<script src="../src/yoob/sexp-parser.js"></script>
+<script src="../src/pixley.js"></script>
+<script>
+  var c = new PixleyController();
+  c.init(); // document.getElementById('canvas'));
+  c.connect({
+    'start': 'start',
+    'stop': 'stop',
+    'step': 'step',
+    'load': 'load',
+    'edit': 'edit',
+    'speed': 'speed',
+    'select': 'select_source',
+    'source': 'program',
+    'display': undefined
+  });
+  c.click_load();
+</script>
