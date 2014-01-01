@@ -4,6 +4,16 @@
   <title>Pixley</title>
   <style>
 #info { float: right; }
+#program { display: none; }
+#load { display: none; }
+#stop { display: none; }
+#step { display: none; }
+#speed { display: none; }
+#display {
+    color: white;
+    background: blue;
+    border: 1px solid green;
+}
   </style>
 </head>
 <body>
@@ -33,11 +43,13 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
   </span>
 </div>
 
-<textarea id="program" rows="25" cols="40">
-</textarea>
+<pre id="display"></pre>
+
+<textarea id="program" rows="25" cols="40"
+>(cons (quote a) (cons (quote b) ())</textarea>
 
 <div id="silly-little-thing" style="display: none;"
->(cons (quote a) (cons (quote b) ())</div>
+>(cons (quote foo) (cons (quote bar) ())</div>
 
 </body>
 <script src="../src/yoob/controller.js"></script>
@@ -57,7 +69,7 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
     'speed': 'speed',
     'select': 'select_source',
     'source': 'program',
-    'display': undefined
+    'display': 'display'
   });
   c.click_load();
 </script>

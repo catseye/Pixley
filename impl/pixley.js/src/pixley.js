@@ -9,14 +9,18 @@
 
 function PixleyController() {
     var intervalId;
-    var program;
 
     this.init = function(c) {
-        this.load("");
+        this.ast = undefined;
     };
 
     this.draw = function() {
-        ;
+        var display = document.getElementById('display');
+        var c = ''
+        if (this.ast) {
+            c = this.ast.toString();
+        }
+        display.innerHTML = c;
     };
 
     this.step = function() {
@@ -24,7 +28,14 @@ function PixleyController() {
     };
 
     this.load = function(text) {
-        program = text;
+        var p = new yoob.SexpParser();
+        p.init(text);
+        this.ast = p.parse();
+        if (this.ast) {
+            // alert(this.ast.toString());
+        } else {
+            alert("Can't parse your Pixley program");
+        }
         this.draw();
     };
 };
