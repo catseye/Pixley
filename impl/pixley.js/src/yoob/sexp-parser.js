@@ -7,9 +7,50 @@ if (window.yoob === undefined) yoob = {};
 
 /*
  * A simple S-expression parser.
+ * WHOA, MODIFIED FROM THE yoob.js STOCK VERSION, A LOT
  *
  * requires you load yoob.Tree and yoob.Scanner first
  */
+var depict = function(sexp) {
+    var s = '';
+    if (sexp instanceof yoob.Cons) {
+        s += '(';
+        s += depict(sexp.head);
+        while (sexp.tail instanceof yoob.Cons) {
+            s += ' ';
+            s += depict(sexp.tail.head);
+            sexp = sexp.tail;
+        }
+        s += ')';
+        return s;
+    } else if (sexp instanceof yoob.Atom) {
+        return sexp.text;
+    } else if (sexp === undefined) {
+        return 'undefined';
+    } else if (sexp === null) {
+        return '()';
+    } else {
+        return '???' + sexp.toString();
+    }
+};
+
+yoob.Atom = function(text) {
+  this.text = text;
+  
+  this.toString = function() {
+    return this.text;
+  }
+};
+
+yoob.Cons = function(head, tail) {
+  this.head = head;
+  this.tail = tail;
+
+  this.toString = function() {
+    return depict(this);
+  }
+};
+
 yoob.SexpParser = function() {
   this.scanner = undefined;
 
@@ -29,14 +70,21 @@ yoob.SexpParser = function() {
     if (this.scanner.onType('atom')) {
       var x = this.scanner.token;
       this.scanner.scan();
-      return (new yoob.Tree('atom')).setValue(x);
+      return new yoob.Atom(x);
     } else if (this.scanner.consume('(')) {
-      var children = []
-      while (!this.scanner.on(')') && !this.scanner.onType('EOF')) {
-        children.push(this.parse());
+      if (this.scanner.consume(')') || this.scanner.onType('EOF')) {
+        return null;
       }
-      this.scanner.expect(')');
-      return new yoob.Tree('list', children);
+      
+      var top = new yoob.Cons(null, null);
+      top.head = this.parse();
+      var cell = top;
+      while (!this.scanner.consume(')') && !this.scanner.onType('EOF')) {
+        cell.tail = new yoob.Cons(null, null);
+        cell = cell.tail;
+        cell.head = this.parse();
+      }
+      return top;
     } else {
       /* register some kind of error */
       this.scanner.scan();

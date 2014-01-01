@@ -7,56 +7,56 @@
  * requires yoob.SexpParser
  */
 
-var depict = function(sexp) {
-    var s = '';
-    if (sexp instanceof yoob.Tree) {
-        if (sexp.type === 'list') {
-            s += '(';
-            var len = sexp.children.length;
-            for (var i = 0; i < len; i++) {
-                s += depict(sexp.children[i]);
-                if (i < (len - 1)) s += ' ';
-            }
-            s += ')';
-            return s;
-        } else if (sexp.type === 'atom') {
-            return sexp.value;
-        } else {
-            alert('wait what');
+var pixleyCar = function(args) {
+    return args[0].head;
+};
+
+var pixleyCdr = function(args) {
+    return args[0].tail;
+};
+
+var pixleyCons = function(args) {
+    return new yoob.Cons(args[0], args[1]);
+};
+
+var evalList = function(sexp, env) {
+    args = [];
+    while (sexp !== null) {
+        if (!sexp instanceof yoob.Cons) {
+            alert('assertion failed: not a yoob.Cons');
+            return [];
         }
-    } else {
-        return '???' + sexp.toString();
+        args.push(evalPixley(sexp.head, env));
+        sexp = sexp.tail;
     }
-};
-
-var pixleyCar = function(sexp) {
-    return sexp.children[0];
-};
-
-var pixleyCdr = function(sexp) {
-    return sexp.children[0];
-};
-
-var pixleyCons = function(sexp) {
-    return new yoob.Tree('list', [sexp, sexp]);
+    return args;
 };
 
 var evalPixley = function(ast, env) {
-    if (ast instanceof yoob.Tree) {
-        if (ast.type === 'list') {
-            if (ast.children.length == 0) {
-                return ast;
+    alert('evaling ' + depict(ast));
+    if (ast === null) {
+        return null;
+    } else if (ast instanceof yoob.Cons) {
+        var head = ast.head;
+        var fn;
+        if (head instanceof yoob.Atom) {
+            if (head.text === 'quote') {
+                return ast.tail;
+            } else {
+                fn = evalPixley(ast.head, env);
             }
-            var head = evalPixley(ast.children[0], env);
-            var tail = ast.children[1];
-            return head(tail, env);
-        } else if (ast.type === 'atom') {
-            return env[ast.value];
         } else {
-            alert('wait what');
+            fn = evalPixley(ast.head, env);
         }
+        args = evalList(ast.tail, env);
+        return fn(args);
+    } else if (ast instanceof yoob.Atom) {
+        if (env[ast.text] === undefined) {
+            alert('Unbound identifier: ' + ast.text);
+        }
+        return env[ast.text];
     } else {
-        alert('wait what, not a yoob.Tree');
+        alert('wait what, not a yoob.Cons or yoob.Atom: ' + ast.toString());
     }
 };
 
@@ -71,11 +71,7 @@ function PixleyController() {
 
     this.draw = function() {
         var display = document.getElementById('display');
-        var c = ''
-        if (this.ast) {
-            c = depict(this.ast);
-        }
-        display.innerHTML = c;
+        display.innerHTML = depict(this.ast);
     };
 
     this.step = function() {
