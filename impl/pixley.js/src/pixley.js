@@ -9,9 +9,11 @@
 
 function PixleyController() {
     var intervalId;
+    var finished;
 
     this.init = function(c) {
         this.ast = undefined;
+        finished = false;
     };
 
     this.draw = function() {
@@ -24,6 +26,10 @@ function PixleyController() {
     };
 
     this.step = function() {
+        if (finished) return;
+        result = this.evalPixley(this.ast);
+        alert(result.toString());
+        finished = true;
         this.draw();
     };
 
@@ -33,10 +39,26 @@ function PixleyController() {
         this.ast = p.parse();
         if (this.ast) {
             // alert(this.ast.toString());
+            finished = false;
         } else {
             alert("Can't parse your Pixley program");
+            finished = true;
         }
         this.draw();
+    };
+    
+    this.evalPixley = function(ast) {
+        if (ast instanceof yoob.Tree) {
+            if (ast.type === 'list') {
+                return ast;
+            } else if (ast.type === 'atom') {
+                return ast.value;
+            } else {
+                alert('wait what');
+            }
+        } else {
+            alert('wait what, not a yoob.Tree');
+        }
     };
 };
 PixleyController.prototype = new yoob.Controller();
