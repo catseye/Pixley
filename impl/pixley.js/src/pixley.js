@@ -242,7 +242,7 @@ var bindAll = function(bindings, env) {
 };
 
 var evalList = function(sexp, env) {
-    args = [];
+    var args = [];
     while (sexp !== null) {
         if (!sexp instanceof Cons) {
             errorHandler.error('assertion failed: not a Cons');
@@ -256,13 +256,15 @@ var evalList = function(sexp, env) {
 
 var extendEnv = function(env, formals, actuals) {
     var sexp = formals;
+    var newEnv = cloneEnv(env);
     for (var i = 0; i < actuals.length; i++) {
         var value = actuals[i];
         var identifier = sexp.head.text;
         // console.log(identifier + ' = ' + depict(value));
-        env[identifier] = value;
+        newEnv[identifier] = value;
         sexp = sexp.tail;
     }
+    return newEnv;
 };
 
 var evalPixley = function(ast, env) {
@@ -317,11 +319,8 @@ var evalPixley = function(ast, env) {
             } else if (head.text === 'lambda') {
                 var formals = ast.tail.head;
                 var body = ast.tail.tail.head;
-                var closedEnv = env;
-                var f = function(args, outerEnv) {
-                    var evalEnv = cloneEnv(closedEnv);
-                    extendEnv(evalEnv, formals, args);
-                    return evalPixley(body, evalEnv);
+                var f = function(args) {
+                    return evalPixley(body, extendEnv(env, formals, args));
                 };
                 return f;
             } else {

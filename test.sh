@@ -78,7 +78,7 @@ falderal test config.markdown src/tests.markdown
 echo "Testing Pixley programs on Pixley interpreter on [${PIXLEY_IMPL}]..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
-    -> "SCHEME_IMPL=${SCHEME_IMPL} FINAL_SCHEME_IMPL=${PIXLEY_IMPL} script/tower.sh src/pixley.pix %(test-file)"
+    -> "SCHEME_IMPL=${SCHEME_IMPL} FINAL_SCHEME_IMPL=${PIXLEY_IMPL} script/tower.sh $PIXLEY_PIX %(test-file)"
 EOF
 falderal test config.markdown src/tests.markdown
 
@@ -94,7 +94,7 @@ falderal test config.markdown src/tests.markdown
 echo "Testing Pixley programs on Pixley interpreter on Pixley interpreter on [${PIXLEY_IMPL}]..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
-    -> "SCHEME_IMPL=${SCHEME_IMPL} FINAL_SCHEME_IMPL=${PIXLEY_IMPL} script/tower.sh src/pixley.pix src/pixley.pix %(test-file)"
+    -> "SCHEME_IMPL=${SCHEME_IMPL} FINAL_SCHEME_IMPL=${PIXLEY_IMPL} script/tower.sh $PIXLEY_PIX $PIXLEY_PIX %(test-file)"
 EOF
 falderal test config.markdown src/tests.markdown
 

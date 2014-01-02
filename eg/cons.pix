@@ -1,0 +1,1 @@
+(cons (quote thing) (quote (rest)))
