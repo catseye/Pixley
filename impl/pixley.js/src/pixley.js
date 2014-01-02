@@ -261,6 +261,7 @@ var extendEnv = function(env, formals, actuals) {
         var identifier = sexp.head.text;
         // console.log(identifier + ' = ' + depict(value));
         env[identifier] = value;
+        sexp = sexp.tail;
     }
 };
 
@@ -329,8 +330,7 @@ var evalPixley = function(ast, env) {
         } else {
             fn = evalPixley(ast.head, env);
         }
-        args = evalList(ast.tail, env);
-        return fn(args);
+        return fn(evalList(ast.tail, env));
     } else if (ast instanceof Atom) {
         if (env[ast.text] === undefined) {
             errorHandler.error('Unbound identifier: ' + ast.text);
