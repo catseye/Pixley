@@ -2,12 +2,13 @@
  * requires yoob.Controller and pixley.js
  */
 function PixleyController() {
-    var intervalId;
     var finished;
+    var status = document.getElementById('status');
 
     this.init = function(c) {
         this.ast = undefined;
         finished = false;
+        status.innerHTML = 'Ready.';
     };
 
     this.draw = function() {
@@ -17,9 +18,11 @@ function PixleyController() {
 
     this.step = function() {
         if (finished) return;
-        result = evalPixley(this.ast, {});
+        status.innerHTML = 'Evaluating...';
+        var result = evalPixley(this.ast, {});
         alert(depict(result));
         finished = true;
+        status.innerHTML = 'Done.';
         this.draw();
     };
 
@@ -35,6 +38,12 @@ function PixleyController() {
             finished = true;
         }
         this.draw();
+    };
+
+    this.wrapIt = function() {
+        var pixley = document.getElementById('pixley-interpreter').innerHTML;
+        var text = '(' + pixley + ' (quote ' + depict(this.ast) + '))';
+        this.load(text);
     };
 };
 PixleyController.prototype = new yoob.Controller();
