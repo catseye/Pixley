@@ -38,70 +38,87 @@ Atomic symbols may contain letters, `*`s, `?`s, and `-`s.
 Predicates and Types
 --------------------
 
-Because booleans don't actually have a defined representation in
-Pixley, the next few tests are cheating a bit, relying on Scheme's
-defined representation for booleans instead.  This would be easy
-to fix up, but a bit tedious: just wrap each of these in
-
-    (cond (... (quote true)) (else (quote false)))
-
 `equal?` works on symbols.
 
+    | (cond (
     | (equal? (quote a) (quote a))
-    = #t
+    |   (quote true)) (else (quote false)))
+    = true
 
+    | (cond (
     | (equal? (quote a) (quote b))
-    = #f
+    |   (quote true)) (else (quote false)))
+    = false
 
 `equal?` works on lists.
 
+    | (cond (
     | (equal? (quote (one (two three)))
     |         (cons (quote one) (quote ((two three)))))
-    = #t
+    |   (quote true)) (else (quote false)))
+    = true
 
 A symbol is not a list.
 
+    | (cond (
     | (list? (quote a))
-    = #f
+    |   (quote true)) (else (quote false)))
+    = false
 
 A list whose final cons cell's tail contains a null, is a list.
 
+    | (cond (
     | (list? (cons (quote a) (quote ())))
-    = #t
+    |   (quote true)) (else (quote false)))
+    = true
 
+    | (cond (
     | (list? (quote (a b c d e f)))
-    = #t
+    |   (quote true)) (else (quote false)))
+    = true
 
 A pair is not a list.
 
 Actually, pairs aren't defined at all in Pixley, so I wouldn't
 blame an implementation for just freaking out at this one.
 
+    | (cond (
     | (list? (cons (quote a) (quote b)))
-    = #f
+    |   (quote true)) (else (quote false)))
+    = false
 
 Booleans are not lists.
 
+    | (cond (
     | (list? (equal? (quote a) (quote b)))
-    = #f
+    |   (quote true)) (else (quote false)))
+    = false
 
 Lambda functions are not lists.
 
+    | (cond (
     | (list? (lambda (x y) (y x)))
-    = #f
+    |   (quote true)) (else (quote false)))
+    = false
 
 But the empty list is a list.
 
+    | (cond (
     | (list? (quote ()))
-    = #t
+    |   (quote true)) (else (quote false)))
+    = true
 
+    | (cond (
     | (list? (cdr (quote (foo))))
-    = #t
+    |   (quote true)) (else (quote false)))
+    = true
 
 The empty list can be expressed as `(quote ())`.
 
+    | (cond (
     | (equal? (cdr (quote (foo))) (quote ()))
-    = #t
+    |   (quote true)) (else (quote false)))
+    = true
 
 Binding to Names
 ----------------

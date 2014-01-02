@@ -45,4 +45,4 @@ SCHEME_IMPL=${FINAL_SCHEME_IMPL} ${SCRIPTDIR}/scheme-adapter.sh /dev/null next.s
 
 ### Clean up ###
 
-#rm -f init.scm next.scm program.scm expression.scm
+rm -f init.scm next.scm program.scm expression.scm
