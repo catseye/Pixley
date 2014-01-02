@@ -3,6 +3,13 @@
  * (almost.)
  */
 
+var ErrorHandler = function() {
+    this.error = function(x) {
+        console.error(x);
+    };
+};
+var errorHandler = new ErrorHandler();
+
 /*
  * Our lexical scanner.  This is a straight copy of the yoob.Scanner object
  * from yoob.js 0.3, pasted in here for convenience.
@@ -201,7 +208,7 @@ var equalP = function(a, b) {
 };
 
 var bind = function(identifier, value, env) {
-    // alert('let ' + depict(identifier) + ' = ' + depict(value));
+    // console.log('let ' + depict(identifier) + ' = ' + depict(value));
     var newEnv = {};
     for (var key in env) {
         newEnv[key] = env[key];
@@ -224,7 +231,7 @@ var evalList = function(sexp, env) {
     args = [];
     while (sexp !== null) {
         if (!sexp instanceof Cons) {
-            alert('assertion failed: not a Cons');
+            errorHandler.error('assertion failed: not a Cons');
             return [];
         }
         args.push(evalPixley(sexp.head, env));
@@ -279,11 +286,19 @@ var evalPixley = function(ast, env) {
                         branch = branch.tail;
                     }
                 }
-                alert('no else in cond');
+                errorHandler.error('no else in cond');
                 return head;
             } else if (head.text === 'lambda') {
-                alert('not implemented');
-                return head;
+                var formals = ast.tail.head;
+                var body = ast.tail.tail.head;
+                var closedEnv = env;
+                var f = function(args, outerEnv) {
+                    var evalEnv = closedEnv; /* TODO clone */
+                    var evaledArgs = args; /* TODO evalArgs(args, formals, outerEnv); */
+                    /* TODO extend evalEnv with args */
+                    return evalPixley(body, evalEnv);
+                };
+                return f;
             } else {
                 fn = evalPixley(ast.head, env);
             }
@@ -294,11 +309,11 @@ var evalPixley = function(ast, env) {
         return fn(args);
     } else if (ast instanceof Atom) {
         if (env[ast.text] === undefined) {
-            alert('Unbound identifier: ' + ast.text);
+            errorHandler.error('Unbound identifier: ' + ast.text);
         }
         return env[ast.text];
     } else {
-        alert('wait what, not a Cons or Atom: ' + depict(ast));
+        errorHandler.error('not a Cons or Atom: ' + depict(ast));
     }
 };
 

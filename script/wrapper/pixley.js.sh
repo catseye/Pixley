@@ -23,5 +23,5 @@ if [ ! "${DEBUG}x" = "x" ]; then
     less driver.js
 fi
 
-node driver.js
+node driver.js 2>&1
 rm -f driver.js
