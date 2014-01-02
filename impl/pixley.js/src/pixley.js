@@ -301,3 +301,14 @@ var evalPixley = function(ast, env) {
         alert('wait what, not a Cons or Atom: ' + depict(ast));
     }
 };
+
+var runPixley = function(text) {
+    var p = new SexpParser();
+    p.init(text);
+    var ast = p.parse();
+    if (ast) {
+        return evalPixley(ast, {});
+    } else {
+        return undefined;
+    }
+};
