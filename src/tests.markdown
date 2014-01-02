@@ -15,6 +15,11 @@ the cons cell whose head is `quote`.
     | (quote (quote quote))
     = (quote quote)
 
+Atomic symbols may contain letters, `*`s, `?`s, and `-`s.
+
+    | (quote abcdef-ghijklm*nopqrst?uvwxyz)
+    = abcdef-ghijklm*nopqrst?uvwxyz
+
 `cons` lets you create a list from some thing and another list.
 
     | (cons (quote thing) (quote (rest)))

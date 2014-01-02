@@ -152,7 +152,7 @@ var SexpParser = function() {
     this.scanner = new Scanner();
     this.scanner.init([
       ['paren',  "^(\\(|\\))"],
-      ['atom',   "^([a-zA-Z\\?\\*][a-zA-Z0-9\\?\\*]*)"]
+      ['atom',   "^([a-zA-Z\\?\\*\\-][a-zA-Z0-9\\?\\*\\-]*)"]
     ]);
     this.scanner.reset(text);
   };
