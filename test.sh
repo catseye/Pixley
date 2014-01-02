@@ -3,14 +3,17 @@
 if [ "${SCHEME_IMPL}x" = "x" ]; then
     export SCHEME_IMPL=plt-r5rs
 fi
+if [ `which ${SCHEME_IMPL}`x = "x" ]; then
+    echo "Your selected Scheme implementation, $SCHEME_IMPL, was not found."
+    exit 1
+fi
 
 if [ "${PIXLEY_IMPL}x" = "x" ]; then
     export PIXLEY_IMPL=haney
 fi
 
-if [ `which ${SCHEME_IMPL}`x = "x" ]; then
-    echo "Your selected Scheme implementation, $SCHEME_IMPL, was not found."
-    exit 1
+if [ "${PIXLEY_PIX}x" = "x" ]; then
+    export PIXLEY_PIX=src/pixley.pix
 fi
 
 if [ `which realpath`x = "x" ]; then
@@ -24,7 +27,7 @@ cat >expected.sexp <<EOF
 EOF
 script/tower.sh eg/simple.pix > out.sexp
 diff -u expected.sexp out.sexp
-script/tower.sh src/pixley.pix eg/simple.pix > out.sexp
+script/tower.sh $PIXLEY_PIX eg/simple.pix > out.sexp
 diff -u expected.sexp out.sexp
 rm -f expected.sexp out.sexp
 cat >expected.sexp <<EOF
@@ -32,7 +35,7 @@ cat >expected.sexp <<EOF
 EOF
 script/tower.sh eg/reverse.pix eg/some-list.sexp > out.sexp
 diff -u expected.sexp out.sexp
-script/tower.sh src/pixley.pix eg/reverse.pix eg/some-list.sexp > out.sexp
+script/tower.sh $PIXLEY_PIX eg/reverse.pix eg/some-list.sexp > out.sexp
 diff -u expected.sexp out.sexp
 rm -f expected.sexp out.sexp
 
@@ -67,7 +70,7 @@ falderal test config.markdown src/tests.markdown
 echo "Testing Pixley programs on Pixley interpreter on [${SCHEME_IMPL}]..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
-    -> "script/tower.sh src/pixley.pix %(test-file)"
+    -> "script/tower.sh $PIXLEY_PIX %(test-file)"
 EOF
 falderal test config.markdown src/tests.markdown
 
@@ -83,7 +86,7 @@ falderal test config.markdown src/tests.markdown
 echo "Testing Pixley programs on Pixley interpreter on Pixley interpreter on [${SCHEME_IMPL}]..."
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
-    -> "script/tower.sh src/pixley.pix src/pixley.pix %(test-file)"
+    -> "script/tower.sh $PIXLEY_PIX $PIXLEY_PIX %(test-file)"
 EOF
 falderal test config.markdown src/tests.markdown
 
@@ -103,7 +106,7 @@ falderal test config.markdown src/tests.markdown
 #echo "Testing Pixley programs on (Pixley reference interpreter)^3..."
 #cat >config.markdown <<EOF
 #    -> Functionality "Interpret Pixley Program" is implemented by shell command
-#    -> "script/tower.sh src/pixley.pix src/pixley.pix src/pixley.pix %(test-file)"
+#    -> "script/tower.sh $PIXLEY_PIX $PIXLEY_PIX $PIXLEY_PIX %(test-file)"
 #EOF
 #falderal test config.markdown src/tests.markdown
 
@@ -114,7 +117,7 @@ falderal test config.markdown src/tests.markdown
 #echo "Testing Pixley programs on (Pixley reference interpreter)^4..."
 #cat >config.markdown <<EOF
 #    -> Functionality "Interpret Pixley Program" is implemented by shell command
-#    -> "script/tower.sh src/pixley.pix src/pixley.pix src/pixley.pix src/pixley.pix %(test-file)"
+#    -> "script/tower.sh $PIXLEY_PIX $PIXLEY_PIX $PIXLEY_PIX $PIXLEY_PIX %(test-file)"
 #EOF
 #time falderal test config.markdown src/tests.markdown
 
@@ -124,7 +127,7 @@ falderal test dialect/P-Normal.markdown
 
 
 echo "P-Normalizing Pixley interpreter..."
-script/tower.sh src/pixley.pix dialect/p-normal.pix src/pixley.pix > src/p-normal-pixley.pix
+script/tower.sh $PIXLEY_PIX dialect/p-normal.pix $PIXLEY_PIX > src/p-normal-pixley.pix
 cat >config.markdown <<EOF
     -> Functionality "Interpret Pixley Program" is implemented by shell command
     -> "script/tower.sh src/p-normal-pixley.pix %(test-file)"
