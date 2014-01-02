@@ -58,7 +58,7 @@ yoob.SexpParser = function() {
     this.scanner = new yoob.Scanner();
     this.scanner.init([
       ['paren',  "^(\\(|\\))"],
-      ['atom',   "^([a-zA-Z\\?][a-zA-Z0-9\\?]*)"]
+      ['atom',   "^([a-zA-Z\\?\\*][a-zA-Z0-9\\?\\*]*)"]
     ]);
     this.scanner.reset(text);
   };

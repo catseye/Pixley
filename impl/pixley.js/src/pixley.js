@@ -24,6 +24,26 @@ var equalP = function(a, b) {
     return false;
 };
 
+var bind = function(identifier, value, env) {
+    // alert('let ' + depict(identifier) + ' = ' + depict(value));
+    var newEnv = {};
+    for (var key in env) {
+        newEnv[key] = env[key];
+    }
+    newEnv[identifier] = value;
+    return newEnv;
+};
+
+var bindAll = function(bindings, env) {
+    while (bindings !== null) {
+        binding = bindings.head;
+        value = evalPixley(binding.tail.head, env);
+        env = bind(binding.head, value, env);
+        bindings = bindings.tail;
+    }
+    return env;
+};
+
 var evalList = function(sexp, env) {
     args = [];
     while (sexp !== null) {
@@ -47,23 +67,25 @@ var evalPixley = function(ast, env) {
             if (head.text === 'quote') {
                 return ast.tail.head;
             } else if (head.text === 'car') {
-                return evalPixley(ast.tail.head).head;
+                return evalPixley(ast.tail.head, env).head;
             } else if (head.text === 'cdr') {
-                return evalPixley(ast.tail.head).tail;
+                return evalPixley(ast.tail.head, env).tail;
             } else if (head.text === 'cons') {
-                var a = evalPixley(ast.tail.head);
-                var b = evalPixley(ast.tail.tail.head);
+                var a = evalPixley(ast.tail.head, env);
+                var b = evalPixley(ast.tail.tail.head, env);
                 return new yoob.Cons(a, b);
             } else if (head.text === 'list?') {
-                var a = evalPixley(ast.tail.head);
+                var a = evalPixley(ast.tail.head, env);
                 return new yoob.Atom(listP(a) ? '#t' : '#f');
             } else if (head.text === 'equal?') {
-                var a = evalPixley(ast.tail.head);
-                var b = evalPixley(ast.tail.tail.head);
+                var a = evalPixley(ast.tail.head, env);
+                var b = evalPixley(ast.tail.tail.head, env);
                 return new yoob.Atom(equalP(a, b) ? '#t' : '#f');
             } else if (head.text === 'let*') {
-                alert('not implemented');
-                return head;
+                var bindings = ast.tail.head;
+                var body = ast.tail.tail.head;
+                var newEnv = bindAll(bindings, env);
+                return evalPixley(body, newEnv);
             } else if (head.text === 'cond') {
                 alert('not implemented');
                 return head;
