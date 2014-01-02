@@ -207,12 +207,17 @@ var equalP = function(a, b) {
     return false;
 };
 
-var bind = function(identifier, value, env) {
-    // console.log('let ' + depict(identifier) + ' = ' + depict(value));
+var cloneEnv = function(env) {
     var newEnv = {};
     for (var key in env) {
         newEnv[key] = env[key];
     }
+    return newEnv;
+};
+
+var bind = function(identifier, value, env) {
+    // console.log('let ' + depict(identifier) + ' = ' + depict(value));
+    var newEnv = cloneEnv(env);
     newEnv[identifier] = value;
     return newEnv;
 };
@@ -238,6 +243,16 @@ var evalList = function(sexp, env) {
         sexp = sexp.tail;
     }
     return args;
+};
+
+var extendEnv = function(env, formals, actuals) {
+    var sexp = formals;
+    for (var i = 0; i < actuals.length; i++) {
+        var value = actuals[i];
+        var identifier = sexp.head.text;
+        // console.log(identifier + ' = ' + depict(value));
+        env[identifier] = value;
+    }
 };
 
 var evalPixley = function(ast, env) {
@@ -293,9 +308,8 @@ var evalPixley = function(ast, env) {
                 var body = ast.tail.tail.head;
                 var closedEnv = env;
                 var f = function(args, outerEnv) {
-                    var evalEnv = closedEnv; /* TODO clone */
-                    var evaledArgs = args; /* TODO evalArgs(args, formals, outerEnv); */
-                    /* TODO extend evalEnv with args */
+                    var evalEnv = cloneEnv(closedEnv);
+                    extendEnv(evalEnv, formals, args);
                     return evalPixley(body, evalEnv);
                 };
                 return f;

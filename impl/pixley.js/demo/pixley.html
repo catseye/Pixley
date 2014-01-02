@@ -43,6 +43,7 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
       <option>binding-test</option>
       <option>cond-test-1</option>
       <option>cond-test-2</option>
+      <option>lambda-test</option>
     </select>
   </span>
 </div>
@@ -71,6 +72,11 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
   ((equal? (quote b) (quote r)) (quote foo))
   ((equal? (quote b) (quote b)) (quote blah))
   (else (quote bar)))</div>
+
+<div id="lambda-test" style="display: none;"
+>(let*
+  ((pair (lambda (x) (cons x (cons x ())))))
+    (pair (quote (hi there))))</div>
 
 </body>
 <script src="../src/pixley.js"></script>
