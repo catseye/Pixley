@@ -87,7 +87,23 @@ var evalPixley = function(ast, env) {
                 var newEnv = bindAll(bindings, env);
                 return evalPixley(body, newEnv);
             } else if (head.text === 'cond') {
-                alert('not implemented');
+                var branch = ast.tail;
+                while (branch !== null) {
+                    var b = branch.head;
+                    var test = b.head;
+                    if (test instanceof yoob.Atom &&
+                        test.text === 'else') {
+                        return evalPixley(b.tail.head, env);
+                    } else {
+                        var result = evalPixley(test, env);
+                        if (result instanceof yoob.Atom &&
+                            result.text === '#t') {
+                            return evalPixley(b.tail.head, env);
+                        }
+                        branch = branch.tail;
+                    }
+                }
+                alert('no else in cond');
                 return head;
             } else if (head.text === 'lambda') {
                 alert('not implemented');

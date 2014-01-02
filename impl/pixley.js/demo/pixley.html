@@ -41,6 +41,8 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
       <option>equality-test</option>
       <option>list-test</option>
       <option>binding-test</option>
+      <option>cond-test-1</option>
+      <option>cond-test-2</option>
     </select>
   </span>
 </div>
@@ -58,6 +60,17 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
 
 <div id="binding-test" style="display: none;"
 >(let* ((a (quote b)) (c (quote d))) (cons a (cons c ())))</div>
+
+<div id="cond-test-1" style="display: none;"
+>(cond
+  ((equal? (quote b) (quote r)) (quote foo))
+  (else (quote bar)))</div>
+
+<div id="cond-test-2" style="display: none;"
+>(cond
+  ((equal? (quote b) (quote r)) (quote foo))
+  ((equal? (quote b) (quote b)) (quote blah))
+  (else (quote bar)))</div>
 
 </body>
 <script src="../src/yoob/controller.js"></script>
