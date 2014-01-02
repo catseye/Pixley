@@ -40,7 +40,8 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
       <option>(select one...)</option>
       <option>equality-test</option>
       <option>list-test</option>
-      <option>binding-test</option>
+      <option>binding-test-1</option>
+      <option>binding-test-2</option>
       <option>cond-test-1</option>
       <option>cond-test-2</option>
       <option>lambda-test</option>
@@ -59,8 +60,11 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
 <div id="list-test" style="display: none;"
 >(list? (quote foo))</div>
 
-<div id="binding-test" style="display: none;"
+<div id="binding-test-1" style="display: none;"
 >(let* ((a (quote b)) (c (quote d))) (cons a (cons c ())))</div>
+
+<div id="binding-test-2" style="display: none;"
+>(let* ((a (let* ((b (quote c))) b))) a)</div>
 
 <div id="cond-test-1" style="display: none;"
 >(cond

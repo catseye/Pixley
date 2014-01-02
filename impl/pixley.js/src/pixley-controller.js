@@ -38,3 +38,7 @@ function PixleyController() {
     };
 };
 PixleyController.prototype = new yoob.Controller();
+
+errorHandler.error = function(msg) {
+    alert('ERROR! ' + msg);
+}

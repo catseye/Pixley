@@ -52,6 +52,9 @@ cat >config.markdown <<EOF
 EOF
 falderal test config.markdown src/tests.markdown
 
+if [ "x$JUST_THE_BASICS" != "x" ]; then
+    exit 0
+fi
 
 echo "Testing Pixley programs on [${PIXLEY_IMPL}] (via tower.sh)..."
 cat >config.markdown <<EOF

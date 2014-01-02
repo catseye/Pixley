@@ -207,6 +207,15 @@ var equalP = function(a, b) {
     return false;
 };
 
+var depictEnv = function(env) {
+    var s = '{\n';
+    for (var key in env) {
+        s += '  ' + key + ': ' + depict(env[key]) + '\n';
+    }
+    s += '}';
+    return s;
+};
+
 var cloneEnv = function(env) {
     var newEnv = {};
     for (var key in env) {
@@ -224,8 +233,8 @@ var bind = function(identifier, value, env) {
 
 var bindAll = function(bindings, env) {
     while (bindings !== null) {
-        binding = bindings.head;
-        value = evalPixley(binding.tail.head, env);
+        var binding = bindings.head;
+        var value = evalPixley(binding.tail.head, env);
         env = bind(binding.head, value, env);
         bindings = bindings.tail;
     }
@@ -283,6 +292,7 @@ var evalPixley = function(ast, env) {
                 var bindings = ast.tail.head;
                 var body = ast.tail.tail.head;
                 var newEnv = bindAll(bindings, env);
+                // alert(depictEnv(newEnv));
                 return evalPixley(body, newEnv);
             } else if (head.text === 'cond') {
                 var branch = ast.tail;
