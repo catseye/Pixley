@@ -16,7 +16,8 @@ var colourMap = {
 function PixleyDepictor() {
     var canvas;
     var ctx;
-    var margin = 8;
+    var margin = 2;
+    var blockSize = 10;
 
     this.init = function(c) {
         canvas = c;
@@ -69,20 +70,20 @@ function PixleyDepictor() {
                 if (children[i] === null) {
                     continue;
                 }
-                w += children[i].width + margin;
+                w += children[i].width;
                 if (children[i].height + margin * 2 > h) {
                     h = children[i].height + margin * 2;
                 }
             }
 
-            origSexp.width = w + margin;
+            origSexp.width = w + margin * (len + 1);
             origSexp.height = h;
         } else {
             /*
              * Atom.  Fill in width and height.
              */
-            sexp.width = margin;
-            sexp.height = margin;
+            sexp.width = blockSize;
+            sexp.height = blockSize;
         }
     };
 
@@ -116,7 +117,7 @@ function PixleyDepictor() {
             var len = children.length;
             ctx.strokeStyle = "black";
             ctx.lineWidth = 1;
-            ctx.strokeRect(x, y, origSexp.width, origSexp.height);
+            ctx.strokeRect(x - 0.5, y - 0.5, origSexp.width, origSexp.height);
             
             var innerX = x + margin;
             for (var i = 0; i < len; i++) {
@@ -124,7 +125,7 @@ function PixleyDepictor() {
                     continue;
                 }
                 this.depictSexp(innerX, y + margin, children[i]);
-                innerX += children[i].width;
+                innerX += children[i].width + margin;
             }
         } else {
             /*
