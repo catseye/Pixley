@@ -5,7 +5,7 @@ function PixleyController() {
     var finished;
     var status = document.getElementById('status');
 
-    this.init = function(c) {
+    this.init = function() {
         this.ast = undefined;
         finished = false;
         status.innerHTML = 'Ready.';

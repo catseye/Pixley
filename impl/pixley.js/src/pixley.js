@@ -105,7 +105,7 @@ var Atom = function(text) {
   
   this.toString = function() {
     return this.text;
-  }
+  };
 };
 
 var Cons = function(head, tail) {
@@ -114,7 +114,7 @@ var Cons = function(head, tail) {
 
   this.toString = function() {
     return depict(this);
-  }
+  };
 };
 
 var depict = function(sexp) {

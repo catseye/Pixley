@@ -15,6 +15,7 @@
     border: 1px solid green;
     font-family: monospace;
 }
+#canvas { border: 1px solid blue; display: none; }
   </style>
 </head>
 <body>
@@ -49,6 +50,7 @@ Pixley on:
       <option>cond-test-1</option>
       <option>cond-test-2</option>
       <option>lambda-test</option>
+      <option>pixley-interpreter</option>
     </select>
   </span>
 </div>
@@ -216,10 +218,17 @@ Pixley on:
                 (quote illegal-program-error))))))))))
       (interpreter interpreter program (quote ()))))</div>
 
+<button onclick="d.depict(c.ast);">Depict on Canvas</button>
+
+<canvas id="canvas" width="1000" height="400">
+  Your browser doesn't understand what a canvas is.
+</canvas>
+
 </body>
 <script src="../src/pixley.js"></script>
 <script src="../src/yoob/controller.js"></script>
 <script src="../src/pixley-controller.js"></script>
+<script src="../src/pixley-depictor.js"></script>
 <script>
   var c = new PixleyController();
   c.init(); // document.getElementById('canvas'));
@@ -235,4 +244,6 @@ Pixley on:
     'display': 'display'
   });
   c.click_load();
+  var d = new PixleyDepictor();
+  d.init(document.getElementById('canvas'));
 </script>
