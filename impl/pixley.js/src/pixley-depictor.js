@@ -7,7 +7,7 @@
 function PixleyDepictor() {
     var canvas;
     var ctx;
-    var margin = 2;
+    var margin = 3;
     var blockSize = 10;
 
     this.init = function(c) {
@@ -86,11 +86,25 @@ function PixleyDepictor() {
              */
         } else if (sexp.text === undefined) {
             /*
-             * Cons cell.  Find the extents of the children, then derive
+             * Cons cell.
+             * First, determine if it has an atom at its head.
+             */
+            var head = sexp.head;
+            if (head.text !== undefined) { // head entry is an atom
+                sexp.startsWithAtom = true;
+            }
+            /*
+             * Next, find the extents of the children, then derive
              * the extents of the cons cell, and fill them in.
              */
             var children = [];
             var origSexp = sexp;
+            if (sexp.startsWithAtom) {
+                // for the purposes of determining the bounding box size,
+                // skip the head atom, as we'll be drawing the entire list
+                // in that colour.
+                sexp = sexp.tail;
+            }
             while (sexp != null) {
                 children.push(sexp.head);
                 sexp = sexp.tail;
@@ -140,19 +154,25 @@ function PixleyDepictor() {
             /*
              * Cons cell.  Get the list into a more Javascript-y data structure.
              */
-            /*
-            var head = sexp.head;
-            if (head.text === undefined) {
-                alert(head + ' is not an atom');
-            }
-            */
-            var children = [];
             var origSexp = sexp;
+
+            var children = [];
+            if (sexp.startsWithAtom) {
+                sexp = sexp.tail;
+            }
             while (sexp != null) {
                 children.push(sexp.head);
                 sexp = sexp.tail;
             }
             var len = children.length;
+
+            if (origSexp.startsWithAtom) {
+               // If there's a head atom, fill in rect with head atom's colour
+               ctx.fillStyle = this.getColour(origSexp.head.text);
+            } else {
+                ctx.fillStyle = 'white';
+            }
+            ctx.fillRect(x - 0.5, y - 0.5, origSexp.width, origSexp.height);
             ctx.strokeStyle = "black";
             ctx.lineWidth = 1;
             ctx.strokeRect(x - 0.5, y - 0.5, origSexp.width, origSexp.height);
@@ -171,7 +191,7 @@ function PixleyDepictor() {
              */
             var colour = this.getColour(sexp.text);
             ctx.fillStyle = colour;
-            ctx.fillRect(x, y, sexp.width, sexp.height);
+            ctx.fillRect(x - 0.5, y - 0.5, sexp.width, sexp.height);
         }
     };
 };
