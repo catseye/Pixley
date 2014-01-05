@@ -4,15 +4,6 @@
  *
  * requires pixley.js
  */
-var colourMap = {
-    'cons': 'yellow',
-    'quote': 'blue',
-    'a': 'pink',
-    'b': 'orange',
-    'lambda': 'green',
-    'let*': 'brown'
-};
-
 function PixleyDepictor() {
     var canvas;
     var ctx;
@@ -22,6 +13,53 @@ function PixleyDepictor() {
     this.init = function(c) {
         canvas = c;
         ctx = canvas.getContext("2d");
+        this.colourMap = {
+            'car':    '#6949d7',
+            'cdr':    '#1f0772',
+            'cond':   'yellow',
+            'cons':   '#3714b0',
+            'else':   'red',
+            'equal?': 'green',
+            'lambda': '#6f0aaa',
+            'let*':   'brown',
+            'list?':  'aquamarine',
+            'quote':  'purple',
+        };
+        
+        this.availableColours = [
+            '#00c0c0',
+            '#c000c0',
+            '#c0c000',
+            '#00a0a0',
+            '#a000a0',
+            '#a0a000',
+            '#008080',
+            '#006060',
+            '#004040',
+            '#002020',
+            '#800080',
+            '#600060',
+            '#400040',
+            '#200020',
+            '#808000',
+            '#606000',
+            '#404000',
+            '#202000'
+        ];
+        this.availableIndex = 0;
+    };
+
+    this.getColour = function(text) {
+        var entry = this.colourMap[text];
+        if (entry) return entry;
+        if (this.availableIndex >= this.availableColours.length) {
+            //alert('Ran out of unique colours!');
+            this.availableIndex = 0;
+        }
+        entry = this.availableColours[this.availableIndex];
+        this.colourMap[text] = entry;
+        this.availableIndex++;
+        return entry;
     };
 
     this.depict = function(sexp) {
@@ -131,7 +169,7 @@ function PixleyDepictor() {
             /*
              * Atom.  Fill the rect in the atom's colour.
              */
-            var colour = colourMap[sexp.text] || 'red';
+            var colour = this.getColour(sexp.text);
             ctx.fillStyle = colour;
             ctx.fillRect(x, y, sexp.width, sexp.height);
         }
