@@ -16,7 +16,7 @@ var colourMap = {
 function PixleyDepictor() {
     var canvas;
     var ctx;
-    var margin = 3;
+    var margin = 8;
 
     this.init = function(c) {
         canvas = c;
@@ -25,26 +25,79 @@ function PixleyDepictor() {
 
     this.depict = function(sexp) {
         canvas.style.display = "block";
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        this.depictList(0, 0, canvas.width, canvas.height, sexp);
+        this.decorateSexp(0, 0, sexp);
+        canvas.width = sexp.width;
+        canvas.height = sexp.height;
+        // this is implied by the canvas size change:
+        // ctx.clearRect(0, 0, canvas.width, canvas.height);
+        this.depictSexp(0, 0, sexp);
     };
 
     /*
-     * Recursively depict this list on the canvas.
-     */    
-    this.depictList = function(x, y, w, h, sexp) {
-        /*
-         * Determine the new bounds.
-         */
-        var newX = x + margin;
-        var newY = y + margin;
-        var newW = w - (margin * 2);
-        var newH = h - (margin * 2);
-
+     * Decorate all Cons and Atom cells in the s-expression with
+     * some details about how to depict them on the canvas.
+     */
+    this.decorateSexp = function(x, y, sexp) {
         /*
          * Determine if we have a Cons cell or an Atom.
          */
-        if (sexp.text === undefined) {
+        if (sexp === null) {
+            /*
+             * Empty list.
+             */
+        } else if (sexp.text === undefined) {
+            /*
+             * Cons cell.  Find the extents of the children, then derive
+             * the extents of the cons cell, and fill them in.
+             */
+            var children = [];
+            var origSexp = sexp;
+            while (sexp != null) {
+                children.push(sexp.head);
+                sexp = sexp.tail;
+            }
+            var len = children.length;
+
+            for (var i = 0; i < len; i++) {
+                this.decorateSexp(x, y, children[i]);
+            }
+
+            var w = 0;
+            var h = 0;
+
+            for (var i = 0; i < len; i++) {
+                if (children[i] === null) {
+                    continue;
+                }
+                w += children[i].width + margin;
+                if (children[i].height + margin * 2 > h) {
+                    h = children[i].height + margin * 2;
+                }
+            }
+
+            origSexp.width = w + margin;
+            origSexp.height = h;
+        } else {
+            /*
+             * Atom.  Fill in width and height.
+             */
+            sexp.width = margin;
+            sexp.height = margin;
+        }
+    };
+
+    /*
+     * Recursively depict this s-expression on the canvas.
+     */
+    this.depictSexp = function(x, y, sexp) {
+        /*
+         * Determine if we have a Cons cell or an Atom.
+         */
+        if (sexp === null) {
+            /*
+             * Empty list.
+             */
+        } else if (sexp.text === undefined) {
             /*
              * Cons cell.  Get the list into a more Javascript-y data structure.
              */
@@ -55,21 +108,23 @@ function PixleyDepictor() {
             }
             */
             var children = [];
+            var origSexp = sexp;
             while (sexp != null) {
                 children.push(sexp.head);
                 sexp = sexp.tail;
             }
             var len = children.length;
-            //var colour = colourMap[head.text] || 'red';
             ctx.strokeStyle = "black";
             ctx.lineWidth = 1;
-            ctx.strokeRect(newX, newY, newW, newH);
+            ctx.strokeRect(x, y, origSexp.width, origSexp.height);
             
-            var innerW = newW / len;
-            
+            var innerX = x + margin;
             for (var i = 0; i < len; i++) {
-                var innerX = newX + innerW * i;
-                this.depictList(innerX, newY, innerW, newH, children[i]);
+                if (children[i] === null) {
+                    continue;
+                }
+                this.depictSexp(innerX, y + margin, children[i]);
+                innerX += children[i].width;
             }
         } else {
             /*
@@ -77,7 +132,7 @@ function PixleyDepictor() {
              */
             var colour = colourMap[sexp.text] || 'red';
             ctx.fillStyle = colour;
-            ctx.fillRect(newX, newY, newW, newH);
+            ctx.fillRect(x, y, sexp.width, sexp.height);
         }
     };
 };
