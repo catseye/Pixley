@@ -5,6 +5,9 @@
  * requires pixley.js
  */
 
+// TODO:
+// (foo foo) -- the bg is foo-coloured, so you can't see the foo inside it
+
 /*
  * We want to decorate S-expressions with information about where they're
  * depicted and what size they are, so we can't just use `null` for the
@@ -107,7 +110,8 @@ function PixleyDepictor() {
 
     /*
      * Decorate all Cons and Atom cells in the s-expression with
-     * some details about how to depict them on the canvas.
+     * some details about how to depict them on the canvas, mainly
+     * the width and the height which the s-expression will occupy.
      */
     this.decorateSexp = function(x, y, sexp) {
         /*
@@ -137,8 +141,11 @@ function PixleyDepictor() {
             if (sexp.startsWithAtom) {
                 // for the purposes of determining the bounding box size,
                 // skip the head atom, as we'll be drawing the entire list
-                // in that colour.
-                sexp = sexp.tail;
+                // in that colour -- unless the list contains *only* the
+                // head atom, in which case, we still want to draw that.
+                if (sexp.tail !== null) {
+                    sexp = sexp.tail;
+                }
             }
             while (sexp != null) {
                 children.push(sexp.head);
