@@ -46,17 +46,48 @@ function PixleyDepictor() {
             '#a000a0',
             '#a0a000',
             '#008080',
-            '#006060',
-            '#004040',
-            '#002020',
             '#800080',
-            '#600060',
-            '#400040',
-            '#200020',
             '#808000',
+            '#006060',
+            '#600060',
             '#606000',
+            '#004040',
+            '#400040',
             '#404000',
-            '#202000'
+            '#002020',
+            '#200020',
+            '#202000',
+
+            '#00ffa0',
+            '#ff00a0',
+            '#ffffa0',
+            '#00a0ff',
+            '#ffa000',
+            '#ffa0ff',
+            '#00c0ff',
+            '#c000ff',
+            '#c0c0ff',
+            '#00ffc0',
+            '#c0ff00',
+            '#c0ffc0',
+            '#00c0a0',
+            '#c000a0',
+            '#c0c0a0',
+            '#00a0c0',
+            '#c0a000',
+            '#c0a0c0',
+            '#0080a0',
+            '#8000a0',
+            '#8080a0',
+            '#00a080',
+            '#80a000',
+            '#80a080',
+            '#0040a0',
+            '#4000a0',
+            '#4040a0',
+            '#00a040',
+            '#40a000',
+            '#40a040'
         ];
         this.availableIndex = 0;
     };
@@ -75,6 +106,7 @@ function PixleyDepictor() {
     };
 
     this.depict = function(sexp) {
+        this.availableIndex = 0;
         sexp = cloneSexp(sexp);
         canvas.style.display = "block";
         this.transformNullsToEmptyLists(sexp);
