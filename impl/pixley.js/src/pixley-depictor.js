@@ -4,6 +4,18 @@
  *
  * requires pixley.js
  */
+
+/*
+ * We want to decorate S-expressions with information about where they're
+ * depicted and what size they are, so we can't just use `null` for the
+ * empty list.
+ */
+var EmptyList = function() {
+    this.toString = function() {
+        return '';
+    };
+};
+
 function PixleyDepictor() {
     var canvas;
     var ctx;
@@ -63,13 +75,34 @@ function PixleyDepictor() {
     };
 
     this.depict = function(sexp) {
+        sexp = cloneSexp(sexp);
         canvas.style.display = "block";
+        this.transformNullsToEmptyLists(sexp);
         this.decorateSexp(0, 0, sexp);
         canvas.width = sexp.width;
         canvas.height = sexp.height;
         // this is implied by the canvas size change:
         // ctx.clearRect(0, 0, canvas.width, canvas.height);
         this.depictSexp(0, 0, sexp);
+    };
+
+    // this method had side-effects; it modified sexp in-place
+    this.transformNullsToEmptyLists = function(sexp) {
+        if (sexp === null) {
+            // what can we do?  this shouldn't happen
+            return;
+        } else if (sexp.text === undefined) {
+            while (sexp !== null) {
+                if (sexp.head === null) {
+                    sexp.head = new EmptyList();
+                } else {
+                    this.transformNullsToEmptyLists(sexp.head);
+                }
+                sexp = sexp.tail;
+            }
+        } else {
+            return;
+        }
     };
 
     /*
@@ -80,10 +113,12 @@ function PixleyDepictor() {
         /*
          * Determine if we have a Cons cell or an Atom.
          */
-        if (sexp === null) {
+        if (sexp instanceof EmptyList) {
             /*
-             * Empty list.
+             * Empty list.  Fill in width and height.
              */
+            sexp.width = blockSize;
+            sexp.height = blockSize;
         } else if (sexp.text === undefined) {
             /*
              * Cons cell.
@@ -146,10 +181,14 @@ function PixleyDepictor() {
         /*
          * Determine if we have a Cons cell or an Atom.
          */
-        if (sexp === null) {
+        if (sexp instanceof EmptyList) {
             /*
-             * Empty list.
+             * Empty list.  Fill the rect in white, w/black border.
              */
+            ctx.fillStyle = 'white';
+            ctx.fillRect(x - 0.5, y - 0.5, sexp.width, sexp.height);
+            ctx.strokeStyle = 'black';
+            ctx.strokeRect(x - 0.5, y - 0.5, sexp.width, sexp.height);
         } else if (sexp.text === undefined) {
             /*
              * Cons cell.  Get the list into a more Javascript-y data structure.

@@ -117,6 +117,16 @@ var Cons = function(head, tail) {
   };
 };
 
+var cloneSexp = function(sexp) {
+    if (sexp instanceof Atom) {
+        return new Atom(sexp.text);
+    } else if (sexp instanceof Cons) {
+        return new Cons(cloneSexp(sexp.head), cloneSexp(sexp.tail));
+    } else {
+        return sexp;
+    }
+};
+
 var depict = function(sexp) {
     var s = '';
     if (sexp instanceof Cons) {
