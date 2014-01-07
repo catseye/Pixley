@@ -14,6 +14,9 @@ function PixleyController() {
     this.draw = function() {
         var display = document.getElementById('display');
         display.innerHTML = depict(this.ast);
+        if (this.depictor) {
+            this.depictor.depict(this.ast);
+        }
     };
 
     this.step = function() {

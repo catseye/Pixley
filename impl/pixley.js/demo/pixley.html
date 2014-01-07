@@ -218,9 +218,7 @@ Pixley on:
                 (quote illegal-program-error))))))))))
       (interpreter interpreter program (quote ()))))</div>
 
-<button onclick="d.depict(c.ast);">Depict on Canvas</button>
-
-<canvas id="canvas" width="1000" height="400">
+<canvas id="canvas">
   Your browser doesn't understand what a canvas is.
 </canvas>
 
@@ -243,7 +241,7 @@ Pixley on:
     'source': 'program',
     'display': 'display'
   });
+  c.depictor = new PixleyDepictor();
+  c.depictor.init(document.getElementById('canvas'));
   c.click_load();
-  var d = new PixleyDepictor();
-  d.init(document.getElementById('canvas'));
 </script>
