@@ -5,9 +5,6 @@
  * requires pixley.js
  */
 
-// TODO:
-// (foo foo) -- the bg is foo-coloured, so you can't see the foo inside it
-
 /*
  * We want to decorate S-expressions with information about where they're
  * depicted and what size they are, so we can't just use `null` for the
@@ -143,6 +140,7 @@ function PixleyDepictor() {
                 // skip the head atom, as we'll be drawing the entire list
                 // in that colour -- unless the list contains *only* the
                 // head atom, in which case, we still want to draw that.
+                // TODO: maybe handle this better; special case, smaller box.
                 if (sexp.tail !== null) {
                     sexp = sexp.tail;
                 }
@@ -184,7 +182,7 @@ function PixleyDepictor() {
     /*
      * Recursively depict this s-expression on the canvas.
      */
-    this.depictSexp = function(x, y, sexp) {
+    this.depictSexp = function(x, y, sexp, parentColour) {
         /*
          * Determine if we have a Cons cell or an Atom.
          */
@@ -212,12 +210,12 @@ function PixleyDepictor() {
             }
             var len = children.length;
 
+            var colour = 'white';
             if (origSexp.startsWithAtom) {
                // If there's a head atom, fill in rect with head atom's colour
-               ctx.fillStyle = this.getColour(origSexp.head.text);
-            } else {
-                ctx.fillStyle = 'white';
-            }
+               colour = this.getColour(origSexp.head.text);
+            }            
+            ctx.fillStyle = colour;
             ctx.fillRect(x - 0.5, y - 0.5, origSexp.width, origSexp.height);
             ctx.strokeStyle = "black";
             ctx.lineWidth = 1;
@@ -228,7 +226,7 @@ function PixleyDepictor() {
                 if (children[i] === null) {
                     continue;
                 }
-                this.depictSexp(innerX, y + margin, children[i]);
+                this.depictSexp(innerX, y + margin, children[i], colour);
                 innerX += children[i].width + margin;
             }
         } else {
@@ -238,6 +236,10 @@ function PixleyDepictor() {
             var colour = this.getColour(sexp.text);
             ctx.fillStyle = colour;
             ctx.fillRect(x - 0.5, y - 0.5, sexp.width, sexp.height);
+            if (colour === parentColour) {
+                ctx.strokeStyle = 'white';
+                ctx.strokeRect(x - 0.5, y - 0.5, sexp.width, sexp.height);
+            }
         }
     };
 };
