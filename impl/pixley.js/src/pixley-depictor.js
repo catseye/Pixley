@@ -158,17 +158,28 @@ function PixleyDepictor() {
             var w = 0;
             var h = 0;
 
+            origSexp.horizontal = false;
             for (var i = 0; i < len; i++) {
-                if (children[i] === null) {
-                    continue;
-                }
-                w += children[i].width;
-                if (children[i].height + margin * 2 > h) {
-                    h = children[i].height + margin * 2;
+                // alert(i + '...' + w);
+                if (origSexp.horizontal) {
+                    w += children[i].width || 0;
+                    if (children[i].height + margin * 2 > h) {
+                        h = children[i].height + margin * 2;
+                    }
+                } else {
+                    h += children[i].height || 0;
+                    if (children[i].width + margin * 2 > w) {
+                        w = children[i].width + margin * 2;
+                    }
                 }
             }
 
-            origSexp.width = w + margin * (len + 1);
+            if (origSexp.horizontal) {
+                w = w + margin * (len + 1);
+            } else {
+                h = h + margin * (len + 1);
+            }
+            origSexp.width = w;
             origSexp.height = h;
         } else {
             /*
@@ -220,14 +231,19 @@ function PixleyDepictor() {
             ctx.strokeStyle = "black";
             ctx.lineWidth = 1;
             ctx.strokeRect(x - 0.5, y - 0.5, origSexp.width, origSexp.height);
-            
+
             var innerX = x + margin;
+            var innerY = y + margin;
             for (var i = 0; i < len; i++) {
                 if (children[i] === null) {
                     continue;
                 }
-                this.depictSexp(innerX, y + margin, children[i], colour);
-                innerX += children[i].width + margin;
+                this.depictSexp(innerX, innerY, children[i], colour);
+                if (origSexp.horizontal) {
+                    innerX += children[i].width + margin;
+                } else {
+                    innerY += children[i].height + margin;
+                }
             }
         } else {
             /*
