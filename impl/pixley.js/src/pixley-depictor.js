@@ -110,7 +110,8 @@ function PixleyDepictor() {
      * some details about how to depict them on the canvas, mainly
      * the width and the height which the s-expression will occupy.
      */
-    this.decorateSexp = function(x, y, sexp) {
+    this.decorateSexp = function(x, y, sexp, parentOrientation) {
+        parentOrientation = !!parentOrientation; // ensure it is a boolean
         /*
          * Determine if we have a Cons cell or an Atom.
          */
@@ -151,14 +152,35 @@ function PixleyDepictor() {
             }
             var len = children.length;
 
+            /*
+             * Determine the orientation of this sexp.
+             */
+
+            // STYLE 1: only cond and let* bindings are vertical
+            origSexp.horizontal = true;
+            if (!origSexp.startsWithAtom) {
+                origSexp.horizontal = false;
+            }
+            if (origSexp.startsWithAtom && head.text === 'cond') {
+                origSexp.horizontal = false;
+            }
+            
+            // STYLE 2: orientation is opposite of parent's
+            /*
+            origSexp.horizontal = !parentOrientation;
+            */
+            
+            // STYLE 3: orientation is random!
+            /*
+            origSexp.horizontal = (Math.random() > 0.5 ? true : false);
+            */
+
             for (var i = 0; i < len; i++) {
-                this.decorateSexp(x, y, children[i]);
+                this.decorateSexp(x, y, children[i], origSexp.horizontal);
             }
 
             var w = 0;
             var h = 0;
-
-            origSexp.horizontal = false;
             for (var i = 0; i < len; i++) {
                 // alert(i + '...' + w);
                 if (origSexp.horizontal) {
@@ -173,7 +195,6 @@ function PixleyDepictor() {
                     }
                 }
             }
-
             if (origSexp.horizontal) {
                 w = w + margin * (len + 1);
             } else {
