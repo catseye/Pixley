@@ -46,10 +46,13 @@ function PixleyController() {
         this.ast = p.parse();
         if (this.ast) {
             this.finished = false;
+            this.setStatus('Program loaded.');
         } else {
             errorHandler.error("Can't parse your Pixley program");
             this.finished = true;
+            this.setStatus('Parsing error!');
         }
+        this.output.innerHTML = '';
         this.draw();
     };
 
