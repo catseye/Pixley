@@ -12,7 +12,6 @@ function PixleyController() {
         this.pixleyInterpreter = cfg.pixleyInterpreter || '???';
         this.display = cfg.display;
         this.output = cfg.output;
-        this.finished = false;
         this.setStatus('Ready.');
     };
 
@@ -30,14 +29,26 @@ function PixleyController() {
         }
     };
 
-    this.step = function() {
-        if (this.finished) return;
+    this.start = function() {
         this.setStatus('Evaluating...');
-        var result = evalPixley(this.ast, {});
-        this.output.innerHTML = depict(result);
-        this.finished = true;
-        this.setStatus('Done.');
-        this.draw();
+
+        this.worker = new Worker("../src/pixley-worker.js");
+        var $this = this;
+        this.worker.addEventListener('message', function(e) {
+            $this.output.innerHTML = e.data;
+            $this.setStatus('Done.');
+            $this.draw();
+            $this.worker = undefined;
+        });
+        this.worker.postMessage(["eval", depict(this.ast)]);
+    };
+
+    this.kill = function() {
+        if (this.worker) {
+            this.worker.terminate();
+            this.worker = undefined;
+            this.setStatus('Terminated.');
+        }
     };
 
     this.load = function(text) {
@@ -45,11 +56,9 @@ function PixleyController() {
         p.init(text);
         this.ast = p.parse();
         if (this.ast) {
-            this.finished = false;
             this.setStatus('Program loaded.');
         } else {
             errorHandler.error("Can't parse your Pixley program");
-            this.finished = true;
             this.setStatus('Parsing error!');
         }
         this.output.innerHTML = '';
