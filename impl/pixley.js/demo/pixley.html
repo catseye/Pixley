@@ -12,7 +12,13 @@
 #display {
     color: white;
     background: blue;
-    border: 1px solid green;
+    border: 3px solid blue;
+    font-family: monospace;
+}
+#output {
+    color: white;
+    background: #008000;
+    border: 3px solid #008000;
     font-family: monospace;
 }
 #canvas { border: 1px solid blue; display: none; }
@@ -55,7 +61,13 @@ Pixley on:
   </span>
 </div>
 
-<div id="display"></div>
+<div id="display_container">
+  <div id="display"></div>
+  <canvas id="canvas">
+    Your browser doesn't understand what a canvas is.
+  </canvas>
+  <div id="output"></div>
+</div>
 
 <textarea id="program" rows="25" cols="40"
 >(cons (quote a) (cons (quote b) ())</textarea>
@@ -218,10 +230,6 @@ Pixley on:
                 (quote illegal-program-error))))))))))
       (interpreter interpreter program (quote ()))))</div>
 
-<canvas id="canvas">
-  Your browser doesn't understand what a canvas is.
-</canvas>
-
 </body>
 <script src="../src/pixley.js"></script>
 <script src="../src/yoob/controller.js"></script>
@@ -229,7 +237,12 @@ Pixley on:
 <script src="../src/pixley-depictor.js"></script>
 <script>
   var c = new PixleyController();
-  c.init(); // document.getElementById('canvas'));
+  c.init({
+    'status': document.getElementById('status'),
+    'display': document.getElementById('display'),
+    'output': document.getElementById('output'),
+    'pixleyInterpreter': document.getElementById('pixley-interpreter').innerHTML,
+  });
   c.connect({
     'start': 'start',
     'stop': 'stop',
@@ -239,7 +252,7 @@ Pixley on:
     'speed': 'speed',
     'select': 'select_source',
     'source': 'program',
-    'display': 'display'
+    'display': 'display_container'
   });
   c.depictor = new PixleyDepictor();
   c.depictor.init(document.getElementById('canvas'));

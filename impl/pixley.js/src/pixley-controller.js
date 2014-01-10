@@ -1,14 +1,25 @@
 /*
  * requires yoob.Controller and pixley.js
  */
-function PixleyController() {
-    var finished;
-    var status = document.getElementById('status');
+errorHandler.error = function(msg) {
+    alert('ERROR! ' + msg);
+};
 
-    this.init = function() {
+function PixleyController() {
+    this.init = function(cfg) {
         this.ast = undefined;
-        finished = false;
-        status.innerHTML = 'Ready.';
+        this.status = cfg.status;
+        this.pixleyInterpreter = cfg.pixleyInterpreter || '???';
+        this.display = cfg.display;
+        this.output = cfg.output;
+        this.finished = false;
+        this.setStatus('Ready.');
+    };
+
+    this.setStatus = function(text) {
+        if (this.status) {
+            this.status.innerHTML = text;
+        }
     };
 
     this.draw = function() {
@@ -20,12 +31,12 @@ function PixleyController() {
     };
 
     this.step = function() {
-        if (finished) return;
-        status.innerHTML = 'Evaluating...';
+        if (this.finished) return;
+        this.setStatus('Evaluating...');
         var result = evalPixley(this.ast, {});
-        alert(depict(result));
-        finished = true;
-        status.innerHTML = 'Done.';
+        this.output.innerHTML = depict(result);
+        this.finished = true;
+        this.setStatus('Done.');
         this.draw();
     };
 
@@ -34,23 +45,18 @@ function PixleyController() {
         p.init(text);
         this.ast = p.parse();
         if (this.ast) {
-            // alert(this.ast.toString());
-            finished = false;
+            this.finished = false;
         } else {
-            alert("Can't parse your Pixley program");
-            finished = true;
+            errorHandler.error("Can't parse your Pixley program");
+            this.finished = true;
         }
         this.draw();
     };
 
     this.wrapIt = function() {
-        var pixley = document.getElementById('pixley-interpreter').innerHTML;
-        var text = '(' + pixley + ' (quote ' + depict(this.ast) + '))';
+        var text = '(' + this.pixleyInterpreter +
+                   ' (quote ' + depict(this.ast) + '))';
         this.load(text);
     };
 };
 PixleyController.prototype = new yoob.Controller();
-
-errorHandler.error = function(msg) {
-    alert('ERROR! ' + msg);
-}
