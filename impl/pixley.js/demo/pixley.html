@@ -6,7 +6,6 @@
 #info { float: right; }
 #program { display: none; }
 #load { display: none; }
-#stop { display: none; }
 #step { display: none; }
 #speed { display: none; }
 #display {
@@ -34,10 +33,13 @@ Pixley on:
 
 <h1>Pixley</h1>
 
+<p><i>Note: this implementation uses Web Workers, and thus this page should be
+served from a web server (rather than loaded as a local file in your browser)
+to avoid security restrictions.</i></p>
+
 <button id="load">Load</button>
 <button id="edit">Edit</button>
 <button id="start">Start</button>
-<button id="kill">Kill</button>
 <button id="stop">Stop</button>
 <button id="step">Step</button>
 <button onclick="c.wrapIt();">Wrap it!</button>
@@ -258,10 +260,4 @@ Pixley on:
   c.depictor = new PixleyDepictor();
   c.depictor.init(document.getElementById('canvas'));
   c.click_load();
-
-  document.getElementById('kill').onclick = function(e) {
-    c.kill();
-  };
-
-
 </script>

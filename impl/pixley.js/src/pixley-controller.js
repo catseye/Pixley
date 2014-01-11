@@ -44,7 +44,7 @@ function PixleyController() {
         this.worker.postMessage(["eval", depict(this.ast)]);
     };
 
-    this.kill = function() {
+    this.stop = function() {
         if (this.worker) {
             this.worker.terminate();
             this.worker = undefined;
