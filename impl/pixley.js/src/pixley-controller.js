@@ -12,7 +12,15 @@ function PixleyController() {
         this.display = cfg.display;
         this.output = cfg.output;
         this.workerURL = cfg.workerURL || "../src/pixley-worker.js";
+        this.loadWorker();
+        this.running = false;
         this.setStatus('Ready.');
+    };
+
+    this.loadWorker = function() {
+        if (!this.worker) {
+            this.worker = new Worker(this.workerURL);
+        }
     };
 
     this.setStatus = function(text) {
@@ -30,22 +38,25 @@ function PixleyController() {
     };
 
     this.start = function() {
+        if (this.running) return;
         this.setStatus('Evaluating...');
 
-        this.worker = new Worker(this.workerURL);
+        this.loadWorker();
         var $this = this;
         this.worker.addEventListener('message', function(e) {
             $this.output.innerHTML = e.data;
             $this.setStatus('Done.');
+            $this.running = false;
             $this.draw();
-            $this.worker = undefined;
         });
         this.worker.postMessage(["eval", depict(this.ast)]);
+        this.running = true;
     };
 
     this.stop = function() {
-        if (this.worker) {
+        if (this.running && this.worker) {
             this.worker.terminate();
+            this.running = false;
             this.worker = undefined;
             this.setStatus('Terminated.');
         }
