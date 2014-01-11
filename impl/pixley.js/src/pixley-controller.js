@@ -12,6 +12,7 @@ function PixleyController() {
         this.pixleyInterpreter = cfg.pixleyInterpreter || '???';
         this.display = cfg.display;
         this.output = cfg.output;
+        this.workerURL = cfg.workerURL || "../src/pixley-worker.js";
         this.setStatus('Ready.');
     };
 
@@ -32,7 +33,7 @@ function PixleyController() {
     this.start = function() {
         this.setStatus('Evaluating...');
 
-        this.worker = new Worker("../src/pixley-worker.js");
+        this.worker = new Worker(this.workerURL);
         var $this = this;
         this.worker.addEventListener('message', function(e) {
             $this.output.innerHTML = e.data;
