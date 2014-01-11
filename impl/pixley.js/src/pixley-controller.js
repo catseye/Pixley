@@ -9,7 +9,6 @@ function PixleyController() {
     this.init = function(cfg) {
         this.ast = undefined;
         this.status = cfg.status;
-        this.pixleyInterpreter = cfg.pixleyInterpreter || '???';
         this.display = cfg.display;
         this.output = cfg.output;
         this.workerURL = cfg.workerURL || "../src/pixley-worker.js";
@@ -66,10 +65,8 @@ function PixleyController() {
         this.draw();
     };
 
-    this.wrapIt = function() {
-        var text = '(' + this.pixleyInterpreter +
-                   ' (quote ' + depict(this.ast) + '))';
-        this.load(text);
+    this.wrapWith = function(lambdaText) {
+        this.load('(' + lambdaText + ' (quote ' + depict(this.ast) + '))');
     };
 };
 PixleyController.prototype = new yoob.Controller();

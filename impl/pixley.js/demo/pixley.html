@@ -42,7 +42,7 @@ to avoid security restrictions.</i></p>
 <button id="start">Start</button>
 <button id="stop">Stop</button>
 <button id="step">Step</button>
-<button onclick="c.wrapIt();">Wrap it!</button>
+<button onclick="c.wrapWith(document.getElementById('pixley-interpreter').innerHTML);">Wrap in Pixley Interpreter</button>
 <input id="speed" type="range" min="0" max="200" value="0" />
 <span id="status"></span>
 
@@ -243,8 +243,7 @@ to avoid security restrictions.</i></p>
   c.init({
     'status': document.getElementById('status'),
     'display': document.getElementById('display'),
-    'output': document.getElementById('output'),
-    'pixleyInterpreter': document.getElementById('pixley-interpreter').innerHTML,
+    'output': document.getElementById('output')
   });
   c.connect({
     'start': 'start',
