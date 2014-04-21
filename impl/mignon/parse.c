@@ -57,7 +57,7 @@ struct pstate *parse_resumable(struct pstate *state)
         switch (state->status) {
             case P_START:
             {
-                while (isspace(*(state->ptr))) {
+                while (isspace((int)*(state->ptr))) {
                     state->ptr++;
                 }
                 if (*(state->ptr) == (char)0) {
@@ -78,8 +78,8 @@ struct pstate *parse_resumable(struct pstate *state)
             {
                 char sym[128];
                 int i = 0;
-                while (isalpha(*(state->ptr)) ||
-                       isdigit(*(state->ptr)) ||
+                while (isalpha((int)*(state->ptr)) ||
+                       isdigit((int)*(state->ptr)) ||
                        *(state->ptr) == '*' ||
                        *(state->ptr) == '-' ||
                        *(state->ptr) == '_' ||
@@ -108,7 +108,7 @@ struct pstate *parse_resumable(struct pstate *state)
                     state->child_result = NULL;
                     state->prev = state->tail;
                 }
-                while (isspace(*(state->ptr))) {
+                while (isspace((int)*(state->ptr))) {
                     state->ptr++;
                 }
                 if (*(state->ptr) == (char)0) {
