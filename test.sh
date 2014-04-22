@@ -1,7 +1,20 @@
 #!/bin/sh
 
 if [ "${SCHEME_IMPL}x" = "x" ]; then
-    export SCHEME_IMPL=plt-r5rs
+    # user didn't care to specify.  let's pick one.
+    if [ ! -z `which miniscm` ]; then
+        export SCHEME_IMPL=miniscm
+    elif [ ! -z `which csi` ]; then
+        export SCHEME_IMPL=csi
+    elif [ ! -z `which huski` ]; then
+        export SCHEME_IMPL=huski
+    elif [ ! -z `which plt-r5rs` ]; then
+        export SCHEME_IMPL=plt-r5rs
+    else
+        echo "No Scheme implementation (SCHEME_IMPL) selected, and"
+        echo "no suitable Scheme implementation was found on your path."
+        exit 1
+    fi
 fi
 if [ `which ${SCHEME_IMPL}`x = "x" ]; then
     echo "Your selected Scheme implementation, $SCHEME_IMPL, was not found."
@@ -9,7 +22,7 @@ if [ `which ${SCHEME_IMPL}`x = "x" ]; then
 fi
 
 if [ "${PIXLEY_IMPL}x" = "x" ]; then
-    export PIXLEY_IMPL=haney
+    export PIXLEY_IMPL=mignon
 fi
 
 if [ "${PIXLEY_PIX}x" = "x" ]; then
