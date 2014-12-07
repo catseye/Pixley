@@ -4,7 +4,9 @@
 ; Load an S-expression from a named file.
 (define load-sexp
   (lambda (filename)
-    (with-input-from-file filename (lambda () (read)))))
+    ; (display "loading ") (display filename) (display "...") (newline)
+    (let* ((port (open-input-file filename)))
+      (read port))))
 
 (define count-cons-cells
   (lambda (sexp)

@@ -9,7 +9,8 @@
 (define load-sexp
   (lambda (filename)
     ; (display "loading ") (display filename) (display "...") (newline)
-    (with-input-from-file filename (lambda () (read)))))
+    (let* ((port (open-input-file filename)))
+      (read port))))
 
 ; Return an S-expression representing a Pixley interpreter.
 ; For convenience, it is loaded from its file.
