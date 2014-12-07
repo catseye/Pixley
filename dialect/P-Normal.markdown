@@ -79,7 +79,7 @@ Tests for the P-Normalizer
     -> Tests for functionality "P-Normalize Pixley Program"
 
     -> Functionality "P-Normalize Pixley Program" is implemented by
-    -> shell command "script/tower.sh src/pixley.pix dialect/p-normal.pix %(test-file)"
+    -> shell command "script/tower.sh src/pixley.pix dialect/p-normal.pix %(test-body-file)"
 
 `let*` gets expanded into a series of nested, one-binding, `let*`s.
 
