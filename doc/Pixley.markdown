@@ -1,7 +1,7 @@
 The Pixley Programming Language
 ===============================
 
-Language version 2.0, distribution revision 2013.1024
+Language version 2.0, distribution revision 2015.0101
 
 Introduction
 ------------
@@ -307,6 +307,29 @@ new in it here.
 
 * The test suite has been modernized (for whatever "modern" means for
   Falderal) and enriched to handle testing these extra implementations.
+
+### Pixley 2.0 revision 2015.0101 ###
+
+(This also includes updates from revision 2014.0819 which I neglected to
+list here previously.)
+
+Again, no changes in the language.  Just some implementation improvements.
+
+* A new implementation of Pixley, in Javascript, which runs in a web browser
+  which supports Web Workers.  As a bonus, it can depict the Pixley program
+  as a series of nested, coloured rectangles.  You can see it online here:
+  [Pixley installation at Cat's Eye Technologies](http://catseye.tc/installation/Pixley).
+
+* Wrappers to allow `pixley.scm` to be run under Scheme48 and the CHICKEN
+  Scheme interpreter.
+
+* The test suite tries to find a reasonable Scheme implementation to run
+  under.
+
+* Syntax for tests updated to Falderal 0.10.
+
+* `with-input-from-file` is an optional R5RS, so change the Scheme programs
+  to not rely on it.
 
 Conclusion
 ----------
