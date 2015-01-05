@@ -48,6 +48,7 @@ function PixleyController() {
             $this.setStatus('Done.');
             $this.running = false;
             $this.draw();
+            $this.click_stop();
         });
         this.worker.postMessage(["eval", depict(this.ast)]);
         this.running = true;
