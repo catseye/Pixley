@@ -1,33 +1,38 @@
 /*
- * This file is part of yoob.js version 0.6-PRE
+ * This file is part of yoob.js version 0.6
  * Available from https://github.com/catseye/yoob.js/
  * This file is in the public domain.  See http://unlicense.org/ for details.
  */
 if (window.yoob === undefined) yoob = {};
 
 /*
- * An object for managing a set of example programs (or other "pre-fab"
- * things) for use in an esolang interpreter (or other thing that could
- * use these things.  For example, games for an emulator, etc.)
+ * An object for managing a set of "presets" -- which, for an esolang,
+ * might be example programs; for an emulator, might be ROM images;
+ * for a control panel, may be pre-selected combinations of settings;
+ * and so forth.
  *
- * Mostly intended to be connected to a yoob.Controller.
+ * Mostly intended to be connected to a yoob.Controller -- but need not be.
  */
-yoob.ExampleManager = function() {
+yoob.PresetManager = function() {
     /*
      * The single argument is a dictionary (object) where the keys are:
+     *
      *    selectElem: (required) the <select> DOM element that will be
      *        populated with the available example programs.  Selecting one
      *        will cause the .select() method of this manager to be called.
      *        it will also call .onselect if that method is present.
+     *
+     *    controller: a yoob.Controller (or compatible object) that will
+     *        be informed of the selection, if no callback was supplied
+     *        when the item was added.
      */
     this.init = function(cfg) {
         this.selectElem = cfg.selectElem;
-        this.exampleClass = cfg.exampleClass || null;
         this.controller = cfg.controller || null;
         this.clear();
         var $this = this;
         this.selectElem.onchange = function() {
-            $this.select(this.options[this.selectedIndex].value);
+            $this._select(this.options[this.selectedIndex].value);
         }
         return this;
     };
@@ -45,11 +50,11 @@ yoob.ExampleManager = function() {
     };
 
     /*
-     * Adds an example to this ExampleManager.  When it is selected,
+     * Adds a preset to this PresetManager.  When it is selected,
      * the given callback will be called, being passed the id as the
      * first argument.  If no callback is provided, a default callback,
      * which loads the contents of the element with the specified id
-     * into the configured controller, will be used.
+     * into the configured yoob.Controller, will be used.
      */
     this.add = function(id, callback) {
         var opt = document.createElement("option");
@@ -58,7 +63,7 @@ yoob.ExampleManager = function() {
         this.selectElem.options.add(opt);
         var $this = this;
         this.reactTo[id] = callback || function(id) {
-            $this.controller.stop(); // in case it is currently running
+            $this.controller.click_stop(); // in case it is currently running
             $this.controller.loadSourceFromHTML(
               document.getElementById(id).innerHTML
             );
@@ -70,7 +75,7 @@ yoob.ExampleManager = function() {
      * Called by the selectElem's onchange event.  For sanity, you should
      * probably not call this yourself.
      */
-    this.select = function(id) {
+    this._select = function(id) {
         this.reactTo[id](id);
         if (this.onselect) {
             this.onselect(id);
@@ -78,8 +83,30 @@ yoob.ExampleManager = function() {
     };
 
     /*
+     * Call this to programmatically select an item.  This will change
+     * the selected option in the selectElem and trigger the appropriate
+     * callback in this PresetManager.
+     */
+    this.select = function(id) {
+        var i = 0;
+        var opt = this.selectElem.options[i];
+        while (opt) {
+            if (opt.value === id) {
+                this.selectElem.selectedIndex = i;
+                this._select(id);
+                return this;
+            }
+            i++;
+            opt = this.selectElem.options[i];
+        }
+        // if not found, select the "(select one...)" option
+        this.selectElem.selectedIndex = 0;
+        return this;
+    };
+
+    /*
      * When called, every DOM element in the document with the given
-     * class will be considered an example program, and the manager
+     * class will be considered a preset, and the manager
      * will be populated with these.  Generally the CSS for the class
      * will have `display: none` and the elements will be <div>s.
      *

@@ -225,7 +225,7 @@ to avoid security restrictions.</em></p>
 </body>
 <script src="../src/pixley.js"></script>
 <script src="../src/yoob/controller.js"></script>
-<script src="../src/yoob/example-manager.js"></script>
+<script src="../src/yoob/preset-manager.js"></script>
 <script src="../src/pixley-controller.js"></script>
 <script src="../src/pixley-depictor.js"></script>
 <script>
@@ -249,7 +249,7 @@ to avoid security restrictions.</em></p>
   c.depictor = new PixleyDepictor();
   c.depictor.init(document.getElementById('canvas'));
   c.click_load();
-  e = (new yoob.ExampleManager()).init({
+  e = (new yoob.PresetManager()).init({
     selectElem: document.getElementById('select_source'),
     controller: c
   }).populateFromClass('example_program');
