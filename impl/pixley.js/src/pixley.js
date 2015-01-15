@@ -15,106 +15,106 @@ var errorHandler = new ErrorHandler();
  * from yoob.js 0.3, pasted in here for convenience.
  */
 var Scanner = function() {
-  this.text = undefined;
-  this.token = undefined;
-  this.type = undefined;
-  this.error = undefined;
-  this.table = undefined;
-  this.whitespacePattern = "^[ \\t\\n\\r]*";
-
-  this.init = function(table) {
-    this.table = table;
-  };
-
-  this.reset = function(text) {
-    this.text = text;
+    this.text = undefined;
     this.token = undefined;
     this.type = undefined;
     this.error = undefined;
-    this.scan();
-  };
-  
-  this.scanPattern = function(pattern, type) {
-    var re = new RegExp(pattern);
-    var match = re.exec(this.text);
-    if (match === null) return false;
-    this.type = type;
-    this.token = match[1];
-    this.text = this.text.substr(match[0].length);
-    return true;
-  };
+    this.table = undefined;
+    this.whitespacePattern = "^[ \\t\\n\\r]*";
 
-  this.scan = function() {
-    this.scanPattern(this.whitespacePattern, "whitespace");
-    if (this.text.length === 0) {
-      this.token = null;
-      this.type = "EOF";
-      return;
-    }
-    for (var i = 0; i < this.table.length; i++) {
-      var type = this.table[i][0];
-      var pattern = this.table[i][1];
-      if (this.scanPattern(pattern, type)) return;
-    }
-    if (this.scanPattern("^([\\s\\S])", "unknown character")) return;
-    // should never get here
-  };
+    this.init = function(table) {
+        this.table = table;
+    };
 
-  this.expect = function(token) {
-    if (this.token === token) {
-      this.scan();
-    } else {
-      this.error = "expected '" + token + "' but found '" + this.token + "'";
-    }
-  };
+    this.reset = function(text) {
+        this.text = text;
+        this.token = undefined;
+        this.type = undefined;
+        this.error = undefined;
+        this.scan();
+    };
 
-  this.on = function(token) {
-    return this.token === token;
-  };
+    this.scanPattern = function(pattern, type) {
+        var re = new RegExp(pattern);
+        var match = re.exec(this.text);
+        if (match === null) return false;
+        this.type = type;
+        this.token = match[1];
+        this.text = this.text.substr(match[0].length);
+        return true;
+    };
 
-  this.onType = function(type) {
-    return this.type === type;
-  };
+    this.scan = function() {
+        this.scanPattern(this.whitespacePattern, "whitespace");
+        if (this.text.length === 0) {
+            this.token = null;
+            this.type = "EOF";
+            return;
+        }
+        for (var i = 0; i < this.table.length; i++) {
+            var type = this.table[i][0];
+            var pattern = this.table[i][1];
+            if (this.scanPattern(pattern, type)) return;
+        }
+        if (this.scanPattern("^([\\s\\S])", "unknown character")) return;
+        // should never get here
+    };
+    
+    this.expect = function(token) {
+        if (this.token === token) {
+            this.scan();
+        } else {
+            this.error = "expected '" + token + "' but found '" + this.token + "'";
+        }
+    };
 
-  this.checkType = function(type) {
-    if (this.type !== type) {
-      this.error = "expected " + type + " but found " + this.type + " (" + this.token + ")"
-    }
-  };
+    this.on = function(token) {
+        return this.token === token;
+    };
 
-  this.expectType = function(type) {
-    this.checkType(type);
-    this.scan();
-  };
+    this.onType = function(type) {
+        return this.type === type;
+    };
 
-  this.consume = function(token) {
-    if (this.on(token)) {
-      this.scan();
-      return true;
-    } else {
-      return false;
-    }
-  };
+    this.checkType = function(type) {
+        if (this.type !== type) {
+            this.error = "expected " + type + " but found " + this.type + " (" + this.token + ")"
+        }
+    };
+
+    this.expectType = function(type) {
+        this.checkType(type);
+        this.scan();
+    };
+
+    this.consume = function(token) {
+        if (this.on(token)) {
+            this.scan();
+            return true;
+        } else {
+            return false;
+        }
+    };
 };
 
 /*
  * S-expressions, apropos to Pixley.
  */
 var Atom = function(text) {
-  this.text = text;
-  
-  this.toString = function() {
-    return this.text;
-  };
+    this.text = text;
+
+    this.toString = function() {
+        return this.text;
+    };
 };
 
 var Cons = function(head, tail) {
-  this.head = head;
-  this.tail = tail;
+    this.head = head;
+    this.tail = tail;
 
-  this.toString = function() {
-    return depict(this);
-  };
+    this.toString = function() {
+        return depict(this);
+    };
 };
 
 var cloneSexp = function(sexp) {
@@ -156,44 +156,44 @@ var depict = function(sexp) {
  * instead of yoob.Trees.
  */
 var SexpParser = function() {
-  this.scanner = undefined;
+    this.scanner = undefined;
+    
+    this.init = function(text) {
+        this.scanner = new Scanner();
+        this.scanner.init([
+            ['paren',  "^(\\(|\\))"],
+            ['atom',   "^([a-zA-Z\\?\\*\\-][a-zA-Z0-9\\?\\*\\-]*)"]
+        ]);
+        this.scanner.reset(text);
+    };
 
-  this.init = function(text) {
-    this.scanner = new Scanner();
-    this.scanner.init([
-      ['paren',  "^(\\(|\\))"],
-      ['atom',   "^([a-zA-Z\\?\\*\\-][a-zA-Z0-9\\?\\*\\-]*)"]
-    ]);
-    this.scanner.reset(text);
-  };
+    /*
+     * SExp ::= Atom | "(" {SExpr} ")".
+     */
+    this.parse = function(text) {
+        if (this.scanner.onType('atom')) {
+            var x = this.scanner.token;
+            this.scanner.scan();
+            return new Atom(x);
+        } else if (this.scanner.consume('(')) {
+            if (this.scanner.consume(')') || this.scanner.onType('EOF')) {
+              return null;
+            }
 
-  /*
-   * SExp ::= Atom | "(" {SExpr} ")".
-   */
-  this.parse = function(text) {
-    if (this.scanner.onType('atom')) {
-      var x = this.scanner.token;
-      this.scanner.scan();
-      return new Atom(x);
-    } else if (this.scanner.consume('(')) {
-      if (this.scanner.consume(')') || this.scanner.onType('EOF')) {
-        return null;
-      }
-      
-      var top = new Cons(null, null);
-      top.head = this.parse();
-      var cell = top;
-      while (!this.scanner.consume(')') && !this.scanner.onType('EOF')) {
-        cell.tail = new Cons(null, null);
-        cell = cell.tail;
-        cell.head = this.parse();
-      }
-      return top;
-    } else {
-      /* TODO: register some kind of error */
-      this.scanner.scan();
-    }
-  };
+            var top = new Cons(null, null);
+            top.head = this.parse();
+            var cell = top;
+            while (!this.scanner.consume(')') && !this.scanner.onType('EOF')) {
+                cell.tail = new Cons(null, null);
+                cell = cell.tail;
+                cell.head = this.parse();
+            }
+            return top;
+        } else {
+            /* TODO: register some kind of error */
+            this.scanner.scan();
+        }
+    };
 };
 
 /********************
