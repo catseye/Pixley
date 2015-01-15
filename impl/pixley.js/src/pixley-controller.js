@@ -5,12 +5,14 @@ errorHandler.error = function(msg) {
     alert('ERROR! ' + msg);
 };
 
+var proto = new yoob.Controller();
 function PixleyController() {
     this.init = function(cfg) {
         this.ast = undefined;
         this.status = cfg.status;
         this.display = cfg.display;
         this.output = cfg.output;
+        this.wrapButton = cfg.wrapButton;
         this.workerURL = cfg.workerURL || "../src/pixley-worker.js";
         this.loadWorker();
         this.running = false;
@@ -80,5 +82,16 @@ function PixleyController() {
     this.wrapWith = function(lambdaText) {
         this.load('(' + lambdaText + ' (quote ' + depict(this.ast) + '))');
     };
+
+    // Awkward But Hopefully Successful Attempts at Calling Super Methods
+    this.click_edit = function(e) {
+        proto.click_edit.apply(this, [e]);
+        if (this.wrapButton) this.wrapButton.disabled = true;
+    };
+
+    this.click_load = function(e) {
+        proto.click_load.apply(this, [e]);
+        if (this.wrapButton) this.wrapButton.disabled = false;
+    };
 };
-PixleyController.prototype = new yoob.Controller();
+PixleyController.prototype = proto;

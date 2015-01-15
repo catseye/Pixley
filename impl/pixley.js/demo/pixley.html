@@ -46,7 +46,7 @@ document root.</em></p>
 <button id="start">Start</button>
 <button id="stop">Stop</button>
 <button id="step">Step</button>
-<button onclick="c.wrapWith(document.getElementById('pixley-interpreter').innerHTML);">Wrap in Pixley Interpreter</button>
+<button id="wrap" onclick="c.wrapWith(document.getElementById('pixley-interpreter').innerHTML);">Wrap in Pixley Interpreter</button>
 <input id="speed" type="range" min="0" max="200" value="0" />
 <span id="status"></span>
 
@@ -234,7 +234,8 @@ document root.</em></p>
   c.init({
     'status': document.getElementById('status'),
     'display': document.getElementById('display'),
-    'output': document.getElementById('output')
+    'output': document.getElementById('output'),
+    'wrapButton': document.getElementById('wrap')
   });
   c.connect({
     'start': 'start',
