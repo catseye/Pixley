@@ -106,6 +106,7 @@ function PixleyDepictor() {
     };
 
     this.depict = function(sexp) {
+        if (!sexp) return;
         this.availableIndex = 0;
         sexp = cloneSexp(sexp);
         canvas.style.display = "block";

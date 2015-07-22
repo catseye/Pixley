@@ -41,14 +41,13 @@ restrictions, this page must be served from a web server (rather than loaded
 as a local file in your browser,) with <code>impl/pixley.js</code> as the
 document root.</em></p>
 
-<button id="load">Load</button>
-<button id="edit">Edit</button>
-<button id="start">Start</button>
-<button id="stop">Stop</button>
-<button id="step">Step</button>
-<button id="wrap" onclick="c.wrapWith(document.getElementById('pixley-interpreter').innerHTML);">Wrap in Pixley Interpreter</button>
-<input id="speed" type="range" min="0" max="200" value="0" />
-<span id="status"></span>
+<div id="edit_panel"></div>
+<div id="panel">
+  <button id="start">Start</button>
+  <button id="stop">Stop</button>
+  <button id="wrap" onclick="c.wrapWith(document.getElementById('pixley-interpreter').innerHTML);">Wrap in Pixley Interpreter</button>
+  <span id="status"></span>
+</div>
 
 <div>
   example source: <select id="select_source"></select>
@@ -62,8 +61,10 @@ document root.</em></p>
   </canvas>
 </div>
 
-<textarea id="program" rows="25" cols="40"
->(cons (quote a) (cons (quote b) ())</textarea>
+<textarea id="program" rows="25" cols="40"></textarea>
+
+<div id="cons-test" class="example_program"
+>(cons (quote a) (cons (quote b) ())</div>
 
 <div id="equality-test" class="example_program"
 >(equal? (quote foo) (quote foo))</div>
@@ -225,7 +226,7 @@ document root.</em></p>
 
 </body>
 <script src="../src/pixley.js"></script>
-<script src="../src/yoob/controller.js"></script>
+<script src="../src/yoob/source-manager.js"></script>
 <script src="../src/yoob/preset-manager.js"></script>
 <script src="../src/pixley-controller.js"></script>
 <script src="../src/pixley-depictor.js"></script>
@@ -237,22 +238,26 @@ document root.</em></p>
     'output': document.getElementById('output'),
     'wrapButton': document.getElementById('wrap')
   });
-  c.connect({
-    'start': 'start',
-    'stop': 'stop',
-    'step': 'step',
-    'load': 'load',
-    'edit': 'edit',
-    'speed': 'speed',
-    'select': 'select_source',
-    'source': 'program',
-    'display': 'display_container'
-  });
+  document.getElementById('start').onclick = function() { c.start(); };
+  document.getElementById('stop').onclick = function() { c.stop(); };
   c.depictor = new PixleyDepictor();
   c.depictor.init(document.getElementById('canvas'));
-  c.click_load();
-  e = (new yoob.PresetManager()).init({
+
+  var sourceManager = (new yoob.SourceManager()).init({
+      'panelContainer': document.getElementById('edit_panel'),
+      'editor': document.getElementById('program'),
+      'hideDuringEdit': [document.getElementById('display')],
+      'disableDuringEdit': [document.getElementById('panel')],
+      //'storageKey': 'eg/controller.html',
+      'onDone': function() {
+          c.load(this.getEditorText());
+      }
+  });
+
+  var presetManager = (new yoob.PresetManager()).init({
     selectElem: document.getElementById('select_source'),
-    controller: c
-  }).populateFromClass('example_program');
+    setPreset: function(id) {
+      sourceManager.loadSourceFromHTML(document.getElementById(id).innerHTML);
+    }
+  }).populateFromClass('example_program').select('cons-test');
 </script>
