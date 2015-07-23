@@ -1,7 +1,7 @@
 The Pixley Programming Language
 ===============================
 
-Language version 2.0, distribution revision 2015.0101
+Language version 2.0, distribution revision 2015.0723
 
 Introduction
 ------------
@@ -330,6 +330,10 @@ Again, no changes in the language.  Just some implementation improvements.
 
 * `with-input-from-file` is an optional R5RS, so change the Scheme programs
   to not rely on it.
+
+### Pixley 2.0 revision 2015.0723 ###
+
+Only small changes to the Javascript implementation.
 
 Conclusion
 ----------
