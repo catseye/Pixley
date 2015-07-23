@@ -39,7 +39,8 @@ Pixley on:
 <p><em>Note: this implementation uses Web Workers, and thus to avoid security
 restrictions, this page must be served from a web server (rather than loaded
 as a local file in your browser,) with <code>impl/pixley.js</code> as the
-document root.</em></p>
+document root.</em>  The script <code>start.sh</code> will do this for you
+(requires Python.)</p>
 
 <div id="edit_panel"></div>
 <div id="panel">
@@ -53,6 +54,8 @@ document root.</em></p>
   example source: <select id="select_source"></select>
 </div>
 
+<textarea id="program" rows="25" cols="40"></textarea>
+
 <div id="display_container">
   <div id="display"></div>
   <div id="output"></div>
@@ -60,8 +63,6 @@ document root.</em></p>
     Your browser doesn't understand what a canvas is.
   </canvas>
 </div>
-
-<textarea id="program" rows="25" cols="40"></textarea>
 
 <div id="cons-test" class="example_program"
 >(cons (quote a) (cons (quote b) ())</div>
@@ -246,11 +247,20 @@ document root.</em></p>
   var sourceManager = (new yoob.SourceManager()).init({
       'panelContainer': document.getElementById('edit_panel'),
       'editor': document.getElementById('program'),
-      'hideDuringEdit': [document.getElementById('display')],
+      'hideDuringEdit': [
+          document.getElementById('display'),
+          document.getElementById('status')
+      ],
       'disableDuringEdit': [document.getElementById('panel')],
-      //'storageKey': 'eg/controller.html',
+      'storageKey': 'demo/pixley.html',
       'onDone': function() {
-          c.load(this.getEditorText());
+          /* Apparently this gets called as soon as the sourceManager
+             has been initialized... but we don't have any editor text
+             yet at that point.  But it will get called again, when
+             we make the sourceManager.  So, ... we check first. */
+          if (this.getEditorText()) {
+              c.load(this.getEditorText());
+          }
       }
   });
 
