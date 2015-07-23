@@ -54,7 +54,7 @@ document root.</em>  The script <code>start.sh</code> will do this for you
   example source: <select id="select_source"></select>
 </div>
 
-<textarea id="program" rows="25" cols="40"></textarea>
+<textarea id="editor" rows="25" cols="40"></textarea>
 
 <div id="display_container">
   <div id="display"></div>
@@ -243,7 +243,7 @@ launch({
     wrapButton: document.getElementById('wrap'),
     pixleyInterpreter: document.getElementById('pixley-interpreter').innerHTML,
     depictionCanvas: document.getElementById('canvas'),
-    editor: document.getElementById('program'),
+    editor: document.getElementById('editor'),
     editPanel: document.getElementById('edit_panel'),
     controlPanel: document.getElementById('panel'),
     storageKey: 'demo/pixley.html',
