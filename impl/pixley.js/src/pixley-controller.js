@@ -11,8 +11,7 @@ function PixleyController() {
         this.status = cfg.status;
         this.display = cfg.display;
         this.output = cfg.output;
-        this.wrapButton = cfg.wrapButton;
-        this.workerURL = cfg.workerURL || "../src/pixley-worker.js";
+        this.workerURL = cfg.workerURL;
         this.loadWorker();
         this.running = false;
         this.setStatus('Ready.');
@@ -31,8 +30,9 @@ function PixleyController() {
     };
 
     this.draw = function() {
-        var display = document.getElementById('display');
-        display.innerHTML = depict(this.ast);
+        if (this.display) {
+            this.display.innerHTML = depict(this.ast);
+        }
         if (this.depictor) {
             this.depictor.depict(this.ast);
         }

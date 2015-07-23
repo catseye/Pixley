@@ -46,7 +46,7 @@ document root.</em>  The script <code>start.sh</code> will do this for you
 <div id="panel">
   <button id="start">Start</button>
   <button id="stop">Stop</button>
-  <button id="wrap" onclick="c.wrapWith(document.getElementById('pixley-interpreter').innerHTML);">Wrap in Pixley Interpreter</button>
+  <button id="wrap">Wrap in Pixley Interpreter</button>
   <span id="status"></span>
 </div>
 
@@ -231,43 +231,24 @@ document root.</em>  The script <code>start.sh</code> will do this for you
 <script src="../src/yoob/preset-manager.js"></script>
 <script src="../src/pixley-controller.js"></script>
 <script src="../src/pixley-depictor.js"></script>
+<script src="../src/pixley-launcher.js"></script>
 <script>
-  var c = new PixleyController();
-  c.init({
-    'status': document.getElementById('status'),
-    'display': document.getElementById('display'),
-    'output': document.getElementById('output'),
-    'wrapButton': document.getElementById('wrap')
-  });
-  document.getElementById('start').onclick = function() { c.start(); };
-  document.getElementById('stop').onclick = function() { c.stop(); };
-  c.depictor = new PixleyDepictor();
-  c.depictor.init(document.getElementById('canvas'));
-
-  var sourceManager = (new yoob.SourceManager()).init({
-      'panelContainer': document.getElementById('edit_panel'),
-      'editor': document.getElementById('program'),
-      'hideDuringEdit': [
-          document.getElementById('display'),
-          document.getElementById('status')
-      ],
-      'disableDuringEdit': [document.getElementById('panel')],
-      'storageKey': 'demo/pixley.html',
-      'onDone': function() {
-          /* Apparently this gets called as soon as the sourceManager
-             has been initialized... but we don't have any editor text
-             yet at that point.  But it will get called again, when
-             we make the sourceManager.  So, ... we check first. */
-          if (this.getEditorText()) {
-              c.load(this.getEditorText());
-          }
-      }
-  });
-
-  var presetManager = (new yoob.PresetManager()).init({
+launch({
+    workerURL: "../src/pixley-worker.js",
+    status: document.getElementById('status'),
+    display: document.getElementById('display'),
+    output: document.getElementById('output'),
+    startButton: document.getElementById('start'),
+    stopButton: document.getElementById('stop'),
+    wrapButton: document.getElementById('wrap'),
+    pixleyInterpreter: document.getElementById('pixley-interpreter').innerHTML,
+    depictionCanvas: document.getElementById('canvas'),
+    editor: document.getElementById('program'),
+    editPanel: document.getElementById('edit_panel'),
+    controlPanel: document.getElementById('panel'),
+    storageKey: 'demo/pixley.html',
     selectElem: document.getElementById('select_source'),
-    setPreset: function(id) {
-      sourceManager.loadSourceFromHTML(document.getElementById(id).innerHTML);
-    }
-  }).populateFromClass('example_program').select('cons-test');
+    exampleProgramClass: 'example_program',
+    initialProgramName: 'cons-test'
+});
 </script>
