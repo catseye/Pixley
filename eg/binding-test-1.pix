@@ -1,0 +1,1 @@
+(let* ((a (quote b)) (c (quote d))) (cons a (cons c ())))

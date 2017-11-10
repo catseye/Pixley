@@ -64,41 +64,6 @@ document root.</em>  The script <code>start.sh</code> will do this for you
   </canvas>
 </div>
 
-<div id="cons-test" class="example_program"
->(cons (quote a) (cons (quote b) ())</div>
-
-<div id="equality-test" class="example_program"
->(equal? (quote foo) (quote foo))</div>
-
-<div id="list-test" class="example_program"
->(list? (quote foo))</div>
-
-<div id="binding-test-1" class="example_program"
->(let* ((a (quote b)) (c (quote d))) (cons a (cons c ())))</div>
-
-<div id="binding-test-2" class="example_program"
->(let* ((a (let* ((b (quote c))) b))) a)</div>
-
-<div id="binding-test-3" class="example_program"
->(let* ((a (lambda (x y) (cons x (cons y ())))))
-        (a (quote foo) (quote bar)))</div>
-
-<div id="cond-test-1" class="example_program"
->(cond
-  ((equal? (quote b) (quote r)) (quote foo))
-  (else (quote bar)))</div>
-
-<div id="cond-test-2" class="example_program"
->(cond
-  ((equal? (quote b) (quote r)) (quote foo))
-  ((equal? (quote b) (quote b)) (quote blah))
-  (else (quote bar)))</div>
-
-<div id="lambda-test" class="example_program"
->(let*
-  ((pair (lambda (x) (cons x (cons x ())))))
-    (pair (quote (hi there))))</div>
-
 <div id="pixley-interpreter" class="example_program"
 >(lambda (program)
   (let* ((interpreter (lambda (interpret program env)
@@ -232,8 +197,9 @@ document root.</em>  The script <code>start.sh</code> will do this for you
 <script src="../src/pixley-controller.js"></script>
 <script src="../src/pixley-depictor.js"></script>
 <script src="../src/pixley-launcher.js"></script>
+<script src="examples.js"></script>
 <script>
-launch({
+launchPixley({
     workerURL: "../src/pixley-worker.js",
     status: document.getElementById('status'),
     display: document.getElementById('display'),
@@ -248,7 +214,6 @@ launch({
     controlPanel: document.getElementById('panel'),
     storageKey: 'demo/pixley.html',
     selectElem: document.getElementById('select_source'),
-    exampleProgramClass: 'example_program',
-    initialProgramName: 'cons-test'
+    examplePrograms: examplePrograms
 });
 </script>

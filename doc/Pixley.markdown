@@ -1,7 +1,7 @@
 The Pixley Programming Language
 ===============================
 
-Language version 2.0, distribution revision 2015.0723
+Language version 2.0, distribution revision 2017.1110
 
 Introduction
 ------------
@@ -334,6 +334,11 @@ Again, no changes in the language.  Just some implementation improvements.
 ### Pixley 2.0 revision 2015.0723 ###
 
 Only small changes to the Javascript implementation.
+
+### Pixley 2.0 revision 2017.1110 ###
+
+Only put all example programs as discrete files in the `eg/` directory, and
+made small changes to the Javascript implementation.
 
 Conclusion
 ----------

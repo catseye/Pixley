@@ -1,4 +1,4 @@
-function launch(cfg) {
+function launchPixley(cfg) {
     var c = new PixleyController();
     c.init({
         status: cfg.status,
@@ -38,8 +38,14 @@ function launch(cfg) {
     
     var presetManager = (new yoob.PresetManager()).init({
         selectElem: cfg.selectElem,
-        setPreset: function(id) {
-            sourceManager.loadSourceFromHTML(document.getElementById(id).innerHTML);
-        }
-    }).populateFromClass(cfg.exampleProgramClass).select(cfg.initialProgramName);
+    });
+    function makeCallback(sourceText) {
+      return function(id) {
+        sourceManager.loadSource(sourceText);
+      }
+    }
+    for (var i = 0; i < cfg.examplePrograms.length; i++) {
+      presetManager.add(cfg.examplePrograms[i][0], makeCallback(cfg.examplePrograms[i][1]));
+    }
+    presetManager.select(cfg.examplePrograms[0][0]);
 }

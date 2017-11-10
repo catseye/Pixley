@@ -1,0 +1,1 @@
+(let* ((a (lambda (x y) (cons x (cons y ()))))) (a (quote foo) (quote bar)))

@@ -1,0 +1,3 @@
+(cond
+  ((equal? (quote b) (quote r)) (quote foo))
+  (else (quote bar)))
