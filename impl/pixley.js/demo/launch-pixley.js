@@ -37,29 +37,27 @@ function launch(prefix, container, config) {
     var selectPanel = yoob.makeDiv(container);
     var selectElem = yoob.makeSelect(selectPanel, "example source:", []);
 
-    var rowFluid = yoob.makeDiv(container);
-    rowFluid.className = "row-fluid";
-    var column1 = yoob.makeDiv(rowFluid);
-    column1.className = "span6";
-    var animationPanel = yoob.makeDiv(column1);
+    var flexContainer = yoob.makeDiv(container);
+    flexContainer.className = "flex-container";
+    var executionPanel = yoob.makeDiv(flexContainer);
+    executionPanel.className = "execution-panel";
 
-    yoob.makeParagraph(animationPanel, "Status:");
-    var status = yoob.makePre(animationPanel);
-    status.id = "status";
+    yoob.makeParagraph(executionPanel, "Status:");
+    var status = yoob.makePre(executionPanel);
 
-    yoob.makeParagraph(animationPanel, "Result:");
-    var output = yoob.makePre(animationPanel);
+    yoob.makeParagraph(executionPanel, "Result:");
+    var output = yoob.makePre(executionPanel);
 
-    yoob.makeParagraph(animationPanel, "Program:");
-    var display = yoob.makePre(animationPanel);
+    yoob.makeParagraph(executionPanel, "Program:");
+    var display = yoob.makePre(executionPanel);
+    var editor = yoob.makeTextArea(executionPanel);
 
-    var column2 = yoob.makeDiv(rowFluid);
-    column2.className = "span6";
-    yoob.makeParagraph(column2, "Depiction:");
-    var depictionCanvas = yoob.makeCanvas(column2);
-    depictionCanvas.id = "canvas";
+    var depictionPanel = yoob.makeDiv(flexContainer);
+    depictionPanel.className = "depiction-panel";
 
-    var editor = yoob.makeTextArea(container);
+    yoob.makeParagraph(depictionPanel, "Depiction:");
+    var depictionCanvas = yoob.makeCanvas(depictionPanel);
+
 
     /* --- Make Controller --- */
 
