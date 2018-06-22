@@ -1,7 +1,7 @@
 The Pixley Programming Language
 ===============================
 
-Language version 2.0, distribution revision 2017.1110
+Language version 2.0
 
 Introduction
 ------------
@@ -96,6 +96,9 @@ naming the identifier, and the second is the value to which it is bound.
 History
 -------
 
+Note that this is only the history of the programming language itself; for
+history of its reference distribution, see [HISTORY.md](../HISTORY.md).
+
 ### Pixley 1.0 ###
 
 Pixley 1.0 was released on May 1st, 2009, from Cupertino, California.
@@ -183,162 +186,10 @@ you *could* have been relying on the fact that `(car (lambda (x) x))`
 evaluates to `__lambda__`, in your Pixley programs, and we can't have that,
 can we?  So the language version was bumped up to 1.1.
 
-#### Goodies ####
-
-The Pixley 1.1 distribution also included the following supplementary
-material:
-
-* An enlarged test suite (previously mentioned).
-* A REPL (read-eval-print loop, or "interactive mode" interpreter), written
-  in Scheme.
-* A statistics generator, written in Scheme, which counts the cons cells,
-  symbol instances, and unique symbols present in a given s-expression.
-  This was to measure the complexity of the Pixley interpreter.
-* A Mini-Scheme driver.  During my adventures in getting programs to run
-  under AmigaOS 1.3, I compiled Mini-Scheme thereunder, and got Pixley to
-  run under it by including the Pixley interpreter in Mini-Scheme's
-  `init.scm` file and invoking it therein.  From this I conclude that,
-  although I have not confirmed this is in a solid way by looking at the
-  spec or anything, Pixley is also a strict subset of R4RS Scheme.
-
 ### Pixley 2.0 ###
 
 As previously mentioned, Pixley 2.0 removes the `cadr` and `null?`
 functions from the language.
-
-#### Goodies ####
-
-The Pixley 2.0 distribution also includes the following supplementary
-material:
-
-* Bourne Shell scripts to run Pixley programs which are stored in individual
-  files.  `pixley.sh` runs either a self-contained Pixley program from a
-  single file, or evaluates a Pixley file to a function value and applies it
-  to an S-expression stored in a second file.  `scheme.sh` does the same
-  thing, but with Scheme, as a sanity-check.  By default these scripts use
-  `plt-r5rs` for the Scheme interpreter, but that can be changed with an
-  environment variable.
-* A P-Normalizer written in Pixley, probably the first non-trivial Pixley
-  program to be written, aside from the Pixley interpreter itself.  P-Normal
-  Pixley is a simplified version of Pixley where `let*` can only bind one
-  identifer to one value and `cond` can only make one test, like Scheme's
-  `if`.  This form is described more fully in the [Falderal literate test
-  suite for the P-Normalizer](../dialect/P-Normal.markdown).
-* Test suites, written in Falderal, for both Pixley and the P-Normalizer.
-  The original test suite written in Scheme, which runs successively deeper
-  nested copies of the Pixley interpreter, is still included in the
-  distribution.
-* A few other standalone Pixley examples, including `reverse.pix`,
-  which reverses the given list.
-
-### Pixley 2.0 revision 2012.0219 ###
-
-While there were no changes to the language in revision 2012.0219, this is
-a fairly major revision to the Pixley distribution, so let's list what's
-new in it here.
-
-* The Bourne shell scripts `pixley.sh` and `scheme.sh` were replaced by a
-  single script `tower.sh`.  The idea behind this script is that it lets
-  you constuct a "tower of interpreters" from a sequence of text files
-  which contain S-expressions.  The first such S-expression is interpreted
-  as Scheme, and may evaluate to a function value; the second such will be
-  interpreted by that function, and may evaluate to another function value,
-  and so forth, until there is an S-expression that evaluates to something
-  besides a function value (and that result will be printed to standard
-  output and `tower.sh` will terminate.)
-
-* `tower.sh` officially supports three implementations of Scheme that can
-  be used as the base interpreter: `plt-r5rs` from the Racket distribution,
-  `tinyscheme`, and `miniscm` version 0.85p1 (from our fork of the project
-  on GitHub.)  Support for Scheme implementations is (more or less)
-  capability-based, so adding support for other implementations should not
-  be difficult (especially if they are similar to the three already
-  supported.)
-
-* The test suite was put into Falderal 0.6 format and now uses `tower.sh`
-  to run each test case.  By default, it uses `plt-r5rs`, but can be told
-  to use any of the Scheme implementations that `tower.sh` supports.
-  (Note: there is currently a failure when running one of the tests on a
-  Pixley interpreter on a Pixley interpreter on `miniscm` that I have yet
-  to track down.)
-
-* To match the expectations of `tower.sh`, the Pixley self-interpreter was
-  refactored to evaluate to a function value of one argument.  It was also
-  simplified slightly, removing an unnecessary nested `cond`.
-
-* Various dialects of Pixley have been defined and described, and collected
-  in the `dialect` directory of the distribution.  The dialects include
-  Pifxley, which supports an `if` construct instead of `cond`; there is a
-  Pixley interpreter written in Pifxley, and a Pifxley self-interpreter.
-  There is also a dialect called Crabwell which allows values to be bound
-  to, not just symbols, but arbitrary S-expressions.
-
-* A bug (a missing case) was fixed in the P-Normalizer.
-
-* The main Pixley documentation (what you're reading now) was converted
-  to Markdown format.
-
-* Source code in the Pixley distribution was placed under a BSD-style
-  license.
-
-### Pixley 2.0 revision 2013.1024 ###
-
-While there were no changes to the language in revision 2013.1024, some
-interesting stuff was added to the Pixley distribution, so let's list what's
-new in it here.
-
-* Funny story!  Remember when I said I was writing writing stuff in C to
-  compile with DICE C under AmigaOS 1.3, and that what I decided to write
-  was a Pixley interpreter in C?  Well, that implementation of Pixley,
-  called `mignon`, has finally been included in the Pixley distribution.
-
-* Another implementation of Pixley, this time in Haskell and called `haney`,
-  has also been included in the Pixley distribution.
-
-* The `tower.sh` script has been refactored, since honestly it was kind of
-  grody.  The abstraction layer which tries to make different implementations
-  of Scheme behave the same has been split off into `scheme-adapter.sh`,
-  while the responsibility of `tower.sh` itself is only to build and run the
-  tower of interpreters.  In addition to `plt-r5rs`, Mini-Scheme, and
-  Tinyscheme, `scheme-adapter.sh` also supports the Husk Scheme interpreter.
-  Finally, `scheme-adapter.sh` supports `mignon` and `haney` as well; even
-  though they're not proper Scheme interpreters, they can be used as the
-  base interpreter for a tower of Pixley interpreters.
-
-* The test suite has been modernized (for whatever "modern" means for
-  Falderal) and enriched to handle testing these extra implementations.
-
-### Pixley 2.0 revision 2015.0101 ###
-
-(This also includes updates from revision 2014.0819 which I neglected to
-list here previously.)
-
-Again, no changes in the language.  Just some implementation improvements.
-
-* A new implementation of Pixley, in Javascript, which runs in a web browser
-  which supports Web Workers.  As a bonus, it can depict the Pixley program
-  as a series of nested, coloured rectangles.  You can see it online here:
-  [Pixley installation at Cat's Eye Technologies](http://catseye.tc/installation/Pixley).
-
-* Wrappers to allow `pixley.scm` to be run under Scheme48 and the CHICKEN
-  Scheme interpreter.
-
-* The test suite tries to find a reasonable Scheme implementation to run
-  under.
-
-* Syntax for tests updated to Falderal 0.10.
-
-* `with-input-from-file` is an optional R5RS, so change the Scheme programs
-  to not rely on it.
-
-### Pixley 2.0 revision 2015.0723 ###
-
-Only small changes to the Javascript implementation.
-
-### Pixley 2.0 revision 2017.1110 ###
-
-Only put all example programs as discrete files in the `eg/` directory, and
-made small changes to the Javascript implementation.
 
 Conclusion
 ----------

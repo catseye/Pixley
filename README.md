@@ -20,19 +20,17 @@ in the Pixley project are distributed under a BSD license.
 
 The latest released version of the Pixley language is 2.0.  For more
 information on the language, reference implementation, and project, please
-refer to
-[The Pixley Programming Language](https://github.com/catseye/Pixley/blob/master/doc/Pixley.markdown)
-document.
+refer to [The Pixley Programming Language](doc/Pixley.markdown) document.
 
 Development
 -----------
 
-Pixley development is
-[hosted on Bitbucket](https://bitbucket.org/catseye/pixley/).
-
-There is also a
-[git mirror of the repository on Github](https://github.com/catseye/Pixley).
-
 Official release distfiles are available on the
 [Pixley project page](http://catseye.tc/node/Pixley) at
 [Cat's Eye Technologies](http://catseye.tc/).
+
+The git repository for the reference distribution is
+[available on Github](https://github.com/catseye/Pixley).
+
+For a release history of the reference distribution, see
+[HISTORY.md](HISTORY.md).

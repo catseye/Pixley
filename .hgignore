@@ -1,9 +1,0 @@
-syntax: glob
-
-*.o
-*.hi
-
-syntax: regexp
-
-^impl/mignon/mignon
-^impl/haney/haney

@@ -1,5 +1,5 @@
 /*
- * This file is part of yoob.js version 0.8
+ * This file is part of yoob.js version 0.13
  * Available from https://github.com/catseye/yoob.js/
  * This file is in the public domain.  See http://unlicense.org/ for details.
  */
@@ -68,7 +68,7 @@ yoob.PresetManager = function() {
     };
 
     this.setPreset = function(id) {
-        alert("No default setPreset callback configured");
+        throw new Error("No default setPreset callback configured");
     };
 
     /*
@@ -118,6 +118,27 @@ yoob.PresetManager = function() {
             var e = elements[i];
             this.add(e.id, callback);
         }
+        return this;
+    };
+
+    /*
+     * When called with a yoob.SourceManager and an array of
+     * 2-element arrays of a name and a source text, this preset
+     * manager will be populated with each source text as a
+     * named preset.  A callback to load the source text with
+     * the SourceManager will be automatically supplied.
+     */
+    this.populateFromPairs = function(sourceManager, pairs) {
+        function makeCallback(sourceText) {
+            return function(id) {
+                sourceManager.loadSource(sourceText);
+            }
+        }
+
+        for (var i = 0; i < pairs.length; i++) {
+            this.add(pairs[i][0], makeCallback(pairs[i][1]));
+        }
+        this.select(pairs[0][0]);
         return this;
     };
 };
