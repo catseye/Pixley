@@ -33,6 +33,7 @@ example programs, and other "goodies".
 ### 2.0 ###
 
 *   Changed implementations to implement Pixley 2.0.
+
 *   Bourne Shell scripts to run Pixley programs which are stored in individual
     files.  `pixley.sh` runs either a self-contained Pixley program from a
     single file, or evaluates a Pixley file to a function value and applies it
@@ -156,13 +157,15 @@ list here previously.)
 
 *   Small changes to the Javascript implementation.
 
-### 2.0 revision 2018.???? ###
+### 2.0 revision 2018.0622 ###
+
+*   Split this HISTORY file off from [The Pixley Programming Language][].
 
 *   Added a `build.seq` which details how to build `mignon` under
     AmigaDOS 1.3 using DICE C.
-*   Added a `launch-pixley.js` file to the pixley.js demo, which creates
-    a UI, etc.
-*   Split this HISTORY file off from [The Pixley Programming Language][].
+
+*   Added a `launch-pixley.js` file to the pixley.js demo, which is
+    responsible for creating the UI, instead of coding it in HTML.
 
 [The Pixley Programming Language]: doc/Pixley.markdown
 [Falderal literate test suite for the P-Normalizer]: dialect/P-Normal.markdown
