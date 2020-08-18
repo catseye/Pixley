@@ -1,6 +1,12 @@
 Pixley
 ======
 
+_Try it online_ [@ catseye.tc](https://catseye.tc/installation/Pixley)
+| _See also:_ [Pail](https://github.com/catseye/Pail#readme)
+∘ [Robin](https://github.com/catseye/Robin#readme)
+
+- - - -
+
 Pixley is a strict subset of R5RS Scheme (or, if you prefer, R4RS Scheme),
 supporting four datatypes (boolean, cons cell, function, and symbol) and
 a dozen built-in symbols.  The reference implementation of Pixley
