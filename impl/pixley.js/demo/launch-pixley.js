@@ -58,6 +58,132 @@ function launch(prefix, container, config) {
     yoob.makeParagraph(depictionPanel, "Depiction:");
     var depictionCanvas = yoob.makeCanvas(depictionPanel);
 
+    var pixleyInterpreter = (
+      "(lambda (program)" +
+      "  (let* ((interpreter (lambda (interpret program env)" +
+      "    (let*  ((cadr (lambda (alist)" +
+      "              (car (cdr alist))))" +
+      "            (null? (lambda (expr)" +
+      "              (equal? expr (quote ()))))" +
+      "            (find (lambda (self elem alist)" +
+      "              (cond" +
+      "                ((null? alist)" +
+      "                  (quote nothing))" +
+      "                (else" +
+      "                  (let* ((entry (car alist))" +
+      "                         (key   (car entry))" +
+      "                         (rest  (cdr alist)))" +
+      "                    (cond" +
+      "                      ((equal? elem key)" +
+      "                        entry)" +
+      "                      (else" +
+      "                        (self self elem rest))))))))" +
+      "            (interpret-args (lambda (interpret-args args env)" +
+      "              (cond" +
+      "                ((null? args)" +
+      "                  args)" +
+      "                (else" +
+      "                  (let* ((arg  (car args))" +
+      "                         (rest (cdr args)))" +
+      "                    (cons (interpret interpret arg env) (interpret-args interpret-args rest env)))))))" +
+      "            (expand-args (lambda (expand-args formals argvals)" +
+      "              (cond" +
+      "                ((null? formals)" +
+      "                  formals)" +
+      "                (else" +
+      "                  (let* ((formal       (car formals))" +
+      "                         (rest-formals (cdr formals))" +
+      "                         (argval       (car argvals))" +
+      "                         (rest-argvals (cdr argvals)))" +
+      "                    (cons (cons formal (cons argval (quote ()))) (expand-args expand-args rest-formals rest-argvals)))))))" +
+      "            (concat-envs (lambda (concat-envs new-env old-env)" +
+      "              (cond" +
+      "                ((null? new-env)" +
+      "                  old-env)" +
+      "                (else" +
+      "                  (let* ((entry (car new-env))" +
+      "                         (rest  (cdr new-env)))" +
+      "                    (cons entry (concat-envs concat-envs rest old-env)))))))" +
+      "             (call-lambda (lambda (func args env)" +
+      "               (let* ((arg-vals (interpret-args interpret-args args env)))" +
+      "                  (func arg-vals)))))" +
+      "      (cond" +
+      "        ((null? program)" +
+      "          program)" +
+      "        ((list? program)" +
+      "          (let* ((tag   (car program))" +
+      "                 (args  (cdr program))" +
+      "                 (entry (find find tag env)))" +
+      "            (cond" +
+      "              ((list? entry)" +
+      "                (call-lambda (cadr entry) args env))" +
+      "              ((equal? tag (quote lambda))" +
+      "                (let* ((formals (car args))" +
+      "                       (body    (cadr args)))" +
+      "                  (lambda (arg-vals)" +
+      "                    (let* ((arg-env   (expand-args expand-args formals arg-vals))" +
+      "                           (new-env   (concat-envs concat-envs arg-env env)))" +
+      "                      (interpret interpret body new-env)))))" +
+      "              ((equal? tag (quote cond))" +
+      "                (cond" +
+      "                  ((null? args)" +
+      "                    args)" +
+      "                  (else" +
+      "                    (let* ((branch   (car args))" +
+      "                           (test     (car branch))" +
+      "                           (expr     (cadr branch)))" +
+      "                      (cond" +
+      "                        ((equal? test (quote else))" +
+      "                          (interpret interpret expr env))" +
+      "                        ((interpret interpret test env)" +
+      "                          (interpret interpret expr env))" +
+      "                        (else" +
+      "                          (let* ((branches (cdr args))" +
+      "                                 (newprog (cons (quote cond) branches)))" +
+      "                            (interpret interpret newprog env))))))))" +
+      "              ((equal? tag (quote let*))" +
+      "                (let* ((bindings (car args))" +
+      "                       (body     (cadr args)))" +
+      "                  (cond" +
+      "                    ((null? bindings)" +
+      "                      (interpret interpret body env))" +
+      "                    (else" +
+      "                      (let* ((binding  (car bindings))" +
+      "                             (rest     (cdr bindings))" +
+      "                             (ident    (car binding))" +
+      "                             (expr     (cadr binding))" +
+      "                             (value    (interpret interpret expr env))" +
+      "                             (new-bi   (cons ident (cons value (quote ()))))" +
+      "                             (new-env  (cons new-bi env))" +
+      "                             (newprog  (cons (quote let*) (cons rest (cons body (quote ()))))))" +
+      "                        (interpret interpret newprog new-env))))))" +
+      "              ((equal? tag (quote list?))" +
+      "                (list? (interpret interpret (car args) env)))" +
+      "              ((equal? tag (quote quote))" +
+      "                (car args))" +
+      "              ((equal? tag (quote car))" +
+      "                (car (interpret interpret (car args) env)))" +
+      "              ((equal? tag (quote cdr))" +
+      "                (cdr (interpret interpret (car args) env)))" +
+      "              ((equal? tag (quote cons))" +
+      "                (cons (interpret interpret (car args) env) (interpret interpret (cadr args) env)))" +
+      "              ((equal? tag (quote equal?))" +
+      "                (equal? (interpret interpret (car args) env) (interpret interpret (cadr args) env)))" +
+      "              ((null? tag)" +
+      "                tag)" +
+      "              ((list? tag)" +
+      "                (call-lambda (interpret interpret tag env) args env))" +
+      "              (else" +
+      "                (call-lambda tag args env)))))" +
+      "        (else" +
+      "          (let* ((entry (find find program env)))" +
+      "            (cond" +
+      "              ((list? entry)" +
+      "                (cadr entry))" +
+      "              (else" +
+      "                (quote illegal-program-error))))))))))" +
+      "      (interpreter interpreter program (quote ()))))"
+    );
 
     /* --- Make Controller --- */
 
@@ -68,7 +194,7 @@ function launch(prefix, container, config) {
         startButton: startButton,
         stopButton: stopButton,
         wrapButton: wrapButton,
-        pixleyInterpreter: "(lambda (program)\n  (let* ((interpreter (lambda (interpret program env)\n    (let*  ((cadr (lambda (alist)\n              (car (cdr alist))))\n            (null? (lambda (expr)\n              (equal? expr (quote ()))))\n            (find (lambda (self elem alist)\n              (cond\n                ((null? alist)\n                  (quote nothing))\n                (else\n                  (let* ((entry (car alist))\n                         (key   (car entry))\n                         (rest  (cdr alist)))\n                    (cond\n                      ((equal? elem key)\n                        entry)\n                      (else\n                        (self self elem rest))))))))\n            (interpret-args (lambda (interpret-args args env)\n              (cond\n                ((null? args)\n                  args)\n                (else\n                  (let* ((arg  (car args))\n                         (rest (cdr args)))\n                    (cons (interpret interpret arg env) (interpret-args interpret-args rest env)))))))\n            (expand-args (lambda (expand-args formals argvals)\n              (cond\n                ((null? formals)\n                  formals)\n                (else\n                  (let* ((formal       (car formals))\n                         (rest-formals (cdr formals))\n                         (argval       (car argvals))\n                         (rest-argvals (cdr argvals)))\n                    (cons (cons formal (cons argval (quote ()))) (expand-args expand-args rest-formals rest-argvals)))))))\n            (concat-envs (lambda (concat-envs new-env old-env)\n              (cond\n                ((null? new-env)\n                  old-env)\n                (else\n                  (let* ((entry (car new-env))\n                         (rest  (cdr new-env)))\n                    (cons entry (concat-envs concat-envs rest old-env)))))))\n             (call-lambda (lambda (func args env)\n               (let* ((arg-vals (interpret-args interpret-args args env)))\n                  (func arg-vals)))))\n      (cond\n        ((null? program)\n          program)\n        ((list? program)\n          (let* ((tag   (car program))\n                 (args  (cdr program))\n                 (entry (find find tag env)))\n            (cond\n              ((list? entry)\n                (call-lambda (cadr entry) args env))\n              ((equal? tag (quote lambda))\n                (let* ((formals (car args))\n                       (body    (cadr args)))\n                  (lambda (arg-vals)\n                    (let* ((arg-env   (expand-args expand-args formals arg-vals))\n                           (new-env   (concat-envs concat-envs arg-env env)))\n                      (interpret interpret body new-env)))))\n              ((equal? tag (quote cond))\n                (cond\n                  ((null? args)\n                    args)\n                  (else\n                    (let* ((branch   (car args))\n                           (test     (car branch))\n                           (expr     (cadr branch)))\n                      (cond\n                        ((equal? test (quote else))\n                          (interpret interpret expr env))\n                        ((interpret interpret test env)\n                          (interpret interpret expr env))\n                        (else\n                          (let* ((branches (cdr args))\n                                 (newprog (cons (quote cond) branches)))\n                            (interpret interpret newprog env))))))))\n              ((equal? tag (quote let*))\n                (let* ((bindings (car args))\n                       (body     (cadr args)))\n                  (cond\n                    ((null? bindings)\n                      (interpret interpret body env))\n                    (else\n                      (let* ((binding  (car bindings))\n                             (rest     (cdr bindings))\n                             (ident    (car binding))\n                             (expr     (cadr binding))\n                             (value    (interpret interpret expr env))\n                             (new-bi   (cons ident (cons value (quote ()))))\n                             (new-env  (cons new-bi env))\n                             (newprog  (cons (quote let*) (cons rest (cons body (quote ()))))))\n                        (interpret interpret newprog new-env))))))\n              ((equal? tag (quote list?))\n                (list? (interpret interpret (car args) env)))\n              ((equal? tag (quote quote))\n                (car args))\n              ((equal? tag (quote car))\n                (car (interpret interpret (car args) env)))\n              ((equal? tag (quote cdr))\n                (cdr (interpret interpret (car args) env)))\n              ((equal? tag (quote cons))\n                (cons (interpret interpret (car args) env) (interpret interpret (cadr args) env)))\n              ((equal? tag (quote equal?))\n                (equal? (interpret interpret (car args) env) (interpret interpret (cadr args) env)))\n              ((null? tag)\n                tag)\n              ((list? tag)\n                (call-lambda (interpret interpret tag env) args env))\n              (else\n                (call-lambda tag args env)))))\n        (else\n          (let* ((entry (find find program env)))\n            (cond\n              ((list? entry)\n                (cadr entry))\n              (else\n                (quote illegal-program-error))))))))))\n      (interpreter interpreter program (quote ()))))\n",
+        pixleyInterpreter: pixleyInterpreter,
         depictionCanvas: depictionCanvas,
         editPanel: editPanel,
         editor: editor,
