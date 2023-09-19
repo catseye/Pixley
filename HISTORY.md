@@ -167,6 +167,10 @@ list here previously.)
 *   Added a `launch-pixley.js` file to the pixley.js demo, which is
     responsible for creating the UI, instead of coding it in HTML.
 
+### 2.0 revision 2023.0919 ###
+
+*   Refactored `launch-pixley.js` to eliminate long lines.
+
 [The Pixley Programming Language]: doc/Pixley.markdown
 [Falderal literate test suite for the P-Normalizer]: dialect/P-Normal.markdown
 [Pixley installation at Cat's Eye Technologies]: http://catseye.tc/ix/Pixley
