@@ -2,8 +2,8 @@ Pixley
 ======
 
 _Try it online_ [@ catseye.tc](https://catseye.tc/installation/Pixley)
-| _See also:_ [Pail](https://github.com/catseye/Pail#readme)
-∘ [Robin](https://github.com/catseye/Robin#readme)
+| _See also:_ [Pail](https://codeberg.org/catseye/Pail#pail)
+∘ [Robin](https://codeberg.org/catseye/Robin#robin)
 
 - - - -
 
@@ -36,7 +36,7 @@ Official release distfiles are available on the
 [Cat's Eye Technologies](http://catseye.tc/).
 
 The git repository for the reference distribution is
-[available on Github](https://github.com/catseye/Pixley).
+[available on Codeberg](https://codeberg.org/catseye/Pixley).
 
 For a release history of the reference distribution, see
 [HISTORY.md](HISTORY.md).

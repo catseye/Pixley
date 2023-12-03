@@ -2,7 +2,7 @@
 
 # scheme-adapter.sh wrapper to support the miniscm-0.85p1 Scheme implementation
 
-# - miniscm          # https://github.com/catseye/minischeme
+# - miniscm          # https://codeberg.org/catseye/minischeme
 
 # Mini-Scheme is supported, but version 0.85p1 (a fork available
 # at the above URL) is required to support the -q and -e options.
